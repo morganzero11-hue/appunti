@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cream:   #f5f0e8;
+            --paper:   #faf7f2;
+            --ink:     #1c1917;
+            --ink2:    #44403c;
+            --muted:   #a8a29e;
+            --border:  #e5ddd0;
+            --accent:  #d4522a;
+            --accent2: #2a7d4f;
+            --yellow:  #f0c040;
+            --nav-h:   60px;
+            --r:       18px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        /* ─── NAVBAR ─── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: var(--ink);
+            display: flex; align-items: center;
+            padding: 0 36px; gap: 32px;
+            z-index: 100;
+        }
+
+        .nav__brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--yellow);
+            text-decoration: none; white-space: nowrap;
+            letter-spacing: -0.5px;
+        }
+
+        .nav__links { list-style: none; display: flex; gap: 2px; flex: 1; }
+
+        .nav__links a {
+            padding: 6px 13px; border-radius: 8px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none; font-size: 0.87rem; font-weight: 700;
+            transition: all .18s;
+        }
+        .nav__links a:hover { color: #fff; background: rgba(255,255,255,0.07); }
+        .nav__links a.active { color: var(--yellow); }
+
+        /* ─── HERO BAND ─── */
+        .hero-band {
+            margin-top: var(--nav-h);
+            height: 220px;
+            background: var(--ink);
+            position: relative; overflow: hidden;
+        }
+
+        /* cross-hatch pattern */
+        .hero-band::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 12px),
+                repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 12px);
+        }
+
+        .hero-band__accent {
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(212,82,42,0.2) 0%, transparent 65%);
+            bottom: -200px; left: -60px;
+            pointer-events: none;
+        }
+
+        .hero-band__accent2 {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(240,192,64,0.12) 0%, transparent 65%);
+            top: -150px; right: 5%;
+            pointer-events: none;
+        }
+
+        .hero-band__label {
+            position: absolute; top: 28px; left: 40px;
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: rgba(255,255,255,0.08);
+            letter-spacing: -2px;
+            user-select: none;
+        }
+
+        /* ─── MAIN LAYOUT ─── */
+        .layout {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 0 28px 80px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: auto auto;
+            gap: 0 28px;
+        }
+
+        /* ─── LEFT COLUMN ─── */
+        .left-col {
+            grid-column: 1;
+            margin-top: -70px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+
+        /* Avatar card */
+        .avatar-card {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 28px 24px;
+            display: flex; flex-direction: column; align-items: center; gap: 18px;
+            box-shadow: 0 4px 24px rgba(28,25,23,0.08);
+            animation: riseUp .5s ease both;
+        }
+
+        .avatar-ring {
+            position: relative;
+            width: 120px; height: 120px;
+        }
+
+        .avatar-circle {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            background: var(--cream);
+            border: 3px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .avatar-circle:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 5px rgba(212,82,42,0.12);
+        }
+
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+        .avatar-placeholder {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 5px;
+            color: var(--muted); font-size: 0.68rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; text-align: center;
+            transition: color .2s;
+        }
+        .avatar-circle:hover .avatar-placeholder { color: var(--accent); }
+
+        .avatar-edit-btn {
+            position: absolute; bottom: 2px; right: 2px;
+            width: 28px; height: 28px;
+            background: var(--accent); border-radius: 50%;
+            border: 2px solid var(--paper);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform .2s, background .2s;
+        }
+        .avatar-edit-btn:hover { transform: scale(1.15); background: #b8421e; }
+
+        #avatarInput { display: none; }
+
+        /* field group */
+        .field-wrap { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+
+        .field-label {
+            font-size: 0.68rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--muted);
+        }
+
+        .field-input, .field-textarea {
+            background: var(--cream);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--ink);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+            padding: 10px 14px;
+            width: 100%; outline: none; resize: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+        .field-input::placeholder, .field-textarea::placeholder {
+            color: var(--muted); font-weight: 500;
+        }
+        .field-input:focus, .field-textarea:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(212,82,42,0.1);
+        }
+        .field-textarea { min-height: 80px; line-height: 1.55; }
+
+        .char-counter { font-size: 0.67rem; color: var(--muted); text-align: right; }
+
+        .btn-save {
+            width: 100%;
+            background: var(--accent);
+            color: #fff; border: none;
+            border-radius: 10px;
+            padding: 11px;
+            font-family: 'Fraunces', serif;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s, background .2s;
+            letter-spacing: 0.2px;
+        }
+        .btn-save:hover {
+            background: #b8421e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,82,42,0.28);
+        }
+
+        /* stats card */
+        .stats-card {
+            background: var(--ink);
+            border-radius: var(--r);
+            padding: 22px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1px;
+            overflow: hidden;
+            animation: riseUp .5s .08s ease both; opacity: 0;
+        }
+
+        .stat {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 12px 8px; gap: 3px;
+        }
+
+        .stat__n {
+            font-family: 'Fraunces', serif;
+            font-size: 1.65rem; font-weight: 900;
+            color: var(--yellow); line-height: 1;
+        }
+
+        .stat__l {
+            font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ─── RIGHT COLUMN ─── */
+        .right-col {
+            grid-column: 2;
+            margin-top: 28px;
+            animation: riseUp .5s .12s ease both; opacity: 0;
+        }
+
+        /* tabs */
+        .tabs-bar {
+            display: flex; gap: 6px;
+            margin-bottom: 22px;
+        }
+
+        .tab-pill {
+            background: none; border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 800;
+            color: var(--ink2); cursor: pointer;
+            transition: all .2s;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .tab-pill:hover { border-color: var(--ink2); color: var(--ink); }
+        .tab-pill.active {
+            background: var(--ink); color: #fff; border-color: var(--ink);
+        }
+        .tab-pill .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: currentColor; opacity: 0.5;
+        }
+        .tab-pill.active .dot { background: var(--yellow); opacity: 1; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ─── TIKTOK GRID ─── */
+        .tiktok-grid {
+            columns: 3; column-gap: 12px;
+        }
+
+        .tt-card {
+            break-inside: avoid;
+            margin-bottom: 12px;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            border: 1.5px solid var(--border);
+            background: var(--paper);
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+        }
+        .tt-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(28,25,23,0.12);
+            border-color: var(--c, #ccc);
+        }
+
+        .tt-card__thumb {
+            aspect-ratio: 3/4;
+            background: var(--cream);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        .tt-card__bg {
+            position: absolute; inset: 0;
+            opacity: 0.15;
+        }
+
+        .tt-card__emoji {
+            font-size: 2.6rem; position: relative; z-index: 1;
+            filter: drop-shadow(0 3px 10px rgba(0,0,0,0.2));
+        }
+
+        .tt-card__hover-info {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(28,25,23,0.88) 0%, transparent 55%);
+            opacity: 0; transition: opacity .25s;
+            display: flex; align-items: flex-end;
+            padding: 10px;
+        }
+        .tt-card:hover .tt-card__hover-info { opacity: 1; }
+        .tt-card__hover-info span {
+            font-size: 0.7rem; font-weight: 800; color: #fff; letter-spacing: 0.3px;
+        }
+
+        .tt-card__body { padding: 10px 11px 12px; }
+
+        .tt-card__chip {
+            display: inline-block;
+            font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            padding: 2px 8px; border-radius: 20px; margin-bottom: 5px;
+            background: color-mix(in srgb, var(--c) 14%, transparent);
+            color: var(--c);
+            border: 1px solid color-mix(in srgb, var(--c) 25%, transparent);
+        }
+
+        .tt-card__title {
+            font-family: 'Fraunces', serif;
+            font-size: 0.8rem; font-weight: 700;
+            line-height: 1.3; color: var(--ink);
+        }
+
+        .tt-card__views {
+            font-size: 0.66rem; color: var(--muted);
+            margin-top: 4px; display: flex; align-items: center; gap: 3px;
+        }
+
+        /* ─── SAVED LIST ─── */
+        .saved-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .sv-card {
+            background: var(--paper);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex; align-items: center; gap: 14px;
+            cursor: pointer;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+        }
+        .sv-card:hover {
+            transform: translateX(6px);
+            border-color: var(--c, #ccc);
+            box-shadow: 0 4px 18px rgba(28,25,23,0.07);
+        }
+
+        .sv-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.35rem; flex-shrink: 0;
+            background: color-mix(in srgb, var(--c) 12%, transparent);
+            border: 1.5px solid color-mix(in srgb, var(--c) 22%, transparent);
+        }
+
+        .sv-body { flex: 1; min-width: 0; }
+
+        .sv-chip {
+            font-size: 0.63rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            color: var(--c); margin-bottom: 3px;
+        }
+
+        .sv-title {
+            font-family: 'Fraunces', serif;
+            font-size: 0.95rem; font-weight: 700; color: var(--ink);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .sv-meta { font-size: 0.71rem; color: var(--muted); margin-top: 2px; }
+
+        .sv-bm { font-size: 1rem; flex-shrink: 0; opacity: 0.6; transition: opacity .2s, transform .2s; }
+        .sv-card:hover .sv-bm { opacity: 1; transform: scale(1.2); }
+
+        /* empty state */
+        .empty {
+            padding: 56px 20px; text-align: center; color: var(--muted);
+        }
+        .empty__icon { font-size: 2.8rem; margin-bottom: 12px; opacity: 0.45; }
+        .empty p { font-size: 0.88rem; line-height: 1.6; }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--ink); color: var(--yellow);
+            padding: 11px 22px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.9rem;
+            opacity: 0; transform: translateY(12px);
+            transition: all .3s; pointer-events: none; z-index: 9999;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes riseUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 700px) {
+            .layout { grid-template-columns: 1fr; }
+            .left-col { margin-top: -50px; grid-column: 1; }
+            .right-col { grid-column: 1; margin-top: 0; }
+            .tiktok-grid { columns: 2; }
+            .nav__links { display: none; }
+            .hero-band { height: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="index.html" class="nav__brand">📚 Appunti</a>
+    <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html">Esplora</a></li>
+        <li><a href="profilo.html" class="active">Profilo</a></li>
+        <li><a href="#">Impostazioni</a></li>
+    </ul>
+</nav>
+
+<!-- HERO BAND -->
+<div class="hero-band">
+    <div class="hero-band__accent"></div>
+    <div class="hero-band__accent2"></div>
+    <div class="hero-band__label">PROFILO</div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+    <!-- LEFT -->
+    <aside class="left-col">
+
+        <!-- Avatar + Campi -->
+        <div class="avatar-card">
+
+            <div class="avatar-ring">
+                <div class="avatar-circle" onclick="document.getElementById('avatarInput').click()">
+                    <img id="avatarImg" alt="Avatar">
+                    <div class="avatar-placeholder" id="avatarPh">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Aggiungi foto
+                    </div>
+                </div>
+                <div class="avatar-edit-btn" onclick="document.getElementById('avatarInput').click()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" onchange="loadAvatar(event)">
+            </div>
+
+            <div class="field-wrap">
+                <div class="field-label">Nickname</div>
+                <input class="field-input" id="nickIn" type="text" maxlength="30"
+                    placeholder="es. studente_curioso99"
+                    oninput="cnt('nickIn','nickCnt',30)">
+                <div class="char-counter"><span id="nickCnt">0</span>/30</div>
+            </div>
+
+            <div class="field-wrap">
+                <div class="field-label">Bio</div>
+                <textarea class="field-textarea" id="bioIn" maxlength="160"
+                    placeholder="Materie preferite, obiettivi, stile di studio…"
+                    oninput="cnt('bioIn','bioCnt',160)"></textarea>
+                <div class="char-counter"><span id="bioCnt">0</span>/160</div>
+            </div>
+
+            <button class="btn-save" onclick="salva()">Salva profilo</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-card">
+            <div class="stat">
+                <div class="stat__n">7</div>
+                <div class="stat__l">Pubblicati</div>
+            </div>
+            <div class="stat">
+                <div class="stat__n">23</div>
+                <div class="stat__l">Salvati</div>
+            </div>
+            <div class="stat">
+                <div class="stat__n">1.4k</div>
+                <div class="stat__l">Visualiz.</div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- RIGHT -->
+    <div class="right-col">
+
+        <div class="tabs-bar">
+            <button class="tab-pill active" onclick="switchTab('pub', this)">
+                <span class="dot"></span> I tuoi appunti
+            </button>
+            <button class="tab-pill" onclick="switchTab('sav', this)">
+                <span class="dot"></span> Appunti salvati
+            </button>
+        </div>
+
+        <!-- Pubblicati -->
+        <div class="tab-panel active" id="tab-pub">
+            <div class="tiktok-grid" id="gridPub"></div>
+        </div>
+
+        <!-- Salvati -->
+        <div class="tab-panel" id="tab-sav">
+            <div class="saved-list" id="gridSav"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const myNotes = [
+        { m:"Matematica", icon:"∑",  c:"#d97706", t:"Derivate — Regole base",       v:"312" },
+        { m:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Le leggi di Newton",            v:"189" },
+        { m:"Storia",     icon:"📖", c:"#ec4899", t:"Prima Guerra Mondiale",          v:"97"  },
+        { m:"Informatica",icon:"💻", c:"#ef4444", t:"Algoritmi di ordinamento",       v:"244" },
+        { m:"Italiano",   icon:"✏️", c:"#f59e0b", t:"Analisi del testo poetico",      v:"78"  },
+        { m:"Scienze",    icon:"🔬", c:"#22c55e", t:"La cellula eucariotica",          v:"156" },
+        { m:"Chimica",    icon:"🧪", c:"#a855f7", t:"Reazioni acido-base",            v:"201" },
+    ];
+
+    const savedNotes = [
+        { m:"Inglese",    icon:"🗣️", c:"#6366f1", t:"Present Perfect vs Past Simple", a:"Marta L.",  d:"2 mar" },
+        { m:"Arte",       icon:"🎨", c:"#0ea5e9", t:"Impressionismo francese",         a:"Chiara P.", d:"28 feb" },
+        { m:"Geografia",  icon:"🌍", c:"#14b8a6", t:"Climi del mondo",                 a:"Fabio G.",  d:"1 mar"  },
+        { m:"Matematica", icon:"∑",  c:"#d97706", t:"Integrali definiti",              a:"Paolo S.",  d:"2 mar"  },
+        { m:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Campo elettrico e potenziale",    a:"Gianni R.", d:"5 mar"  },
+    ];
+
+    function renderPub() {
+        document.getElementById('gridPub').innerHTML = myNotes.map(n => `
+            <div class="tt-card" style="--c:${n.c}">
+                <div class="tt-card__thumb">
+                    <div class="tt-card__bg" style="background:radial-gradient(circle at 50% 40%,${n.c},transparent 72%)"></div>
+                    <div class="tt-card__emoji">${n.icon}</div>
+                    <div class="tt-card__hover-info"><span>👁 ${n.v} visualizzazioni</span></div>
+                </div>
+                <div class="tt-card__body">
+                    <div class="tt-card__chip">${n.m}</div>
+                    <div class="tt-card__title">${n.t}</div>
+                    <div class="tt-card__views">👁 ${n.v}</div>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderSav() {
+        const el = document.getElementById('gridSav');
+        if (!savedNotes.length) {
+            el.innerHTML = `<div class="empty"><div class="empty__icon">🔖</div><p>Non hai ancora salvato appunti.<br>Esplora e salva quelli che ti interessano!</p></div>`;
+            return;
+        }
+        el.innerHTML = savedNotes.map(n => `
+            <div class="sv-card" style="--c:${n.c}">
+                <div class="sv-icon">${n.icon}</div>
+                <div class="sv-body">
+                    <div class="sv-chip">${n.m}</div>
+                    <div class="sv-title">${n.t}</div>
+                    <div class="sv-meta">di ${n.a} · ${n.d}</div>
+                </div>
+                <span class="sv-bm">🔖</span>
+            </div>`).join('');
+    }
+
+    renderPub(); renderSav();
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function loadAvatar(e) {
+        const file = e.target.files[0]; if (!file) return;
+        const r = new FileReader();
+        r.onload = ev => {
+            const img = document.getElementById('avatarImg');
+            img.src = ev.target.result; img.style.display = 'block';
+            document.getElementById('avatarPh').style.display = 'none';
+            localStorage.setItem('appunti_av', ev.target.result);
+            toast('📸 Foto aggiornata!');
+        };
+        r.readAsDataURL(file);
+    }
+
+    function cnt(iId, cId, max) {
+        document.getElementById(cId).textContent = document.getElementById(iId).value.length;
+    }
+
+    function salva() {
+        const nick = document.getElementById('nickIn').value.trim();
+        if (!nick) { toast('⚠️ Inserisci un nickname!'); return; }
+        localStorage.setItem('appunti_nick', nick);
+        localStorage.setItem('appunti_bio', document.getElementById('bioIn').value);
+        toast('✅ Profilo salvato!');
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    window.addEventListener('load', () => {
+        const nick = localStorage.getItem('appunti_nick');
+        const bio  = localStorage.getItem('appunti_bio');
+        const av   = localStorage.getItem('appunti_av');
+        if (nick) { document.getElementById('nickIn').value = nick; cnt('nickIn','nickCnt',30); }
+        if (bio)  { document.getElementById('bioIn').value = bio;   cnt('bioIn','bioCnt',160); }
+        if (av) {
+            document.getElementById('avatarImg').src = av;
+            document.getElementById('avatarImg').style.display = 'block';
+            document.getElementById('avatarPh').style.display = 'none';
+        }
+    });
+
+    document.getElementById('nickIn').addEventListener('input', () =>
+        localStorage.setItem('appunti_nick', document.getElementById('nickIn').value));
+    document.getElementById('bioIn').addEventListener('input', () =>
+        localStorage.setItem('appunti_bio', document.getElementById('bioIn').value));
+</script>
+
+</body>
+</html>
