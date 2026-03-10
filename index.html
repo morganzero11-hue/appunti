@@ -3,42 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appunti - Pubblicazione Note</title>
+    <title>Appunti — Condividi il Sapere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Appunti</h1>
-            <p>Sito per pubblicare e condividere i tuoi appunti</p>
-        </header>
-        <nav>
-            <ul>
-                <li><a href="#note1">Nota 1: Introduzione</a></li>
-                <li><a href="#note2">Nota 2: Argomento Avanzato</a></li>
-                <li><a href="#note3">Nota 3: Conclusioni</a></li>
-            </ul>
-        </nav>
-        <main>
-            <section id="note1">
-                <h2>Nota 1: Introduzione</h2>
-                <p>Questa è la prima nota. Qui puoi scrivere i tuoi appunti introduttivi.</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            </section>
-            <section id="note2">
-                <h2>Nota 2: Argomento Avanzato</h2>
-                <p>Questa nota copre argomenti più avanzati.</p>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </section>
-            <section id="note3">
-                <h2>Nota 3: Conclusioni</h2>
-                <p>Qui trovi le conclusioni finali.</p>
-                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-            </section>
-        </main>
-        <footer>
-            <p>&copy; 2026 Appunti. Tutti i diritti riservati.</p>
-        </footer>
+
+    <!-- TOP NAVBAR -->
+    <nav class="topnav">
+        <div class="topnav__brand">📚 Appunti</div>
+        <ul class="topnav__links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Esplora</a></li>
+            <li><a href="#">Profilo</a></li>
+            <li><a href="#">Impostazioni</a></li>
+        </ul>
+        <div class="topnav__search">
+            <input type="text" id="searchInput" placeholder="Cerca argomento o materia…" autocomplete="off">
+            <button onclick="cercaAppunti()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </nav>
+
+    <!-- HERO BANNER CON SLIDER MATERIE -->
+    <header class="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <p class="hero__eyebrow">La tua piattaforma di studio</p>
+            <h1 class="hero__title">Appunti</h1>
+            <p class="hero__sub">Pubblica, scopri e condividi appunti con studenti come te</p>
+        </div>
+
+        <!-- SLIDER MATERIE -->
+        <div class="subjects-slider">
+            <div class="subjects-track" id="subjectsTrack">
+                <!-- duplicated for infinite loop -->
+                <div class="subject-card" style="--c:#f97316">
+                    <span class="subject-card__icon">∑</span>
+                    <span>Matematica</span>
+                </div>
+                <div class="subject-card" style="--c:#22c55e">
+                    <span class="subject-card__icon">🔬</span>
+                    <span>Scienze</span>
+                </div>
+                <div class="subject-card" style="--c:#3b82f6">
+                    <span class="subject-card__icon">⚛️</span>
+                    <span>Fisica</span>
+                </div>
+                <div class="subject-card" style="--c:#a855f7">
+                    <span class="subject-card__icon">🧪</span>
+                    <span>Chimica</span>
+                </div>
+                <div class="subject-card" style="--c:#ec4899">
+                    <span class="subject-card__icon">📖</span>
+                    <span>Storia</span>
+                </div>
+                <div class="subject-card" style="--c:#14b8a6">
+                    <span class="subject-card__icon">🌍</span>
+                    <span>Geografia</span>
+                </div>
+                <div class="subject-card" style="--c:#f59e0b">
+                    <span class="subject-card__icon">✏️</span>
+                    <span>Italiano</span>
+                </div>
+                <div class="subject-card" style="--c:#6366f1">
+                    <span class="subject-card__icon">🗣️</span>
+                    <span>Inglese</span>
+                </div>
+                <div class="subject-card" style="--c:#ef4444">
+                    <span class="subject-card__icon">💻</span>
+                    <span>Informatica</span>
+                </div>
+                <div class="subject-card" style="--c:#0ea5e9">
+                    <span class="subject-card__icon">🎨</span>
+                    <span>Arte</span>
+                </div>
+                <!-- duplicates for loop -->
+                <div class="subject-card" style="--c:#f97316">
+                    <span class="subject-card__icon">∑</span>
+                    <span>Matematica</span>
+                </div>
+                <div class="subject-card" style="--c:#22c55e">
+                    <span class="subject-card__icon">🔬</span>
+                    <span>Scienze</span>
+                </div>
+                <div class="subject-card" style="--c:#3b82f6">
+                    <span class="subject-card__icon">⚛️</span>
+                    <span>Fisica</span>
+                </div>
+                <div class="subject-card" style="--c:#a855f7">
+                    <span class="subject-card__icon">🧪</span>
+                    <span>Chimica</span>
+                </div>
+                <div class="subject-card" style="--c:#ec4899">
+                    <span class="subject-card__icon">📖</span>
+                    <span>Storia</span>
+                </div>
+                <div class="subject-card" style="--c:#14b8a6">
+                    <span class="subject-card__icon">🌍</span>
+                    <span>Geografia</span>
+                </div>
+                <div class="subject-card" style="--c:#f59e0b">
+                    <span class="subject-card__icon">✏️</span>
+                    <span>Italiano</span>
+                </div>
+                <div class="subject-card" style="--c:#6366f1">
+                    <span class="subject-card__icon">🗣️</span>
+                    <span>Inglese</span>
+                </div>
+                <div class="subject-card" style="--c:#ef4444">
+                    <span class="subject-card__icon">💻</span>
+                    <span>Informatica</span>
+                </div>
+                <div class="subject-card" style="--c:#0ea5e9">
+                    <span class="subject-card__icon">🎨</span>
+                    <span>Arte</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- RISULTATI RICERCA -->
+    <div class="search-overlay" id="searchOverlay" style="display:none">
+        <div class="search-overlay__inner">
+            <div class="search-overlay__header">
+                <h2 id="searchTitle">Risultati ricerca</h2>
+                <button onclick="chiudiRicerca()">✕ Chiudi</button>
+            </div>
+            <div class="notes-grid" id="searchGrid"></div>
+        </div>
     </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <section class="section-label">
+            <span>Ultimi appunti pubblicati</span>
+        </section>
+
+        <div class="notes-grid">
+
+            <article class="note-card" data-subject="Matematica">
+                <div class="note-card__tag" style="--c:#f97316">Matematica</div>
+                <h3>Introduzione alle derivate</h3>
+                <p>Concetti base del calcolo differenziale, regole di derivazione e applicazioni pratiche.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Marco R.</span>
+                    <span class="note-card__date">8 mar 2026</span>
+                </div>
+            </article>
+
+            <article class="note-card" data-subject="Scienze">
+                <div class="note-card__tag" style="--c:#22c55e">Scienze</div>
+                <h3>La cellula eucariotica</h3>
+                <p>Struttura, organelli e funzioni della cellula eucariotica con schemi dettagliati.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Giulia M.</span>
+                    <span class="note-card__date">7 mar 2026</span>
+                </div>
+            </article>
+
+            <article class="note-card" data-subject="Storia">
+                <div class="note-card__tag" style="--c:#ec4899">Storia</div>
+                <h3>Prima Guerra Mondiale</h3>
+                <p>Cause, eventi principali e conseguenze del conflitto mondiale 1914–1918.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Luca B.</span>
+                    <span class="note-card__date">6 mar 2026</span>
+                </div>
+            </article>
+
+            <article class="note-card" data-subject="Fisica">
+                <div class="note-card__tag" style="--c:#3b82f6">Fisica</div>
+                <h3>Le leggi di Newton</h3>
+                <p>Principi fondamentali della meccanica classica con esempi ed esercizi risolti.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Sara V.</span>
+                    <span class="note-card__date">5 mar 2026</span>
+                </div>
+            </article>
+
+            <article class="note-card" data-subject="Italiano">
+                <div class="note-card__tag" style="--c:#f59e0b">Italiano</div>
+                <h3>Analisi del testo poetico</h3>
+                <p>Metrica, figure retoriche e interpretazione della poesia italiana del Novecento.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Anna C.</span>
+                    <span class="note-card__date">4 mar 2026</span>
+                </div>
+            </article>
+
+            <article class="note-card" data-subject="Informatica">
+                <div class="note-card__tag" style="--c:#ef4444">Informatica</div>
+                <h3>Algoritmi di ordinamento</h3>
+                <p>BubbleSort, QuickSort, MergeSort: confronto di complessità e implementazione.</p>
+                <div class="note-card__footer">
+                    <span class="note-card__author">👤 Diego F.</span>
+                    <span class="note-card__date">3 mar 2026</span>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2026 <strong>Appunti</strong> — Tutti i diritti riservati</p>
+    </footer>
+
+    <script>
+        // Dati simulati appunti
+        const tuttiGliAppunti = [
+            { materia:"Matematica", titolo:"Introduzione alle derivate", autore:"Marco R.", data:"8 mar 2026", desc:"Concetti base del calcolo differenziale." },
+            { materia:"Matematica", titolo:"Integrali definiti", autore:"Paolo S.", data:"2 mar 2026", desc:"Metodi di integrazione e applicazioni geometriche." },
+            { materia:"Scienze", titolo:"La cellula eucariotica", autore:"Giulia M.", data:"7 mar 2026", desc:"Struttura, organelli e funzioni." },
+            { materia:"Scienze", titolo:"Fotosintesi clorofilliana", autore:"Elena T.", data:"1 mar 2026", desc:"Processo e reazioni chimiche." },
+            { materia:"Storia", titolo:"Prima Guerra Mondiale", autore:"Luca B.", data:"6 mar 2026", desc:"Cause, eventi e conseguenze." },
+            { materia:"Fisica", titolo:"Le leggi di Newton", autore:"Sara V.", data:"5 mar 2026", desc:"Meccanica classica con esempi." },
+            { materia:"Chimica", titolo:"Tavola periodica", autore:"Roberto N.", data:"4 mar 2026", desc:"Elementi, gruppi e periodi." },
+            { materia:"Italiano", titolo:"Analisi del testo poetico", autore:"Anna C.", data:"4 mar 2026", desc:"Metrica e figure retoriche." },
+            { materia:"Informatica", titolo:"Algoritmi di ordinamento", autore:"Diego F.", data:"3 mar 2026", desc:"BubbleSort, QuickSort, MergeSort." },
+            { materia:"Inglese", titolo:"Present Perfect vs Past Simple", autore:"Marta L.", data:"2 mar 2026", desc:"Differenze e usi pratici." },
+            { materia:"Geografia", titolo:"Climi del mondo", autore:"Fabio G.", data:"1 mar 2026", desc:"Fasce climatiche e biomi." },
+            { materia:"Arte", titolo:"Impressionismo francese", autore:"Chiara P.", data:"28 feb 2026", desc:"Monet, Renoir e il movimento." },
+        ];
+
+        const coloriMateria = {
+            "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
+            "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
+            "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9"
+        };
+
+        function cercaAppunti() {
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!q) return;
+
+            const risultati = tuttiGliAppunti.filter(n =>
+                n.materia.toLowerCase().includes(q) ||
+                n.titolo.toLowerCase().includes(q) ||
+                n.desc.toLowerCase().includes(q)
+            );
+
+            document.getElementById('searchTitle').textContent =
+                risultati.length > 0
+                ? `${risultati.length} risultati per "${document.getElementById('searchInput').value}"`
+                : `Nessun risultato per "${document.getElementById('searchInput').value}"`;
+
+            const grid = document.getElementById('searchGrid');
+            grid.innerHTML = risultati.length === 0
+                ? '<p class="no-results">Nessun appunto trovato. Prova con un\'altra materia!</p>'
+                : risultati.map(n => `
+                    <article class="note-card">
+                        <div class="note-card__tag" style="--c:${coloriMateria[n.materia]||'#888'}">${n.materia}</div>
+                        <h3>${n.titolo}</h3>
+                        <p>${n.desc}</p>
+                        <div class="note-card__footer">
+                            <span class="note-card__author">👤 ${n.autore}</span>
+                            <span class="note-card__date">${n.data}</span>
+                        </div>
+                    </article>`).join('');
+
+            document.getElementById('searchOverlay').style.display = 'block';
+            document.getElementById('searchOverlay').scrollIntoView({behavior:'smooth'});
+        }
+
+        function chiudiRicerca() {
+            document.getElementById('searchOverlay').style.display = 'none';
+            document.getElementById('searchInput').value = '';
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') cercaAppunti();
+        });
+
+        // Subject card click → search
+        document.querySelectorAll('.subject-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const materia = card.querySelector('span:last-child').textContent;
+                document.getElementById('searchInput').value = materia;
+                cercaAppunti();
+            });
+        });
+    </script>
+
 </body>
 </html>
