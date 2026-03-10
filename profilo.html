@@ -429,6 +429,128 @@
         }
         .toast.show { opacity: 1; transform: translateY(0); }
 
+        /* ─── UPLOAD BAR ─── */
+        .upload-bar {
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 32px 24px;
+            margin-bottom: 18px;
+            border-radius: 14px;
+            border: 2px dashed var(--border);
+            background: transparent;
+            cursor: pointer;
+            color: var(--muted);
+            transition: border-color .2s, background .2s, color .2s, transform .2s;
+        }
+        .upload-bar:hover {
+            border-color: var(--accent);
+            background: rgba(212,82,42,0.04);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .upload-bar__plus {
+            width: 32px; height: 32px;
+            border: 2px solid currentColor;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: 300; line-height: 1;
+            transition: transform .25s;
+            flex-shrink: 0;
+        }
+        .upload-bar:hover .upload-bar__plus { transform: rotate(90deg); }
+
+        .upload-bar__label {
+            font-size: 0.85rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+        }
+
+        /* ─── UPLOAD MODAL ─── */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(28,25,23,0.55);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s;
+        }
+        .modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 36px 32px;
+            width: min(520px, 92vw);
+            box-shadow: 0 24px 64px rgba(28,25,23,0.18);
+            transform: translateY(20px) scale(0.97);
+            transition: transform .3s;
+            display: flex; flex-direction: column; gap: 18px;
+        }
+        .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+        .modal__header {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .modal__title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem; font-weight: 900; color: var(--ink);
+        }
+
+        .modal__close {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: var(--cream); border: 1px solid var(--border);
+            cursor: pointer; font-size: 1rem; color: var(--ink2);
+            display: flex; align-items: center; justify-content: center;
+            transition: background .2s;
+        }
+        .modal__close:hover { background: var(--border); }
+
+        .modal .field-wrap { gap: 6px; }
+
+        /* materia select */
+        .field-select {
+            background: var(--cream);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--ink);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+            padding: 10px 14px;
+            width: 100%; outline: none;
+            cursor: pointer;
+            transition: border-color .2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a29e' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+        .field-select:focus { border-color: var(--accent); }
+
+        /* file drop zone */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            color: var(--muted);
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(212,82,42,0.04);
+            color: var(--accent);
+        }
+        .drop-zone__icon { font-size: 2rem; margin-bottom: 8px; }
+        .drop-zone__text { font-size: 0.82rem; font-weight: 700; line-height: 1.5; }
+        .drop-zone__sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+        .drop-zone.has-file { border-color: var(--accent2); background: rgba(42,125,79,0.05); color: var(--accent2); }
+
+        .modal .btn-save { margin-top: 4px; }
+
         /* ─── ANIMATIONS ─── */
         @keyframes riseUp {
             from { opacity: 0; transform: translateY(22px); }
@@ -546,6 +668,10 @@
 
         <!-- Pubblicati -->
         <div class="tab-panel active" id="tab-pub">
+            <div class="upload-bar" onclick="apriModale()">
+                <span class="upload-bar__plus">+</span>
+                <span class="upload-bar__label">Carica appunto</span>
+            </div>
             <div class="tiktok-grid" id="gridPub"></div>
         </div>
 
@@ -556,6 +682,57 @@
 
     </div>
 
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="chiudiModale(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <div class="modal__title">Carica appunto</div>
+            <button class="modal__close" onclick="chiudiModale()">✕</button>
+        </div>
+
+        <div class="field-wrap">
+            <div class="field-label">Titolo</div>
+            <input class="field-input" id="upTitolo" type="text" maxlength="60" placeholder="Es. Derivate — Regole base">
+        </div>
+
+        <div class="field-wrap">
+            <div class="field-label">Materia</div>
+            <select class="field-select" id="upMateria">
+                <option value="">— Seleziona materia —</option>
+                <option value="Matematica">∑ Matematica</option>
+                <option value="Scienze">🔬 Scienze</option>
+                <option value="Fisica">⚛️ Fisica</option>
+                <option value="Chimica">🧪 Chimica</option>
+                <option value="Storia">📖 Storia</option>
+                <option value="Geografia">🌍 Geografia</option>
+                <option value="Italiano">✏️ Italiano</option>
+                <option value="Inglese">🗣️ Inglese</option>
+                <option value="Informatica">💻 Informatica</option>
+                <option value="Arte">🎨 Arte</option>
+            </select>
+        </div>
+
+        <div class="field-wrap">
+            <div class="field-label">Descrizione</div>
+            <textarea class="field-textarea" id="upDesc" maxlength="200" placeholder="Breve descrizione del contenuto…"></textarea>
+        </div>
+
+        <div class="field-wrap">
+            <div class="field-label">File appunto</div>
+            <div class="drop-zone" id="dropZone"
+                onclick="document.getElementById('upFile').click()"
+                ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+                <div class="drop-zone__icon">📄</div>
+                <div class="drop-zone__text" id="dropText">Clicca o trascina il file qui</div>
+                <div class="drop-zone__sub">PDF, DOC, TXT, PNG — max 10 MB</div>
+            </div>
+            <input type="file" id="upFile" accept=".pdf,.doc,.docx,.txt,.png,.jpg" style="display:none" onchange="fileSelezionato(event)">
+        </div>
+
+        <button class="btn-save" onclick="pubblicaAppunto()">Pubblica appunto</button>
+    </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -580,8 +757,13 @@
     ];
 
     function renderPub() {
-        document.getElementById('gridPub').innerHTML = myNotes.map(n => `
-            <div class="tt-card" style="--c:${n.c}">
+        const grid = document.getElementById('gridPub');
+        // rimuovi vecchie note (mantieni solo la upload card)
+        grid.querySelectorAll('.tt-card').forEach(c => c.remove());
+        myNotes.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'tt-card'; div.style.cssText = `--c:${n.c}`;
+            div.innerHTML = `
                 <div class="tt-card__thumb">
                     <div class="tt-card__bg" style="background:radial-gradient(circle at 50% 40%,${n.c},transparent 72%)"></div>
                     <div class="tt-card__emoji">${n.icon}</div>
@@ -591,8 +773,9 @@
                     <div class="tt-card__chip">${n.m}</div>
                     <div class="tt-card__title">${n.t}</div>
                     <div class="tt-card__views">👁 ${n.v}</div>
-                </div>
-            </div>`).join('');
+                </div>`;
+            grid.appendChild(div);
+        });
     }
 
     function renderSav() {
@@ -666,10 +849,82 @@
         }
     });
 
+    /* ── MODALE UPLOAD ── */
+    function apriModale() {
+        document.getElementById('modalBackdrop').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function chiudiModale(e) {
+        if (e && e.target !== document.getElementById('modalBackdrop')) return;
+        document.getElementById('modalBackdrop').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    const coloriMap = {
+        "Matematica":"#d97706","Scienze":"#22c55e","Fisica":"#3b82f6",
+        "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
+        "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9"
+    };
+
+    const iconeMap = {
+        "Matematica":"∑","Scienze":"🔬","Fisica":"⚛️","Chimica":"🧪",
+        "Storia":"📖","Geografia":"🌍","Italiano":"✏️","Inglese":"🗣️",
+        "Informatica":"💻","Arte":"🎨"
+    };
+
+    function fileSelezionato(e) {
+        const f = e.target.files[0]; if (!f) return;
+        document.getElementById('dropText').textContent = '✅ ' + f.name;
+        document.getElementById('dropZone').classList.add('has-file');
+    }
+
+    function dragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+    function dragLeave()  { document.getElementById('dropZone').classList.remove('drag-over'); }
+    function dropFile(e)  {
+        e.preventDefault(); dragLeave();
+        const f = e.dataTransfer.files[0]; if (!f) return;
+        document.getElementById('dropText').textContent = '✅ ' + f.name;
+        document.getElementById('dropZone').classList.add('has-file');
+    }
+
+    function pubblicaAppunto() {
+        const titolo  = document.getElementById('upTitolo').value.trim();
+        const materia = document.getElementById('upMateria').value;
+        const desc    = document.getElementById('upDesc').value.trim();
+        if (!titolo)  { toast('⚠️ Inserisci un titolo!'); return; }
+        if (!materia) { toast('⚠️ Seleziona una materia!'); return; }
+
+        // Aggiungi alla lista
+        myNotes.unshift({
+            m: materia,
+            icon: iconeMap[materia] || '📄',
+            c: coloriMap[materia] || '#888',
+            t: titolo,
+            v: '0'
+        });
+        renderPub();
+
+        // Reset form
+        document.getElementById('upTitolo').value = '';
+        document.getElementById('upMateria').value = '';
+        document.getElementById('upDesc').value = '';
+        document.getElementById('dropText').textContent = 'Clicca o trascina il file qui';
+        document.getElementById('dropZone').classList.remove('has-file');
+
+        document.getElementById('modalBackdrop').classList.remove('open');
+        document.body.style.overflow = '';
+        toast('🎉 Appunto pubblicato!');
+    }
+
     document.getElementById('nickIn').addEventListener('input', () =>
         localStorage.setItem('appunti_nick', document.getElementById('nickIn').value));
     document.getElementById('bioIn').addEventListener('input', () =>
         localStorage.setItem('appunti_bio', document.getElementById('bioIn').value));
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { document.getElementById('modalBackdrop').classList.remove('open'); document.body.style.overflow = ''; }
+    });
 </script>
 
 </body>
