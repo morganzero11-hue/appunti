@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impostazioni — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #0f0f0f;
+            --surface:  #181818;
+            --surface2: #222222;
+            --surface3: #2a2a2a;
+            --border:   rgba(255,255,255,0.07);
+            --border2:  rgba(255,255,255,0.12);
+            --text:     #f2f0ec;
+            --muted:    rgba(242,240,236,0.4);
+            --accent:   #c8f060;
+            --red:      #ff4444;
+            --blue:     #60b8f0;
+            --nav-h:    60px;
+            --sidebar:  240px;
+            --r:        14px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ─── NAVBAR ─── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(15,15,15,0.97);
+            backdrop-filter: blur(12px);
+            display: flex; align-items: center;
+            padding: 0 32px; gap: 28px;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav__brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--accent);
+            text-decoration: none; white-space: nowrap;
+        }
+
+        .nav__links { list-style: none; display: flex; gap: 2px; flex: 1; }
+        .nav__links a {
+            padding: 6px 13px; border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none; font-size: 0.87rem; font-weight: 700;
+            transition: all .18s;
+        }
+        .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+        .nav__links a.active { color: var(--accent); }
+
+        /* ─── PAGE LAYOUT ─── */
+        .page {
+            margin-top: var(--nav-h);
+            display: grid;
+            grid-template-columns: var(--sidebar) 1fr;
+            min-height: calc(100vh - var(--nav-h));
+        }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            position: sticky;
+            top: var(--nav-h);
+            height: calc(100vh - var(--nav-h));
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 32px 16px;
+            display: flex; flex-direction: column; gap: 4px;
+            overflow-y: auto;
+        }
+
+        .sidebar__label {
+            font-size: 0.65rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--muted);
+            padding: 0 12px;
+            margin: 16px 0 6px;
+        }
+
+        .sidebar__label:first-child { margin-top: 0; }
+
+        .sidebar__item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 0.87rem; font-weight: 700;
+            transition: all .18s;
+            border: none; background: none;
+            width: 100%; text-align: left;
+        }
+
+        .sidebar__item:hover { color: var(--text); background: var(--surface2); }
+
+        .sidebar__item.active {
+            color: var(--accent);
+            background: rgba(200,240,96,0.08);
+        }
+
+        .sidebar__item .s-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+        .sidebar__divider {
+            height: 1px; background: var(--border);
+            margin: 12px 0;
+        }
+
+        .sidebar__item--danger { color: rgba(255,68,68,0.7); }
+        .sidebar__item--danger:hover { color: var(--red); background: rgba(255,68,68,0.08); }
+
+        /* ─── MAIN CONTENT ─── */
+        .main {
+            padding: 40px 48px;
+            max-width: 720px;
+        }
+
+        /* ─── SECTION ─── */
+        .section { display: none; animation: fadeIn .3s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .section__title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8rem; font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .section__sub {
+            font-size: 0.88rem; color: var(--muted);
+            margin-bottom: 32px; line-height: 1.5;
+        }
+
+        /* ─── SETTING ROW ─── */
+        .setting-group {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .setting-row {
+            display: flex; align-items: center;
+            padding: 18px 22px;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            transition: background .18s;
+        }
+
+        .setting-row:last-child { border-bottom: none; }
+        .setting-row:hover { background: var(--surface2); }
+
+        .setting-row__icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; flex-shrink: 0;
+        }
+
+        .setting-row__text { flex: 1; min-width: 0; }
+
+        .setting-row__label {
+            font-size: 0.9rem; font-weight: 700; color: var(--text);
+        }
+
+        .setting-row__desc {
+            font-size: 0.76rem; color: var(--muted);
+            margin-top: 2px; line-height: 1.4;
+        }
+
+        /* ─── TOGGLE ─── */
+        .toggle {
+            position: relative;
+            width: 44px; height: 24px; flex-shrink: 0;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle__track {
+            position: absolute; inset: 0;
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+        }
+
+        .toggle__track::after {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            top: 2px; left: 2px;
+            border-radius: 50%;
+            background: var(--muted);
+            transition: transform .2s, background .2s;
+        }
+
+        .toggle input:checked + .toggle__track {
+            background: rgba(200,240,96,0.2);
+            border-color: var(--accent);
+        }
+
+        .toggle input:checked + .toggle__track::after {
+            transform: translateX(20px);
+            background: var(--accent);
+        }
+
+        /* ─── SELECT ─── */
+        .setting-select {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.83rem; font-weight: 700;
+            padding: 7px 28px 7px 12px;
+            outline: none; cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            transition: border-color .2s;
+            flex-shrink: 0;
+        }
+
+        .setting-select:focus { border-color: var(--accent); }
+
+        /* ─── INPUT ─── */
+        .setting-input {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.87rem; font-weight: 600;
+            padding: 8px 14px;
+            outline: none; width: 100%;
+            transition: border-color .2s;
+            margin-top: 10px;
+        }
+
+        .setting-input:focus { border-color: var(--accent); }
+        .setting-input::placeholder { color: var(--muted); font-weight: 400; }
+
+        /* ─── ACCENT COLOR PICKER ─── */
+        .color-grid {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            margin-top: 12px;
+        }
+
+        .color-swatch {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform .2s, border-color .2s;
+            position: relative;
+        }
+
+        .color-swatch:hover { transform: scale(1.15); }
+
+        .color-swatch.active {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .color-swatch.active::after {
+            content: '✓';
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 900; color: #000;
+        }
+
+        /* ─── THEME CARDS ─── */
+        .theme-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-top: 12px;
+        }
+
+        .theme-card {
+            border-radius: 12px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: border-color .2s, transform .2s;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .theme-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+        .theme-card.active { border-color: var(--accent); }
+
+        .theme-card__preview {
+            height: 60px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .theme-card__name {
+            font-size: 0.82rem; font-weight: 800; color: var(--text);
+        }
+
+        .theme-card__desc { font-size: 0.72rem; color: var(--muted); }
+
+        /* ─── MATERIE TAGS ─── */
+        .materie-grid {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-top: 12px;
+        }
+
+        .materia-tag {
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.78rem; font-weight: 800;
+            cursor: pointer;
+            border: 1.5px solid var(--border2);
+            color: var(--muted);
+            transition: all .18s;
+            background: none;
+        }
+
+        .materia-tag:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+        .materia-tag.active {
+            color: #0f0f0f;
+            border-color: transparent;
+        }
+
+        /* ─── DANGER ZONE ─── */
+        .danger-zone {
+            background: rgba(255,68,68,0.04);
+            border: 1px solid rgba(255,68,68,0.15);
+            border-radius: var(--r);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .danger-zone .setting-row:hover { background: rgba(255,68,68,0.05); }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.87rem; font-weight: 800;
+            cursor: pointer; border: none;
+            transition: transform .2s, box-shadow .2s, background .2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: translateY(0); }
+
+        .btn--accent {
+            background: var(--accent); color: #0f0f0f;
+        }
+        .btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.25); }
+
+        .btn--ghost {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border2);
+        }
+
+        .btn--danger {
+            background: rgba(255,68,68,0.1);
+            color: var(--red);
+            border: 1px solid rgba(255,68,68,0.2);
+        }
+        .btn--danger:hover { background: rgba(255,68,68,0.18); box-shadow: none; }
+
+        .btn-row {
+            display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;
+        }
+
+        /* ─── NOTIFICATION ROW ─── */
+        .notif-row {
+            display: flex; align-items: center;
+            padding: 14px 22px; gap: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .notif-row:last-child { border-bottom: none; }
+        .notif-row__text { flex: 1; }
+        .notif-row__label { font-size: 0.87rem; font-weight: 700; }
+        .notif-row__desc { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+
+        /* ─── PRIVACY LEVEL ─── */
+        .privacy-options {
+            display: flex; flex-direction: column; gap: 8px;
+            margin-top: 12px;
+        }
+
+        .privacy-opt {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            background: none;
+            color: var(--text);
+            text-align: left; width: 100%;
+        }
+
+        .privacy-opt:hover { background: var(--surface2); border-color: var(--border2); }
+        .privacy-opt.active { border-color: var(--accent); background: rgba(200,240,96,0.04); }
+
+        .privacy-opt__radio {
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid var(--border2);
+            flex-shrink: 0; position: relative;
+            transition: border-color .2s;
+        }
+
+        .privacy-opt.active .privacy-opt__radio {
+            border-color: var(--accent);
+        }
+
+        .privacy-opt.active .privacy-opt__radio::after {
+            content: '';
+            position: absolute;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .privacy-opt__text { flex: 1; }
+        .privacy-opt__label { font-size: 0.87rem; font-weight: 800; }
+        .privacy-opt__desc { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
+        .privacy-opt__icon { font-size: 1.2rem; }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--accent); color: #0f0f0f;
+            padding: 11px 22px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.9rem;
+            opacity: 0; transform: translateY(12px);
+            transition: all .3s; pointer-events: none; z-index: 9999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── CONFIRM MODAL ─── */
+        .confirm-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity .25s;
+        }
+        .confirm-backdrop.open { opacity: 1; pointer-events: all; }
+
+        .confirm-box {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            padding: 32px;
+            width: min(420px, 90vw);
+            transform: scale(0.95); transition: transform .25s;
+            text-align: center;
+        }
+        .confirm-backdrop.open .confirm-box { transform: scale(1); }
+
+        .confirm-box__icon { font-size: 2.5rem; margin-bottom: 14px; }
+        .confirm-box__title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem; font-weight: 900; margin-bottom: 10px;
+        }
+        .confirm-box__desc { font-size: 0.87rem; color: var(--muted); line-height: 1.55; margin-bottom: 24px; }
+        .confirm-box__btns { display: flex; gap: 10px; justify-content: center; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 720px) {
+            .page { grid-template-columns: 1fr; }
+            .sidebar {
+                position: static; height: auto;
+                flex-direction: row; flex-wrap: wrap;
+                padding: 12px; gap: 4px;
+                border-right: none; border-bottom: 1px solid var(--border);
+            }
+            .sidebar__label, .sidebar__divider { display: none; }
+            .sidebar__item { padding: 7px 12px; font-size: 0.8rem; }
+            .main { padding: 24px 16px; }
+            .nav__links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="index.html" class="nav__brand">📚 Appunti</a>
+    <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="esplora.html">Esplora</a></li>
+        <li><a href="profilo.html">Profilo</a></li>
+        <li><a href="impostazioni.html" class="active">Impostazioni</a></li>
+    </ul>
+</nav>
+
+<div class="page">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar__label">Account</div>
+        <button class="sidebar__item active" onclick="mostraSezione('account', this)">
+            <span class="s-icon">👤</span> Account
+        </button>
+        <button class="sidebar__item" onclick="mostraSezione('sicurezza', this)">
+            <span class="s-icon">🔒</span> Sicurezza
+        </button>
+
+        <div class="sidebar__label">Preferenze</div>
+        <button class="sidebar__item" onclick="mostraSezione('aspetto', this)">
+            <span class="s-icon">🎨</span> Aspetto
+        </button>
+        <button class="sidebar__item" onclick="mostraSezione('materie', this)">
+            <span class="s-icon">📚</span> Materie
+        </button>
+        <button class="sidebar__item" onclick="mostraSezione('notifiche', this)">
+            <span class="s-icon">🔔</span> Notifiche
+        </button>
+
+        <div class="sidebar__label">Privacy</div>
+        <button class="sidebar__item" onclick="mostraSezione('privacy', this)">
+            <span class="s-icon">🛡️</span> Privacy
+        </button>
+        <button class="sidebar__item" onclick="mostraSezione('dati', this)">
+            <span class="s-icon">📦</span> I tuoi dati
+        </button>
+
+        <div class="sidebar__divider"></div>
+        <button class="sidebar__item sidebar__item--danger" onclick="mostraSezione('zona-pericolo', this)">
+            <span class="s-icon">⚠️</span> Zona pericolo
+        </button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- ── ACCOUNT ── -->
+        <div class="section active" id="s-account">
+            <div class="section__title">Account</div>
+            <div class="section__sub">Gestisci le informazioni del tuo account pubblico.</div>
+
+            <div class="setting-group">
+                <div class="setting-row">
+                    <div class="setting-row__icon">✏️</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Nickname</div>
+                        <div class="setting-row__desc">Il nome che appare sui tuoi appunti</div>
+                        <input class="setting-input" id="setNick" type="text" maxlength="30" placeholder="es. studente_curioso99">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">📧</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Email</div>
+                        <div class="setting-row__desc">Usata per notifiche e recupero account</div>
+                        <input class="setting-input" id="setEmail" type="email" placeholder="tuaemail@esempio.it">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">🏫</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Scuola / Università</div>
+                        <div class="setting-row__desc">Opzionale — visibile nel profilo</div>
+                        <input class="setting-input" id="setScuola" type="text" placeholder="es. Liceo Scientifico Volta">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">📅</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Anno scolastico</div>
+                        <div class="setting-row__desc">Il tuo anno di studio attuale</div>
+                    </div>
+                    <select class="setting-select" id="setAnno">
+                        <option>1° anno</option>
+                        <option>2° anno</option>
+                        <option selected>3° anno</option>
+                        <option>4° anno</option>
+                        <option>5° anno</option>
+                        <option>Università — Triennale</option>
+                        <option>Università — Magistrale</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn--accent" onclick="salva('Account aggiornato!')">💾 Salva modifiche</button>
+                <button class="btn btn--ghost" onclick="annulla()">Annulla</button>
+            </div>
+        </div>
+
+        <!-- ── SICUREZZA ── -->
+        <div class="section" id="s-sicurezza">
+            <div class="section__title">Sicurezza</div>
+            <div class="section__sub">Tieni al sicuro il tuo account.</div>
+
+            <div class="setting-group">
+                <div class="setting-row">
+                    <div class="setting-row__icon">🔑</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Password attuale</div>
+                        <input class="setting-input" type="password" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">🔐</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Nuova password</div>
+                        <input class="setting-input" id="newPass" type="password" placeholder="Min. 8 caratteri">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">✅</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Conferma password</div>
+                        <input class="setting-input" id="confPass" type="password" placeholder="Ripeti la nuova password">
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-row">
+                    <div class="setting-row__icon">📱</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Autenticazione a due fattori</div>
+                        <div class="setting-row__desc">Aggiunge un livello extra di sicurezza al login</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" onchange="salva('Impostazione salvata!')">
+                        <span class="toggle__track"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">🖥️</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Sessioni attive</div>
+                        <div class="setting-row__desc">Disconnetti tutti gli altri dispositivi</div>
+                    </div>
+                    <button class="btn btn--ghost btn--sm" onclick="salva('Sessioni disconnesse!')">Disconnetti</button>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn--accent" onclick="cambiaPassword()">🔒 Cambia password</button>
+            </div>
+        </div>
+
+        <!-- ── ASPETTO ── -->
+        <div class="section" id="s-aspetto">
+            <div class="section__title">Aspetto</div>
+            <div class="section__sub">Personalizza come vedi l'app.</div>
+
+            <div class="setting-group">
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                    <div style="display:flex;align-items:center;gap:16px;width:100%">
+                        <div class="setting-row__icon">🌙</div>
+                        <div class="setting-row__text">
+                            <div class="setting-row__label">Tema</div>
+                            <div class="setting-row__desc">Scegli l'aspetto generale dell'app</div>
+                        </div>
+                    </div>
+                    <div class="theme-grid" style="width:100%">
+                        <div class="theme-card active" onclick="setTema('scuro', this)">
+                            <div class="theme-card__preview" style="background:#111">🌑</div>
+                            <div class="theme-card__name">Scuro</div>
+                            <div class="theme-card__desc">Meno affaticamento visivo</div>
+                        </div>
+                        <div class="theme-card" onclick="setTema('chiaro', this)">
+                            <div class="theme-card__preview" style="background:#f5f0e8">☀️</div>
+                            <div class="theme-card__name">Chiaro</div>
+                            <div class="theme-card__desc">Per ambienti luminosi</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                    <div style="display:flex;align-items:center;gap:16px;width:100%">
+                        <div class="setting-row__icon">🎨</div>
+                        <div class="setting-row__text">
+                            <div class="setting-row__label">Colore accento</div>
+                            <div class="setting-row__desc">Il colore principale dell'interfaccia</div>
+                        </div>
+                    </div>
+                    <div class="color-grid">
+                        <div class="color-swatch active" style="background:#c8f060" onclick="setAccento('#c8f060', this)" title="Verde lime"></div>
+                        <div class="color-swatch" style="background:#60b8f0" onclick="setAccento('#60b8f0', this)" title="Blu cielo"></div>
+                        <div class="color-swatch" style="background:#f06080" onclick="setAccento('#f06080', this)" title="Rosa"></div>
+                        <div class="color-swatch" style="background:#f0a060" onclick="setAccento('#f0a060', this)" title="Arancio"></div>
+                        <div class="color-swatch" style="background:#a060f0" onclick="setAccento('#a060f0', this)" title="Viola"></div>
+                        <div class="color-swatch" style="background:#60f0b8" onclick="setAccento('#60f0b8', this)" title="Menta"></div>
+                        <div class="color-swatch" style="background:#f0e060" onclick="setAccento('#f0e060', this)" title="Giallo"></div>
+                        <div class="color-swatch" style="background:#ff7eb6" onclick="setAccento('#ff7eb6', this)" title="Fucsia"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">✍️</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Dimensione testo</div>
+                        <div class="setting-row__desc">Adatta la leggibilità alle tue esigenze</div>
+                    </div>
+                    <select class="setting-select" onchange="salva('Dimensione aggiornata!')">
+                        <option>Piccolo</option>
+                        <option selected>Normale</option>
+                        <option>Grande</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">✨</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Animazioni</div>
+                        <div class="setting-row__desc">Riduci le animazioni per prestazioni migliori</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" checked onchange="salva('Impostazione salvata!')">
+                        <span class="toggle__track"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn--accent" onclick="salva('Aspetto salvato!')">💾 Salva</button>
+            </div>
+        </div>
+
+        <!-- ── MATERIE ── -->
+        <div class="section" id="s-materie">
+            <div class="section__title">Materie preferite</div>
+            <div class="section__sub">Seleziona le materie che ti interessano — il feed si adatterà ai tuoi interessi.</div>
+
+            <div class="setting-group">
+                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
+                    <div style="display:flex;align-items:center;gap:16px;width:100%">
+                        <div class="setting-row__icon">📌</div>
+                        <div class="setting-row__text">
+                            <div class="setting-row__label">Le tue materie</div>
+                            <div class="setting-row__desc">Tocca per selezionare / deselezionare</div>
+                        </div>
+                    </div>
+                    <div class="materie-grid" id="materieGrid"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <div class="setting-row">
+                    <div class="setting-row__icon">🔀</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Ordine nel feed</div>
+                        <div class="setting-row__desc">Come vengono mostrati gli appunti in Esplora</div>
+                    </div>
+                    <select class="setting-select" onchange="salva('Ordinamento salvato!')">
+                        <option>Più recenti</option>
+                        <option>Più popolari</option>
+                        <option>Per materia</option>
+                        <option>Casuali</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn--accent" onclick="salva('Materie salvate!')">💾 Salva preferenze</button>
+            </div>
+        </div>
+
+        <!-- ── NOTIFICHE ── -->
+        <div class="section" id="s-notifiche">
+            <div class="section__title">Notifiche</div>
+            <div class="section__sub">Scegli quando e come vuoi essere avvisato.</div>
+
+            <div class="setting-group">
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">🔥 Mi piace ai tuoi appunti</div>
+                        <div class="notif-row__desc">Quando qualcuno mette like a un tuo appunto</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">💬 Commenti</div>
+                        <div class="notif-row__desc">Quando qualcuno commenta i tuoi appunti</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">🔖 Salvataggi</div>
+                        <div class="notif-row__desc">Quando qualcuno salva un tuo appunto</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">👤 Nuovi follower</div>
+                        <div class="notif-row__desc">Quando qualcuno inizia a seguirti</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">📣 Aggiornamenti app</div>
+                        <div class="notif-row__desc">Novità e nuove funzionalità di Appunti</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="notif-row">
+                    <div class="notif-row__text">
+                        <div class="notif-row__label">📧 Email settimanale</div>
+                        <div class="notif-row__desc">Riepilogo degli appunti più popolari della settimana</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PRIVACY ── -->
+        <div class="section" id="s-privacy">
+            <div class="section__title">Privacy</div>
+            <div class="section__sub">Controlla chi può vedere i tuoi contenuti.</div>
+
+            <div class="setting-group">
+                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
+                    <div style="display:flex;align-items:center;gap:16px;width:100%">
+                        <div class="setting-row__icon">👁️</div>
+                        <div class="setting-row__text">
+                            <div class="setting-row__label">Visibilità profilo</div>
+                            <div class="setting-row__desc">Chi può vedere il tuo profilo e i tuoi appunti</div>
+                        </div>
+                    </div>
+                    <div class="privacy-options">
+                        <button class="privacy-opt active" onclick="setPrivacy(this)">
+                            <span class="privacy-opt__icon">🌍</span>
+                            <div class="privacy-opt__text">
+                                <div class="privacy-opt__label">Pubblico</div>
+                                <div class="privacy-opt__desc">Tutti possono vedere il tuo profilo e appunti</div>
+                            </div>
+                            <div class="privacy-opt__radio"></div>
+                        </button>
+                        <button class="privacy-opt" onclick="setPrivacy(this)">
+                            <span class="privacy-opt__icon">🔗</span>
+                            <div class="privacy-opt__text">
+                                <div class="privacy-opt__label">Solo con link</div>
+                                <div class="privacy-opt__desc">Accessibile solo a chi ha il link diretto</div>
+                            </div>
+                            <div class="privacy-opt__radio"></div>
+                        </button>
+                        <button class="privacy-opt" onclick="setPrivacy(this)">
+                            <span class="privacy-opt__icon">🔒</span>
+                            <div class="privacy-opt__text">
+                                <div class="privacy-opt__label">Privato</div>
+                                <div class="privacy-opt__desc">Solo tu puoi vedere il tuo profilo</div>
+                            </div>
+                            <div class="privacy-opt__radio"></div>
+                        </button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">📊</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Mostra statistiche</div>
+                        <div class="setting-row__desc">Visualizzazioni e like visibili pubblicamente</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">🔍</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Indicizzazione nei motori di ricerca</div>
+                        <div class="setting-row__desc">Il tuo profilo appare su Google e altri motori</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn--accent" onclick="salva('Privacy aggiornata!')">💾 Salva</button>
+            </div>
+        </div>
+
+        <!-- ── DATI ── -->
+        <div class="section" id="s-dati">
+            <div class="section__title">I tuoi dati</div>
+            <div class="section__sub">Scarica o gestisci tutto ciò che hai caricato su Appunti.</div>
+
+            <div class="setting-group">
+                <div class="setting-row">
+                    <div class="setting-row__icon">📥</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Scarica i tuoi dati</div>
+                        <div class="setting-row__desc">Esporta profilo, appunti e attività in formato ZIP</div>
+                    </div>
+                    <button class="btn btn--ghost btn--sm" onclick="salva('📦 Esportazione avviata!')">Esporta</button>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">📋</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Attività recente</div>
+                        <div class="setting-row__desc">Visualizza log di accessi e azioni</div>
+                    </div>
+                    <button class="btn btn--ghost btn--sm" onclick="salva('Apertura log...')">Vedi log</button>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon">🗑️</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label">Cancella cronologia ricerche</div>
+                        <div class="setting-row__desc">Rimuovi tutte le ricerche salvate</div>
+                    </div>
+                    <button class="btn btn--ghost btn--sm" onclick="salva('Cronologia cancellata!')">Cancella</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── ZONA PERICOLO ── -->
+        <div class="section" id="s-zona-pericolo">
+            <div class="section__title" style="color:var(--red)">⚠️ Zona pericolo</div>
+            <div class="section__sub">Queste azioni sono irreversibili. Procedi con cautela.</div>
+
+            <div class="danger-zone">
+                <div class="setting-row">
+                    <div class="setting-row__icon" style="background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2)">🚫</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label" style="color:var(--red)">Disattiva account</div>
+                        <div class="setting-row__desc">Il profilo diventa invisibile ma i dati vengono conservati. Puoi riattivarlo in qualsiasi momento.</div>
+                    </div>
+                    <button class="btn btn--danger btn--sm" onclick="apriConferma('disattiva')">Disattiva</button>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon" style="background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2)">🗑️</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label" style="color:var(--red)">Elimina tutti gli appunti</div>
+                        <div class="setting-row__desc">Cancella definitivamente tutti i tuoi appunti pubblicati. Azione irreversibile.</div>
+                    </div>
+                    <button class="btn btn--danger btn--sm" onclick="apriConferma('appunti')">Elimina</button>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-row__icon" style="background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2)">💀</div>
+                    <div class="setting-row__text">
+                        <div class="setting-row__label" style="color:var(--red)">Elimina account</div>
+                        <div class="setting-row__desc">Elimina permanentemente il tuo account e tutti i dati associati. Impossibile annullare.</div>
+                    </div>
+                    <button class="btn btn--danger btn--sm" onclick="apriConferma('account')">Elimina account</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-backdrop" id="confirmBackdrop" onclick="chiudiConferma(event)">
+    <div class="confirm-box">
+        <div class="confirm-box__icon" id="confirmIcon">⚠️</div>
+        <div class="confirm-box__title" id="confirmTitle">Sei sicuro?</div>
+        <div class="confirm-box__desc" id="confirmDesc">Questa azione è irreversibile.</div>
+        <div class="confirm-box__btns">
+            <button class="btn btn--ghost" onclick="chiudiConferma()">Annulla</button>
+            <button class="btn btn--danger" id="confirmBtn" onclick="eseguiAzione()">Conferma</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    /* ── NAVIGAZIONE SEZIONI ── */
+    function mostraSezione(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.sidebar__item').forEach(b => b.classList.remove('active'));
+        document.getElementById('s-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    /* ── MATERIE ── */
+    const tutteMaterie = [
+        { n:'∑ Matematica', c:'#d97706' }, { n:'🔬 Scienze',    c:'#16a34a' },
+        { n:'⚛️ Fisica',    c:'#2563eb' }, { n:'🧪 Chimica',    c:'#7c3aed' },
+        { n:'📖 Storia',    c:'#be185d' }, { n:'🌍 Geografia',  c:'#0d9488' },
+        { n:'✏️ Italiano',  c:'#d97706' }, { n:'🗣️ Inglese',   c:'#4f46e5' },
+        { n:'💻 Informatica',c:'#dc2626'},{ n:'🎨 Arte',       c:'#0891b2' },
+        { n:'🧬 Biologia',  c:'#059669' }, { n:'📐 Geometria',  c:'#7c3aed' },
+    ];
+
+    let materieAttive = new Set(['∑ Matematica', '⚛️ Fisica', '💻 Informatica']);
+
+    function renderMaterie() {
+        document.getElementById('materieGrid').innerHTML = tutteMaterie.map(m => `
+            <button class="materia-tag ${materieAttive.has(m.n) ? 'active' : ''}"
+                style="${materieAttive.has(m.n) ? `background:${m.c};color:#fff;border-color:${m.c}` : ''}"
+                onclick="toggleMateria('${m.n}', '${m.c}', this)">
+                ${m.n}
+            </button>`).join('');
+    }
+
+    function toggleMateria(nome, colore, el) {
+        if (materieAttive.has(nome)) {
+            materieAttive.delete(nome);
+            el.classList.remove('active');
+            el.style.background = '';
+            el.style.color = '';
+            el.style.borderColor = '';
+        } else {
+            materieAttive.add(nome);
+            el.classList.add('active');
+            el.style.background = colore;
+            el.style.color = '#fff';
+            el.style.borderColor = colore;
+        }
+    }
+
+    renderMaterie();
+
+    /* ── TEMA ── */
+    function setTema(tema, el) {
+        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        salva('Tema ' + tema + ' applicato!');
+    }
+
+    /* ── COLORE ACCENTO ── */
+    function setAccento(colore, el) {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        document.documentElement.style.setProperty('--accent', colore);
+        salva('Colore aggiornato!');
+    }
+
+    /* ── PRIVACY ── */
+    function setPrivacy(el) {
+        document.querySelectorAll('.privacy-opt').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+        salva('Privacy aggiornata!');
+    }
+
+    /* ── PASSWORD ── */
+    function cambiaPassword() {
+        const np = document.getElementById('newPass').value;
+        const cp = document.getElementById('confPass').value;
+        if (!np) { salva('⚠️ Inserisci la nuova password!'); return; }
+        if (np.length < 8) { salva('⚠️ Minimo 8 caratteri!'); return; }
+        if (np !== cp) { salva('⚠️ Le password non coincidono!'); return; }
+        salva('🔒 Password aggiornata!');
+        document.getElementById('newPass').value = '';
+        document.getElementById('confPass').value = '';
+    }
+
+    /* ── CONFERMA AZIONE ── */
+    const configConferma = {
+        disattiva: {
+            icon: '🚫',
+            title: 'Disattivare l\'account?',
+            desc: 'Il tuo profilo diventerà invisibile. Potrai riattivarlo in qualsiasi momento accedendo di nuovo.',
+            btn: 'Disattiva'
+        },
+        appunti: {
+            icon: '🗑️',
+            title: 'Eliminare tutti gli appunti?',
+            desc: 'Tutti i tuoi appunti pubblicati verranno eliminati definitivamente. Questa azione non può essere annullata.',
+            btn: 'Elimina tutto'
+        },
+        account: {
+            icon: '💀',
+            title: 'Eliminare l\'account?',
+            desc: 'Il tuo account e tutti i dati (appunti, profilo, attività) verranno eliminati per sempre. Impossibile recuperarli.',
+            btn: 'Elimina account'
+        }
+    };
+
+    let azioneCorrente = null;
+
+    function apriConferma(tipo) {
+        azioneCorrente = tipo;
+        const cfg = configConferma[tipo];
+        document.getElementById('confirmIcon').textContent = cfg.icon;
+        document.getElementById('confirmTitle').textContent = cfg.title;
+        document.getElementById('confirmDesc').textContent = cfg.desc;
+        document.getElementById('confirmBtn').textContent = cfg.btn;
+        document.getElementById('confirmBackdrop').classList.add('open');
+    }
+
+    function chiudiConferma(e) {
+        if (e && e.target !== document.getElementById('confirmBackdrop')) return;
+        document.getElementById('confirmBackdrop').classList.remove('open');
+        azioneCorrente = null;
+    }
+
+    function eseguiAzione() {
+        document.getElementById('confirmBackdrop').classList.remove('open');
+        if (azioneCorrente === 'disattiva') salva('🚫 Account disattivato');
+        if (azioneCorrente === 'appunti')  salva('🗑️ Appunti eliminati');
+        if (azioneCorrente === 'account')  salva('💀 Account eliminato');
+        azioneCorrente = null;
+    }
+
+    /* ── SALVA / ANNULLA ── */
+    function salva(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    function annulla() {
+        document.getElementById('setNick').value = localStorage.getItem('appunti_nick') || '';
+        salva('Modifiche annullate');
+    }
+
+    /* ── CARICA DATI SALVATI ── */
+    window.addEventListener('load', () => {
+        const nick = localStorage.getItem('appunti_nick');
+        if (nick) document.getElementById('setNick').value = nick;
+    });
+
+    document.getElementById('setNick').addEventListener('input', () =>
+        localStorage.setItem('appunti_nick', document.getElementById('setNick').value));
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') chiudiConferma();
+    });
+</script>
+
+</body>
+</html>

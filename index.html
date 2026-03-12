@@ -14,9 +14,9 @@
         <div class="topnav__brand">📚 Appunti</div>
         <ul class="topnav__links">
             <li><a href="#" class="active">Home</a></li>
-            <li><a href="#">Esplora</a></li>
+            <li><a href="esplora.html">Esplora</a></li>
             <li><a href="profilo.html">Profilo</a></li>
-            <li><a href="#">Impostazioni</a></li>
+            <li><a href="impostazioni.html">Impostazioni</a></li>
         </ul>
         <div class="topnav__search">
             <input type="text" id="searchInput" placeholder="Cerca argomento o materia…" autocomplete="off">
@@ -285,7 +285,56 @@
                 cercaAppunti();
             });
         });
+        // ... codice precedente ...
+
+        // Subject card click → search
+        document.querySelectorAll('.subject-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const materia = card.querySelector('span:last-child').textContent;
+                document.getElementById('searchInput').value = materia;
+                cercaAppunti();
+            });
+        });
+
+        // ── SLIDER: drag scroll + ciclo infinito ──
+        const slider = document.querySelector('.subjects-slider');
+        const track  = document.getElementById('subjectsTrack');
+
+        let isDragging = false, startX, scrollStart;
+
+        slider.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.pageX - slider.offsetLeft;
+            scrollStart = slider.scrollLeft;
+            slider.classList.add('dragging');
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            slider.scrollLeft = scrollStart - (x - startX);
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            slider.classList.remove('dragging');
+        });
+
+        slider.addEventListener('scroll', () => {
+            const half = track.scrollWidth / 2;
+            if (slider.scrollLeft >= half) {
+                slider.scrollLeft -= half;
+            } else if (slider.scrollLeft <= 0) {
+                slider.scrollLeft += half;
+            }
+        });
+
     </script>
+</body>
+</html>
+    </script>
+        
 
 </body>
 </html>

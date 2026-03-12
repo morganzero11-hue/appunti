@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esplora — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --nav-h: 60px;
+            --accent: #d4522a;
+            --yellow: #f0c040;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* ─── NAVBAR ─── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            display: flex; align-items: center;
+            padding: 0 28px; gap: 28px;
+            z-index: 100;
+        }
+
+        .nav__brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--yellow);
+            text-decoration: none; white-space: nowrap;
+        }
+
+        .nav__links { list-style: none; display: flex; gap: 2px; flex: 1; }
+        .nav__links a {
+            padding: 6px 13px; border-radius: 8px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none; font-size: 0.87rem; font-weight: 700;
+            transition: all .18s;
+        }
+        .nav__links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav__links a.active { color: var(--yellow); }
+
+        /* ─── FEED CONTAINER ─── */
+        .feed {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+        .feed::-webkit-scrollbar { display: none; }
+
+        /* ─── SLIDE ─── */
+        .slide {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        /* animated gradient background per ogni slide */
+        .slide__bg {
+            position: absolute; inset: 0;
+            transition: opacity .4s;
+        }
+
+        /* pattern overlay */
+        .slide__pattern {
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 22px 22px;
+            z-index: 1;
+        }
+
+        /* big icon decoration */
+        .slide__deco {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -58%);
+            font-size: clamp(120px, 22vw, 200px);
+            opacity: 0.12;
+            z-index: 1;
+            user-select: none;
+            filter: blur(2px);
+            transition: transform .6s cubic-bezier(.22,1,.36,1);
+        }
+
+        .slide:hover .slide__deco { transform: translate(-50%, -60%) scale(1.05); }
+
+        /* bottom gradient */
+        .slide__grad {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top,
+                rgba(0,0,0,0.92) 0%,
+                rgba(0,0,0,0.5) 35%,
+                rgba(0,0,0,0.1) 60%,
+                transparent 100%);
+            z-index: 2;
+        }
+
+        /* ─── CONTENT AREA ─── */
+        .slide__content {
+            position: relative; z-index: 3;
+            width: 100%;
+            padding: 0 28px 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .slide__main { flex: 1; min-width: 0; }
+
+        /* subject chip */
+        .slide__chip {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            margin-bottom: 12px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .slide__chip-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* title */
+        .slide__title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        /* description */
+        .slide__desc {
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.55;
+            max-width: 580px;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+
+        /* author row */
+        .slide__author {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .slide__avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .slide__author-info { display: flex; flex-direction: column; gap: 1px; }
+        .slide__author-name { font-size: 0.85rem; font-weight: 800; color: #fff; }
+        .slide__author-date { font-size: 0.73rem; color: rgba(255,255,255,0.5); }
+
+        /* ─── ACTIONS SIDEBAR ─── */
+        .slide__actions {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 20px;
+            padding-bottom: 44px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 5px;
+            cursor: pointer;
+            transition: transform .2s;
+            background: none; border: none; color: #fff;
+        }
+
+        .action-btn:hover { transform: scale(1.15); }
+        .action-btn:active { transform: scale(0.95); }
+
+        .action-btn__icon {
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            transition: background .2s, border-color .2s;
+        }
+
+        .action-btn:hover .action-btn__icon {
+            background: rgba(255,255,255,0.22);
+        }
+
+        .action-btn.liked .action-btn__icon {
+            background: rgba(212,82,42,0.3);
+            border-color: var(--accent);
+        }
+
+        .action-btn.saved .action-btn__icon {
+            background: rgba(240,192,64,0.2);
+            border-color: var(--yellow);
+        }
+
+        .action-btn__count {
+            font-size: 0.72rem; font-weight: 800;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ─── PROGRESS DOTS ─── */
+        .progress-dots {
+            position: fixed;
+            right: 20px; top: 50%;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 50;
+        }
+
+        .pdot {
+            width: 6px; height: 6px; border-radius: 3px;
+            background: rgba(255,255,255,0.3);
+            transition: all .3s;
+            cursor: pointer;
+        }
+
+        .pdot.active {
+            background: #fff;
+            height: 20px;
+        }
+
+        /* ─── FILTER BAR ─── */
+        .filter-bar {
+            position: fixed;
+            top: var(--nav-h); left: 0; right: 0;
+            z-index: 90;
+            padding: 10px 28px;
+            display: flex; gap: 8px; overflow-x: auto;
+            scrollbar-width: none;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.78rem; font-weight: 800;
+            letter-spacing: 0.5px;
+            white-space: nowrap; cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            transition: all .2s;
+            backdrop-filter: blur(6px);
+        }
+
+        .filter-chip:hover { color: #fff; background: rgba(255,255,255,0.18); }
+        .filter-chip.active {
+            background: #fff; color: #0a0a0a; border-color: #fff;
+        }
+
+        /* ─── SCROLL HINT ─── */
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+            animation: bounce 2s ease infinite;
+            pointer-events: none;
+            transition: opacity .4s;
+        }
+
+        .scroll-hint svg { opacity: 0.5; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50%       { transform: translateX(-50%) translateY(6px); }
+        }
+
+        /* ─── NOTE MODAL ─── */
+        .note-modal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity .25s;
+        }
+
+        .note-modal.open { opacity: 1; pointer-events: all; }
+
+        .note-modal__box {
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 22px;
+            width: min(580px, 92vw);
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 36px 32px;
+            transform: scale(0.95) translateY(20px);
+            transition: transform .3s;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+
+        .note-modal.open .note-modal__box { transform: scale(1) translateY(0); }
+
+        .note-modal__close {
+            float: right;
+            background: rgba(255,255,255,0.08); border: none; color: #fff;
+            width: 32px; height: 32px; border-radius: 8px;
+            cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .2s;
+        }
+        .note-modal__close:hover { background: rgba(255,255,255,0.18); }
+
+        .note-modal__chip {
+            display: inline-block;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            margin-bottom: 14px; clear: both;
+        }
+
+        .note-modal__title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.7rem; font-weight: 900;
+            line-height: 1.2; margin-bottom: 12px;
+        }
+
+        .note-modal__author {
+            font-size: 0.82rem; color: rgba(255,255,255,0.5);
+            margin-bottom: 24px; display: flex; align-items: center; gap: 6px;
+        }
+
+        .note-modal__body {
+            font-size: 0.95rem; line-height: 1.75;
+            color: rgba(255,255,255,0.8);
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding-top: 20px;
+        }
+
+        .note-modal__body p { margin-bottom: 14px; }
+
+        .note-modal__body h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem; font-weight: 700;
+            color: #fff; margin: 20px 0 8px;
+        }
+
+        /* responsive */
+        @media (max-width: 600px) {
+            .nav__links { display: none; }
+            .slide__content { padding: 0 16px 80px; }
+            .slide__deco { font-size: 28vw; }
+            .progress-dots { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="index.html" class="nav__brand">📚 Appunti</a>
+    <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="esplora.html" class="active">Esplora</a></li>
+        <li><a href="profilo.html">Profilo</a></li>
+        <li><a href="#">Impostazioni</a></li>
+    </ul>
+</nav>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+    <div class="filter-chip active" onclick="filtra('tutti', this)">✨ Tutti</div>
+    <div class="filter-chip" onclick="filtra('Matematica', this)">∑ Matematica</div>
+    <div class="filter-chip" onclick="filtra('Scienze', this)">🔬 Scienze</div>
+    <div class="filter-chip" onclick="filtra('Fisica', this)">⚛️ Fisica</div>
+    <div class="filter-chip" onclick="filtra('Chimica', this)">🧪 Chimica</div>
+    <div class="filter-chip" onclick="filtra('Storia', this)">📖 Storia</div>
+    <div class="filter-chip" onclick="filtra('Italiano', this)">✏️ Italiano</div>
+    <div class="filter-chip" onclick="filtra('Inglese', this)">🗣️ Inglese</div>
+    <div class="filter-chip" onclick="filtra('Informatica', this)">💻 Informatica</div>
+    <div class="filter-chip" onclick="filtra('Arte', this)">🎨 Arte</div>
+    <div class="filter-chip" onclick="filtra('Geografia', this)">🌍 Geografia</div>
+</div>
+
+<!-- FEED -->
+<div class="feed" id="feed"></div>
+
+<!-- PROGRESS DOTS -->
+<div class="progress-dots" id="progressDots"></div>
+
+<!-- SCROLL HINT -->
+<div class="scroll-hint" id="scrollHint">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    Scorri
+</div>
+
+<!-- NOTE MODAL -->
+<div class="note-modal" id="noteModal" onclick="chiudiNota(event)">
+    <div class="note-modal__box" id="noteModalBox">
+        <button class="note-modal__close" onclick="chiudiNota()">✕</button>
+        <div id="noteModalContent"></div>
+    </div>
+</div>
+
+<script>
+    const appunti = [
+        {
+            id:1, materia:"Matematica", icon:"∑", colore:"#d97706",
+            gradiente:"linear-gradient(135deg,#1a0a00 0%,#3d1f00 50%,#1a0a00 100%)",
+            titolo:"Derivate — Regole fondamentali",
+            desc:"Introduzione al calcolo differenziale: dalla definizione di limite al concetto di derivata come tasso di variazione istantaneo.",
+            autore:"Marco R.", avatar:"👨‍🎓", data:"8 mar 2026", likes:142, views:1240,
+            contenuto:`<h4>Cos'è una derivata?</h4>
+<p>La derivata di una funzione f(x) in un punto x₀ rappresenta il tasso di variazione istantaneo, ovvero la pendenza della retta tangente al grafico in quel punto.</p>
+<h4>Regole principali</h4>
+<p><strong>Derivata di una costante:</strong> D[c] = 0</p>
+<p><strong>Derivata di xⁿ:</strong> D[xⁿ] = n·xⁿ⁻¹</p>
+<p><strong>Regola della somma:</strong> D[f+g] = f' + g'</p>
+<p><strong>Regola del prodotto:</strong> D[f·g] = f'g + fg'</p>
+<p><strong>Regola della catena:</strong> D[f(g(x))] = f'(g(x))·g'(x)</p>
+<h4>Esempi pratici</h4>
+<p>D[x³] = 3x² — D[sin(x)] = cos(x) — D[eˣ] = eˣ</p>`
+        },
+        {
+            id:2, materia:"Scienze", icon:"🔬", colore:"#16a34a",
+            gradiente:"linear-gradient(135deg,#001a08 0%,#003d15 50%,#001a08 100%)",
+            titolo:"La cellula eucariotica",
+            desc:"Struttura completa della cellula eucariotica: nucleo, mitocondri, reticolo endoplasmatico e tutti gli organelli con le loro funzioni.",
+            autore:"Giulia M.", avatar:"👩‍🔬", data:"7 mar 2026", likes:98, views:876,
+            contenuto:`<h4>Struttura generale</h4>
+<p>La cellula eucariotica è caratterizzata dalla presenza di un nucleo delimitato da una membrana nucleare, che contiene il materiale genetico organizzato in cromosomi.</p>
+<h4>Organelli principali</h4>
+<p><strong>Mitocondri:</strong> centrali energetiche della cellula, producono ATP tramite respirazione cellulare.</p>
+<p><strong>Reticolo endoplasmatico rugoso:</strong> sintesi proteica grazie ai ribosomi sulla superficie.</p>
+<p><strong>Apparato di Golgi:</strong> smistamento e modifica delle proteine, formazione di vescicole.</p>
+<p><strong>Lisosomi:</strong> digestione intracellulare, contengono enzimi idrolitici.</p>
+<h4>Differenze con la cellula procariotica</h4>
+<p>Le cellule procariotiche mancano di nucleo e organelli membranosi. Sono tipiche di batteri e archea.</p>`
+        },
+        {
+            id:3, materia:"Storia", icon:"📖", colore:"#be185d",
+            gradiente:"linear-gradient(135deg,#1a0010 0%,#3d0025 50%,#1a0010 100%)",
+            titolo:"Prima Guerra Mondiale",
+            desc:"Cause, sviluppi e conseguenze del primo conflitto mondiale. Dalla guerra di trincea ai trattati di pace che ridisegnarono l'Europa.",
+            autore:"Luca B.", avatar:"👨‍📚", data:"6 mar 2026", likes:213, views:2100,
+            contenuto:`<h4>Le cause del conflitto</h4>
+<p>L'assassinio dell'arciduca Francesco Ferdinando a Sarajevo nel 1914 fu la scintilla che innescò una serie di dichiarazioni di guerra a catena tra le grandi potenze europee.</p>
+<h4>Le alleanze</h4>
+<p><strong>Triplice Intesa:</strong> Francia, Russia, Gran Bretagna (poi Italia dal 1915 con il Patto di Londra).</p>
+<p><strong>Triplice Alleanza:</strong> Germania, Austria-Ungheria, Ottomani.</p>
+<h4>La guerra di trincea</h4>
+<p>Il fronte occidentale si stabilizzò in una logorante guerra di posizione. Le trincee si estendevano per centinaia di chilometri, in condizioni disumane.</p>
+<h4>Fine del conflitto</h4>
+<p>L'armistizio fu firmato l'11 novembre 1918. Il Trattato di Versailles del 1919 impose pesanti sanzioni alla Germania, seminando i germi del secondo conflitto.</p>`
+        },
+        {
+            id:4, materia:"Fisica", icon:"⚛️", colore:"#2563eb",
+            gradiente:"linear-gradient(135deg,#00001a 0%,#001040 50%,#00001a 100%)",
+            titolo:"Le leggi di Newton",
+            desc:"I tre principi fondamentali della meccanica classica che descrivono il moto dei corpi e le forze che lo determinano.",
+            autore:"Sara V.", avatar:"👩‍🔭", data:"5 mar 2026", likes:177, views:1580,
+            contenuto:`<h4>Primo principio — Inerzia</h4>
+<p>Un corpo rimane in stato di quiete o di moto rettilineo uniforme finché non è soggetto a una forza esterna netta.</p>
+<h4>Secondo principio — Dinamica</h4>
+<p><strong>F = ma</strong> — La forza risultante su un corpo è uguale al prodotto della sua massa per l'accelerazione prodotta. Più è massiva un'oggetto, più forza serve per accelerarlo.</p>
+<h4>Terzo principio — Azione e reazione</h4>
+<p>Ad ogni azione corrisponde una reazione uguale e contraria. Se un corpo A esercita una forza su B, allora B esercita su A una forza uguale in modulo e opposta in direzione.</p>
+<h4>Applicazioni pratiche</h4>
+<p>Queste leggi spiegano fenomeni quotidiani: perché ci incliniamo in curva, come funziona un razzo, perché i sedili hanno le cinture di sicurezza.</p>`
+        },
+        {
+            id:5, materia:"Informatica", icon:"💻", colore:"#dc2626",
+            gradiente:"linear-gradient(135deg,#1a0000 0%,#3d0000 50%,#1a0000 100%)",
+            titolo:"Algoritmi di ordinamento",
+            desc:"BubbleSort, QuickSort e MergeSort a confronto: complessità computazionale, casi migliori e peggiori, implementazione pratica.",
+            autore:"Diego F.", avatar:"👨‍💻", data:"3 mar 2026", likes:305, views:3200,
+            contenuto:`<h4>BubbleSort</h4>
+<p>Complessità: O(n²) nel caso peggiore. Confronta coppie adiacenti e le scambia se nell'ordine sbagliato. Semplice ma inefficiente per grandi dataset.</p>
+<h4>QuickSort</h4>
+<p>Complessità media: O(n log n). Sceglie un pivot e partiziona l'array in elementi minori e maggiori. Ricorsivo, molto veloce in pratica.</p>
+<h4>MergeSort</h4>
+<p>Complessità garantita: O(n log n). Divide l'array a metà ricorsivamente, poi unisce le parti ordinate. Stabile e prevedibile ma usa memoria extra.</p>
+<h4>Quando usare quale?</h4>
+<p>QuickSort è generalmente il più veloce in pratica. MergeSort quando serve stabilità. BubbleSort solo per scopi didattici o array quasi ordinati molto piccoli.</p>`
+        },
+        {
+            id:6, materia:"Italiano", icon:"✏️", colore:"#d97706",
+            gradiente:"linear-gradient(135deg,#1a1000 0%,#3d2800 50%,#1a1000 100%)",
+            titolo:"Analisi del testo poetico",
+            desc:"Come analizzare una poesia: metrica, figure retoriche, temi e contesto storico-letterario. Guida completa con esempi dal Novecento.",
+            autore:"Anna C.", avatar:"👩‍🎨", data:"4 mar 2026", likes:89, views:720,
+            contenuto:`<h4>La metrica italiana</h4>
+<p>Il verso italiano si misura in sillabe. I principali: endecasillabo (11 sillabe), settenario (7), ottonario (8). La rima può essere baciata AABB, alternata ABAB, incrociata ABBA.</p>
+<h4>Figure retoriche fondamentali</h4>
+<p><strong>Metafora:</strong> sostituzione di un termine con un altro per analogia.</p>
+<p><strong>Similitudine:</strong> confronto esplicito tramite "come" o "simile a".</p>
+<p><strong>Anafora:</strong> ripetizione di parole all'inizio di versi consecutivi.</p>
+<p><strong>Enjambement:</strong> il senso del verso continua nel verso successivo senza pausa.</p>
+<h4>Come strutturare l'analisi</h4>
+<p>1. Parafrasi — 2. Analisi metrica — 3. Figure retoriche — 4. Temi — 5. Contesto e poetica dell'autore.</p>`
+        },
+        {
+            id:7, materia:"Chimica", icon:"🧪", colore:"#7c3aed",
+            gradiente:"linear-gradient(135deg,#0d001a 0%,#250040 50%,#0d001a 100%)",
+            titolo:"Reazioni acido-base",
+            desc:"La teoria di Brønsted-Lowry, il pH, gli indicatori e le reazioni di neutralizzazione. Con esempi di laboratorio e calcoli pratici.",
+            autore:"Roberto N.", avatar:"👨‍🔬", data:"4 mar 2026", likes:134, views:1100,
+            contenuto:`<h4>Teoria di Brønsted-Lowry</h4>
+<p>Un acido è una sostanza che dona protoni (H⁺), una base è una sostanza che li accetta. Ogni acido ha la sua base coniugata e viceversa.</p>
+<h4>Il pH</h4>
+<p>pH = -log[H⁺]. Scala da 0 a 14: pH < 7 è acido, pH = 7 è neutro, pH > 7 è basico. L'acqua pura a 25°C ha pH = 7.</p>
+<h4>Reazione di neutralizzazione</h4>
+<p>Acido + Base → Sale + Acqua. Esempio: HCl + NaOH → NaCl + H₂O. Il prodotto è una soluzione salina neutra se acido e base sono forti.</p>
+<h4>Indicatori di pH</h4>
+<p>La cartina al tornasole diventa rossa in ambiente acido, blu in ambiente basico. La fenolftaleina è incolore in acido, fucsia in base.</p>`
+        },
+        {
+            id:8, materia:"Inglese", icon:"🗣️", colore:"#4f46e5",
+            gradiente:"linear-gradient(135deg,#00001a 0%,#0a0035 50%,#00001a 100%)",
+            titolo:"Present Perfect vs Past Simple",
+            desc:"La differenza che ogni studente italiano confonde: quando usare il Present Perfect e quando il Past Simple in inglese.",
+            autore:"Marta L.", avatar:"👩‍🏫", data:"2 mar 2026", likes:267, views:2800,
+            contenuto:`<h4>Past Simple</h4>
+<p>Si usa per azioni <strong>completate in un momento preciso del passato</strong>. Richiede un riferimento temporale: yesterday, last week, in 2020, at 3pm.</p>
+<p>Esempio: "I visited Rome last summer." ✓</p>
+<h4>Present Perfect</h4>
+<p>Si usa per azioni passate con <strong>collegamento al presente</strong>: esperienze di vita, azioni appena avvenute, o che continuano nel presente.</p>
+<p>Esempio: "I have visited Rome." (esperienza, senza specificare quando) ✓</p>
+<h4>Parole chiave</h4>
+<p><strong>Past Simple:</strong> yesterday, ago, last..., in [anno]</p>
+<p><strong>Present Perfect:</strong> ever, never, already, yet, just, since, for</p>
+<h4>Errore comune degli italiani</h4>
+<p>"Ho mangiato ieri" → "I ate yesterday" (Past Simple, NON Present Perfect!) perché c'è un riferimento temporale preciso.</p>`
+        },
+        {
+            id:9, materia:"Arte", icon:"🎨", colore:"#0891b2",
+            gradiente:"linear-gradient(135deg,#00101a 0%,#002535 50%,#00101a 100%)",
+            titolo:"L'Impressionismo francese",
+            desc:"Il movimento che rivoluzionò la pittura occidentale: Monet, Renoir, Degas e la cattura della luce fuggente del momento.",
+            autore:"Chiara P.", avatar:"👩‍🎨", data:"28 feb 2026", likes:201, views:1750,
+            contenuto:`<h4>Origini del movimento</h4>
+<p>Il termine "Impressionismo" nacque ironicamente dalla critica al dipinto di Monet "Impression, soleil levant" (1872), esposto alla prima mostra del gruppo nel 1874.</p>
+<h4>Caratteristiche tecniche</h4>
+<p>Pennellate veloci e visibili, colori puri accostati senza mescolarli sulla tavolozza, pittura en plein air (all'aperto), cattura degli effetti di luce e atmosfera.</p>
+<h4>I protagonisti</h4>
+<p><strong>Claude Monet:</strong> le serie delle Ninfee e della Cattedrale di Rouen.</p>
+<p><strong>Pierre-Auguste Renoir:</strong> scene di vita parigina, figure femminili.</p>
+<p><strong>Edgar Degas:</strong> ballerine, corse di cavalli, vita moderna.</p>
+<h4>Eredità</h4>
+<p>L'Impressionismo aprì la strada al Post-Impressionismo (Cézanne, Van Gogh, Gauguin) e in ultima analisi a tutto l'arte moderna del XX secolo.</p>`
+        },
+        {
+            id:10, materia:"Geografia", icon:"🌍", colore:"#0d9488",
+            gradiente:"linear-gradient(135deg,#001a18 0%,#003d38 50%,#001a18 100%)",
+            titolo:"Le fasce climatiche mondiali",
+            desc:"Dai climi equatoriali alle regioni polari: come la latitudine, le correnti oceaniche e l'altitudine determinano il clima di una zona.",
+            autore:"Fabio G.", avatar:"👨‍🌍", data:"1 mar 2026", likes:76, views:640,
+            contenuto:`<h4>Clima equatoriale</h4>
+<p>Tra il Tropico del Cancro e quello del Capricorno. Temperature costantemente elevate (25-30°C), piogge abbondanti tutto l'anno. Tipico: bacino amazzonico, Congo.</p>
+<h4>Clima mediterraneo</h4>
+<p>Estati calde e secche, inverni miti e piovosi. Tipico del bacino del Mediterraneo, California, Cile centrale.</p>
+<h4>Clima temperato oceanico</h4>
+<p>Temperature moderate tutto l'anno, piogge distribuite uniformemente. Tipico di Europa occidentale (UK, Francia atlantica).</p>
+<h4>Clima polare</h4>
+<p>Temperature sempre sotto zero, precipitazioni scarse (deserti freddi). Tundra: estate breve con qualche grado positivo. Calotta glaciale: sempre sotto zero.</p>`
+        },
+    ];
+
+    let visibili = [...appunti];
+    let currentSlide = 0;
+    let likes = {};
+    let saved = {};
+
+    /* ─── RENDER FEED ─── */
+    function renderFeed() {
+        const feed = document.getElementById('feed');
+        const dots = document.getElementById('progressDots');
+        feed.innerHTML = '';
+        dots.innerHTML = '';
+
+        visibili.forEach((a, i) => {
+            // slide
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            slide.innerHTML = `
+                <div class="slide__bg" style="background:${a.gradiente}"></div>
+                <div class="slide__pattern"></div>
+                <div class="slide__deco">${a.icon}</div>
+                <div class="slide__grad"></div>
+                <div class="slide__content">
+                    <div class="slide__main">
+                        <div class="slide__chip" style="background:rgba(0,0,0,0.4);color:${a.colore};border-color:${a.colore}40">
+                            <span class="slide__chip-dot" style="background:${a.colore}"></span>
+                            ${a.materia}
+                        </div>
+                        <div class="slide__title">${a.titolo}</div>
+                        <div class="slide__desc">${a.desc}</div>
+                        <div class="slide__author">
+                            <div class="slide__avatar">${a.avatar}</div>
+                            <div class="slide__author-info">
+                                <div class="slide__author-name">${a.autore}</div>
+                                <div class="slide__author-date">${a.data}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide__actions">
+                        <button class="action-btn ${likes[a.id] ? 'liked' : ''}" onclick="toggleLike(${a.id}, this)" title="Mi piace">
+                            <div class="action-btn__icon">🔥</div>
+                            <span class="action-btn__count" id="likes-${a.id}">${a.likes + (likes[a.id] ? 1 : 0)}</span>
+                        </button>
+                        <button class="action-btn ${saved[a.id] ? 'saved' : ''}" onclick="toggleSave(${a.id}, this)" title="Salva">
+                            <div class="action-btn__icon">${saved[a.id] ? '🔖' : '🔖'}</div>
+                            <span class="action-btn__count">${saved[a.id] ? 'Salvato' : 'Salva'}</span>
+                        </button>
+                        <button class="action-btn" onclick="apriNota(${a.id})" title="Leggi">
+                            <div class="action-btn__icon">📖</div>
+                            <span class="action-btn__count">Leggi</span>
+                        </button>
+                        <button class="action-btn" onclick="condividi('${a.titolo}')" title="Condividi">
+                            <div class="action-btn__icon">↗️</div>
+                            <span class="action-btn__count">Invia</span>
+                        </button>
+                    </div>
+                </div>`;
+            feed.appendChild(slide);
+
+            // dot
+            const dot = document.createElement('div');
+            dot.className = 'pdot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => scrollToSlide(i);
+            dots.appendChild(dot);
+        });
+
+        if (visibili.length === 0) {
+            feed.innerHTML = `<div class="slide" style="align-items:center;justify-content:center;text-align:center;padding:40px">
+                <div style="z-index:3;position:relative">
+                    <div style="font-size:4rem;margin-bottom:20px;opacity:0.4">🔍</div>
+                    <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:900;margin-bottom:10px">Nessun appunto trovato</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.9rem">Prova a selezionare un'altra materia</div>
+                </div>
+            </div>`;
+        }
+
+        currentSlide = 0;
+        aggiornaScrollHint();
+    }
+
+    /* ─── SCROLL TRACKING ─── */
+    let scrollTimer;
+    document.getElementById('feed').addEventListener('scroll', function() {
+        const h = this.clientHeight;
+        const idx = Math.round(this.scrollTop / h);
+        if (idx !== currentSlide) {
+            currentSlide = idx;
+            document.querySelectorAll('.pdot').forEach((d, i) => d.classList.toggle('active', i === idx));
+            aggiornaScrollHint();
+        }
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(aggiornaScrollHint, 300);
+    });
+
+    function aggiornaScrollHint() {
+        const hint = document.getElementById('scrollHint');
+        hint.style.opacity = currentSlide >= visibili.length - 1 ? '0' : '0.7';
+    }
+
+    function scrollToSlide(i) {
+        const feed = document.getElementById('feed');
+        feed.scrollTo({ top: i * feed.clientHeight, behavior: 'smooth' });
+    }
+
+    /* ─── FILTER ─── */
+    function filtra(materia, el) {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        visibili = materia === 'tutti' ? [...appunti] : appunti.filter(a => a.materia === materia);
+        renderFeed();
+    }
+
+    /* ─── LIKE ─── */
+    function toggleLike(id, btn) {
+        likes[id] = !likes[id];
+        btn.classList.toggle('liked', likes[id]);
+        const nota = appunti.find(a => a.id === id);
+        document.getElementById('likes-' + id).textContent = nota.likes + (likes[id] ? 1 : 0);
+    }
+
+    /* ─── SAVE ─── */
+    function toggleSave(id, btn) {
+        saved[id] = !saved[id];
+        btn.classList.toggle('saved', saved[id]);
+        btn.querySelector('.action-btn__count').textContent = saved[id] ? 'Salvato' : 'Salva';
+    }
+
+    /* ─── OPEN NOTE ─── */
+    function apriNota(id) {
+        const a = appunti.find(n => n.id === id);
+        document.getElementById('noteModalContent').innerHTML = `
+            <div class="note-modal__chip" style="background:${a.colore}22;color:${a.colore};border:1px solid ${a.colore}44">${a.icon} ${a.materia}</div>
+            <div class="note-modal__title">${a.titolo}</div>
+            <div class="note-modal__author">👤 ${a.autore} · ${a.data} · 👁 ${a.views} visualizzazioni</div>
+            <div class="note-modal__body">${a.contenuto}</div>`;
+        document.getElementById('noteModal').classList.add('open');
+        document.getElementById('feed').style.overflow = 'hidden';
+    }
+
+    function chiudiNota(e) {
+        if (e && e.target !== document.getElementById('noteModal')) return;
+        document.getElementById('noteModal').classList.remove('open');
+        document.getElementById('feed').style.overflow = '';
+    }
+
+    /* ─── SHARE ─── */
+    function condividi(titolo) {
+        if (navigator.share) {
+            navigator.share({ title: titolo, text: 'Guarda questo appunto su Appunti!', url: window.location.href });
+        } else {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = event.currentTarget;
+                const cnt = btn.querySelector('.action-btn__count');
+                cnt.textContent = 'Copiato!';
+                setTimeout(() => cnt.textContent = 'Invia', 1800);
+            });
+        }
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            document.getElementById('noteModal').classList.remove('open');
+            document.getElementById('feed').style.overflow = '';
+        }
+        if (e.key === 'ArrowDown') scrollToSlide(Math.min(currentSlide + 1, visibili.length - 1));
+        if (e.key === 'ArrowUp')   scrollToSlide(Math.max(currentSlide - 1, 0));
+    });
+
+    renderFeed();
+</script>
+</body>
+</html>
