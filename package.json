@@ -1,0 +1,24 @@
+{
+  "name": "appunti",
+  "version": "1.0.0",
+  "description": "Un sito semplice per pubblicare e condividere appunti.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morganzero11-hue/appunti.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/morganzero11-hue/appunti/issues"
+  },
+  "homepage": "https://github.com/morganzero11-hue/appunti#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "pg": "^8.20.0"
+  }
+}
