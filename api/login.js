@@ -1,35 +1,31 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // Usa la stringa di Neon
-  ssl: { rejectUnauthorized: false }
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: true } // Neon richiede SSL
 });
 
 module.exports = async (req, res) => {
-  // Gestiamo solo richieste POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Metodo non consentito' });
-  }
-
+  // 1. IMPORTANTE: Vercel popola req.body automaticamente se il Content-Type è application/json
   const { username, password } = req.body;
 
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Solo POST ammesso' });
+  }
+
   try {
-    const client = await pool.connect();
-    // Cerchiamo l'utente nel database
-    const result = await client.query(
+    const result = await pool.query(
       'SELECT * FROM utenti WHERE username = $1 AND password = $2',
       [username, password]
     );
-    client.release();
 
     if (result.rows.length > 0) {
-      // Successo
-      res.status(200).json({ success: true, message: 'Login effettuato!' });
+      res.status(200).json({ success: true, message: 'Login OK' });
     } else {
-      // Credenziali errate
-      res.status(401).json({ success: false, message: 'Username o password errati' });
+      res.status(401).json({ success: false, message: 'Credenziali errate' });
     }
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Errore server', error: err.message });
   }
 };
