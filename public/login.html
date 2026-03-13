@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Accedi</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Entra</button>
+        </form>
+        <p id="messaggio"></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+            const messaggio = document.getElementById('messaggio');
+
+            if (data.success) {
+                messaggio.style.color = 'green';
+                messaggio.innerText = "Accesso eseguito! Reindirizzamento...";
+                // Esempio: window.location.href = '/esplora.html';
+            } else {
+                messaggio.style.color = 'red';
+                messaggio.innerText = data.message;
+            }
+        });
+    </script>
+</body>
+</html>
