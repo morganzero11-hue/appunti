@@ -24,7 +24,6 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             background: var(--bg);
             color: var(--text);
-            overflow: hidden;
         }
 
         /* ─── BACKGROUND ─── */
@@ -76,16 +75,26 @@
         /* ─── LAYOUT ─── */
         .page {
             position: relative; z-index: 1;
-            height: 100vh;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .page__inner {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1px 1fr;
+            width: 100%;
+            max-width: 960px;
+            align-items: center;
         }
 
         /* ─── LEFT PANEL ─── */
         .left {
             display: flex; flex-direction: column;
             justify-content: center;
-            padding: 60px 72px;
+            padding: 40px 56px 40px 40px;
             animation: slideIn .65s cubic-bezier(.22,1,.36,1) both;
         }
 
@@ -184,7 +193,7 @@
         /* ─── RIGHT PANEL ─── */
         .right {
             display: flex; align-items: center; justify-content: center;
-            padding: 48px;
+            padding: 40px 40px 40px 56px;
             animation: slideInR .65s .1s cubic-bezier(.22,1,.36,1) both;
         }
 
@@ -426,10 +435,9 @@
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 800px) {
-            .page { grid-template-columns: 1fr; }
+            .page__inner { grid-template-columns: 1fr; }
             .left, .divider { display: none; }
             .right { padding: 32px 20px; }
-            html, body { overflow: auto; }
             .card { padding: 32px 26px; }
         }
     </style>
@@ -444,6 +452,7 @@
 </div>
 
 <div class="page">
+<div class="page__inner">
 
     <!-- LEFT PANEL -->
     <div class="left">
@@ -543,6 +552,7 @@
         </div>
     </div>
 
+</div>
 </div>
 
 <script>
