@@ -926,6 +926,28 @@
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') { document.getElementById('modalBackdrop').classList.remove('open'); document.body.style.overflow = ''; }
     });
+
+    async function caricaFile(inputId, tipo) {
+  const fileInput = document.getElementById(inputId);
+  const file = fileInput.files[0];
+  const utenteId = 123; // Prendi l'ID dell'utente loggato (es. da un cookie o sessione)
+
+  if (!file) return alert("Seleziona un file!");
+
+  // Costruiamo l'URL con i parametri necessari
+  const response = await fetch(
+    `/api/upload?filename=${file.name}&type=${tipo}&utenteId=${utenteId}`,
+    {
+      method: 'POST',
+      body: file, // Inviamo il file direttamente nel body
+    }
+  );
+
+  const newBlob = await response.json();
+  alert("Caricamento completato!");
+  location.reload(); // Ricarica per vedere i cambiamenti
+}
+
 </script>
 
 </body>
