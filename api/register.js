@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 const crypto = require('crypto');
 
+/* Neon usa DATABASE_URL — identico a login.js */
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: true }
@@ -63,11 +64,10 @@ module.exports = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Errore registrazione:', err);
+    console.error('Errore registrazione dettagliato:', err);
     return res.status(500).json({
       success: false,
-      message: 'Errore del server. Riprova più tardi.',
-      error: err.message
+      message: 'Errore del server: ' + err.message
     });
   }
 };
