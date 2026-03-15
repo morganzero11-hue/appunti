@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Utente — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #0a0a0a;
+            --surface: #111;
+            --surface2:#181818;
+            --border:  rgba(255,255,255,0.08);
+            --border2: rgba(255,255,255,0.14);
+            --text:    #f2f0ec;
+            --muted:   rgba(242,240,236,0.45);
+            --accent:  #f0c040;
+            --red:     #d4522a;
+            --nav-h:   60px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(10,10,10,0.97);
+            backdrop-filter: blur(12px);
+            display: flex; align-items: center;
+            padding: 0 32px; gap: 28px;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav__brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--accent);
+            text-decoration: none; white-space: nowrap;
+        }
+
+        .nav__links { list-style: none; display: flex; gap: 2px; flex: 1; }
+        .nav__links a {
+            padding: 6px 13px; border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none; font-size: 0.87rem; font-weight: 700;
+            transition: all .18s;
+        }
+        .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+
+        .nav__back {
+            display: flex; align-items: center; gap: 7px;
+            padding: 7px 14px; border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid var(--border2);
+            color: var(--muted);
+            text-decoration: none; font-size: 0.84rem; font-weight: 800;
+            transition: all .2s; white-space: nowrap;
+        }
+        .nav__back:hover { color: var(--text); background: rgba(255,255,255,0.12); }
+
+        /* ── COVER / HERO ── */
+        .cover {
+            margin-top: var(--nav-h);
+            height: 260px;
+            position: relative; overflow: hidden;
+        }
+
+        .cover__bg {
+            position: absolute; inset: 0;
+        }
+
+        .cover__pattern {
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            z-index: 1;
+        }
+
+        .cover__grad {
+            position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 30%, rgba(10,10,10,0.9) 100%);
+            z-index: 2;
+        }
+
+        /* ── PROFILE HEADER ── */
+        .profile-header {
+            max-width: 860px;
+            margin: -80px auto 0;
+            padding: 0 32px;
+            position: relative; z-index: 10;
+            display: flex; align-items: flex-end; gap: 24px;
+        }
+
+        .profile-avatar {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 4px solid var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            animation: riseUp .5s ease both;
+        }
+
+        .profile-info {
+            flex: 1; min-width: 0;
+            padding-bottom: 12px;
+            animation: riseUp .5s .1s ease both; opacity: 0;
+        }
+
+        .profile-name {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem; font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .profile-username {
+            font-size: 0.9rem; color: var(--muted);
+            font-weight: 700; margin-top: 3px;
+        }
+
+        .profile-username span {
+            color: var(--accent);
+        }
+
+        .profile-school {
+            font-size: 0.82rem; color: var(--muted);
+            margin-top: 6px; display: flex; align-items: center; gap: 6px;
+        }
+
+        .profile-actions {
+            padding-bottom: 12px;
+            display: flex; gap: 8px;
+            animation: riseUp .5s .15s ease both; opacity: 0;
+            flex-shrink: 0;
+        }
+
+        .btn-follow {
+            padding: 9px 22px;
+            background: var(--accent);
+            color: #0a0a0a;
+            border: none; border-radius: 10px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.87rem; font-weight: 800;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .btn-follow:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,0.3); }
+        .btn-follow.following {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border2);
+        }
+
+        .btn-share {
+            padding: 9px 16px;
+            background: var(--surface2);
+            color: var(--muted);
+            border: 1px solid var(--border2);
+            border-radius: 10px;
+            font-size: 0.87rem; font-weight: 800;
+            cursor: pointer;
+            transition: all .2s;
+            font-family: 'Cabinet Grotesk', sans-serif;
+        }
+        .btn-share:hover { color: var(--text); background: rgba(255,255,255,0.12); }
+
+        /* ── MAIN LAYOUT ── */
+        .main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 28px 32px 80px;
+        }
+
+        /* ── BIO SECTION ── */
+        .bio-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            animation: riseUp .5s .2s ease both; opacity: 0;
+        }
+
+        .bio-text {
+            font-size: 0.95rem; color: rgba(242,240,236,0.75);
+            line-height: 1.65; font-weight: 500;
+        }
+
+        .bio-tags {
+            display: flex; flex-wrap: wrap; gap: 7px;
+            margin-top: 14px;
+        }
+
+        .bio-tag {
+            padding: 4px 13px; border-radius: 20px;
+            font-size: 0.73rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.7px;
+            border: 1px solid transparent;
+        }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; margin-bottom: 28px;
+            animation: riseUp .5s .25s ease both; opacity: 0;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex; flex-direction: column; gap: 3px;
+        }
+
+        .stat-card__n {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem; font-weight: 900;
+            color: var(--accent); line-height: 1;
+        }
+
+        .stat-card__l {
+            font-size: 0.72rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--muted);
+        }
+
+        /* ── TABS ── */
+        .tabs-bar {
+            display: flex; gap: 6px; margin-bottom: 20px;
+            animation: riseUp .5s .3s ease both; opacity: 0;
+        }
+
+        .tab-pill {
+            background: none; border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 800;
+            color: var(--muted); cursor: pointer;
+            transition: all .2s;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .tab-pill:hover { border-color: var(--border2); color: var(--text); }
+        .tab-pill.active { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+        .tab-pill .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: currentColor; opacity: 0.5;
+        }
+        .tab-pill.active .dot { background: var(--accent); opacity: 1; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn .3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── NOTES GRID ── */
+        .notes-grid {
+            columns: 3; column-gap: 14px;
+        }
+
+        .note-card {
+            break-inside: avoid;
+            margin-bottom: 14px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+        }
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+            border-color: var(--border2);
+        }
+
+        .note-card__thumb {
+            height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+
+        .note-card__thumb-bg {
+            position: absolute; inset: 0;
+            opacity: 0.2;
+        }
+
+        .note-card__thumb-icon {
+            font-size: 2.2rem; position: relative; z-index: 1;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+
+        .note-card__body { padding: 12px 14px 14px; }
+
+        .note-card__chip {
+            display: inline-block;
+            font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            padding: 2px 9px; border-radius: 20px; margin-bottom: 6px;
+        }
+
+        .note-card__title {
+            font-family: 'Fraunces', serif;
+            font-size: 0.88rem; font-weight: 700;
+            line-height: 1.3; color: var(--text);
+        }
+
+        .note-card__meta {
+            font-size: 0.68rem; color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty {
+            padding: 60px 20px; text-align: center; color: var(--muted);
+        }
+        .empty__icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.4; }
+        .empty p { font-size: 0.9rem; line-height: 1.6; }
+
+        /* ── NOT FOUND ── */
+        .not-found {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: calc(100vh - var(--nav-h));
+            text-align: center; padding: 40px;
+        }
+
+        .not-found__icon { font-size: 5rem; margin-bottom: 24px; opacity: 0.4; }
+        .not-found__title {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem; font-weight: 900; margin-bottom: 10px;
+        }
+        .not-found__sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 28px; }
+        .not-found__btn {
+            padding: 11px 28px;
+            background: var(--accent); color: #0a0a0a;
+            border: none; border-radius: 12px;
+            font-family: 'Fraunces', serif;
+            font-size: 1rem; font-weight: 900;
+            cursor: pointer; text-decoration: none;
+            transition: transform .2s, box-shadow .2s;
+            display: inline-block;
+        }
+        .not-found__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,0.3); }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--accent); color: #0a0a0a;
+            padding: 11px 22px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.9rem;
+            opacity: 0; transform: translateY(12px);
+            transition: all .3s; pointer-events: none; z-index: 9999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ── ANIMATIONS ── */
+        @keyframes riseUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .profile-header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 0 16px; }
+            .profile-avatar { width: 80px; height: 80px; font-size: 2.2rem; }
+            .profile-actions { padding-bottom: 0; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .notes-grid { columns: 2; }
+            .main { padding: 20px 16px 60px; }
+            .nav__links { display: none; }
+            .cover { height: 180px; }
+        }
+
+        @media (max-width: 480px) {
+            .notes-grid { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="index.html" class="nav__brand">📚 Appunti</a>
+    <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="esplora.html">Esplora</a></li>
+        <li><a href="profilo.html">Il mio profilo</a></li>
+        <li><a href="impostazioni.html">Impostazioni</a></li>
+    </ul>
+    <a href="javascript:history.back()" class="nav__back">← Indietro</a>
+</nav>
+
+<!-- CONTENUTO DINAMICO -->
+<div id="pageContent"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ── DATI UTENTI ──
+    const utentiRegistrati = [
+        {
+            username: "yedda",
+            nome: "Yedda",
+            cognome: "B.",
+            avatar: "🌟",
+            bio: "Appassionata di scienze e matematica. Studio per diventare ingegnera! Amo condividere appunti chiari e dettagliati con tutti.",
+            scuola: "Liceo Scientifico",
+            anno: "4° anno",
+            appuntiPubblicati: 12,
+            views: 2840,
+            salvati: 34,
+            follower: 87,
+            seguiti: 42,
+            materie: ["Matematica", "Fisica", "Chimica"],
+            copertina: "linear-gradient(135deg, #1a0a1a 0%, #2d0a3d 40%, #0a1a2d 100%)"
+        },
+        {
+            username: "marco_r",
+            nome: "Marco",
+            cognome: "R.",
+            avatar: "👨‍🎓",
+            bio: "Matematica e informatica sono la mia passione. Futuro ingegnere del software.",
+            scuola: "Liceo Scientifico Volta",
+            anno: "5° anno",
+            appuntiPubblicati: 7,
+            views: 1240,
+            salvati: 23,
+            follower: 45,
+            seguiti: 28,
+            materie: ["Matematica", "Informatica"],
+            copertina: "linear-gradient(135deg, #0a0f1a 0%, #0d1f3d 40%, #1a0a0a 100%)"
+        },
+        {
+            username: "giulia_m",
+            nome: "Giulia",
+            cognome: "M.",
+            avatar: "👩‍🔬",
+            bio: "Amo la biologia e le scienze naturali. Futura biologa marina!",
+            scuola: "Liceo Scientifico",
+            anno: "3° anno",
+            appuntiPubblicati: 5,
+            views: 876,
+            salvati: 18,
+            follower: 31,
+            seguiti: 19,
+            materie: ["Scienze", "Chimica", "Biologia"],
+            copertina: "linear-gradient(135deg, #0a1a0a 0%, #0d3d1f 40%, #0a1a0a 100%)"
+        },
+        {
+            username: "luca_b",
+            nome: "Luca",
+            cognome: "B.",
+            avatar: "👨‍📚",
+            bio: "Storia e letteratura sono il mio mondo. Appassionato di cinema e podcast.",
+            scuola: "Liceo Classico",
+            anno: "5° anno",
+            appuntiPubblicati: 9,
+            views: 2100,
+            salvati: 41,
+            follower: 62,
+            seguiti: 35,
+            materie: ["Storia", "Italiano", "Inglese"],
+            copertina: "linear-gradient(135deg, #1a0a0a 0%, #3d0f1f 40%, #1a0a0a 100%)"
+        },
+        {
+            username: "sara_v",
+            nome: "Sara",
+            cognome: "V.",
+            avatar: "👩‍🔭",
+            bio: "Fisica quantistica e astronomia mi affascinano. Amo gli esperimenti di laboratorio.",
+            scuola: "Liceo Scientifico",
+            anno: "4° anno",
+            appuntiPubblicati: 6,
+            views: 1580,
+            salvati: 29,
+            follower: 53,
+            seguiti: 40,
+            materie: ["Fisica", "Matematica"],
+            copertina: "linear-gradient(135deg, #0a0a1a 0%, #0a1040 40%, #0a0a1a 100%)"
+        },
+        {
+            username: "anna_c",
+            nome: "Anna",
+            cognome: "C.",
+            avatar: "👩‍🎨",
+            bio: "Letteratura italiana e storia dell'arte. Scrivo poesie nel tempo libero.",
+            scuola: "Liceo delle Scienze Umane",
+            anno: "3° anno",
+            appuntiPubblicati: 4,
+            views: 720,
+            salvati: 15,
+            follower: 28,
+            seguiti: 22,
+            materie: ["Italiano", "Arte", "Storia"],
+            copertina: "linear-gradient(135deg, #1a0a10 0%, #3d0a20 40%, #0a1020 100%)"
+        },
+        {
+            username: "diego_f",
+            nome: "Diego",
+            cognome: "F.",
+            avatar: "👨‍💻",
+            bio: "Dev wannabe. Algoritmi, strutture dati e caffè. Open source enthusiast.",
+            scuola: "ITI Marconi",
+            anno: "5° anno",
+            appuntiPubblicati: 11,
+            views: 3200,
+            salvati: 52,
+            follower: 104,
+            seguiti: 67,
+            materie: ["Informatica", "Matematica"],
+            copertina: "linear-gradient(135deg, #1a0a0a 0%, #3d0a0a 40%, #0a0a0a 100%)"
+        }
+    ];
+
+    // ── DATI APPUNTI PER UTENTE ──
+    const appuntiPerUtente = {
+        "yedda": [
+            { materia:"Matematica", icon:"∑",  c:"#f97316", t:"Derivate — Regole fondamentali", data:"5 mar 2026", views:312 },
+            { materia:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Campo elettrico e potenziale",  data:"3 mar 2026", views:189 },
+            { materia:"Chimica",    icon:"🧪", c:"#a855f7", t:"Reazioni acido-base",            data:"1 mar 2026", views:201 },
+            { materia:"Matematica", icon:"∑",  c:"#f97316", t:"Integrali — metodo per parti",   data:"27 feb 2026", views:145 },
+            { materia:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Onde elettromagnetiche",         data:"24 feb 2026", views:98  },
+        ],
+        "marco_r": [
+            { materia:"Matematica",  icon:"∑",  c:"#f97316", t:"Derivate — Regole base",       data:"8 mar 2026", views:420 },
+            { materia:"Informatica", icon:"💻", c:"#ef4444", t:"Algoritmi di ordinamento",       data:"3 mar 2026", views:244 },
+            { materia:"Informatica", icon:"💻", c:"#ef4444", t:"Strutture dati: alberi",         data:"28 feb 2026", views:187},
+        ],
+        "giulia_m": [
+            { materia:"Scienze", icon:"🔬", c:"#22c55e", t:"La cellula eucariotica",     data:"7 mar 2026", views:312 },
+            { materia:"Chimica", icon:"🧪", c:"#a855f7", t:"Legami chimici",              data:"4 mar 2026", views:198 },
+            { materia:"Scienze", icon:"🔬", c:"#22c55e", t:"Fotosintesi clorofilliana",   data:"1 mar 2026", views:143 },
+        ],
+        "luca_b": [
+            { materia:"Storia",  icon:"📖", c:"#ec4899", t:"Prima Guerra Mondiale",     data:"6 mar 2026", views:540 },
+            { materia:"Italiano",icon:"✏️", c:"#f59e0b", t:"Leopardi — L'Infinito",      data:"4 mar 2026", views:380 },
+            { materia:"Inglese", icon:"🗣️", c:"#6366f1", t:"Shakespeare — Macbeth",      data:"2 mar 2026", views:210 },
+            { materia:"Storia",  icon:"📖", c:"#ec4899", t:"Seconda Guerra Mondiale",    data:"27 feb 2026", views:480 },
+        ],
+        "sara_v": [
+            { materia:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Le leggi di Newton",              data:"5 mar 2026", views:420 },
+            { materia:"Matematica", icon:"∑",  c:"#f97316", t:"Limiti e continuità",             data:"3 mar 2026", views:198 },
+            { materia:"Fisica",     icon:"⚛️", c:"#3b82f6", t:"Moto uniformemente accelerato",   data:"1 mar 2026", views:167 },
+        ],
+        "anna_c": [
+            { materia:"Italiano", icon:"✏️", c:"#f59e0b", t:"Analisi del testo poetico",   data:"4 mar 2026", views:210 },
+            { materia:"Arte",     icon:"🎨", c:"#0ea5e9", t:"Impressionismo francese",      data:"28 feb 2026", views:198 },
+            { materia:"Storia",   icon:"📖", c:"#ec4899", t:"Rivoluzione Francese",         data:"25 feb 2026", views:143 },
+        ],
+        "diego_f": [
+            { materia:"Informatica", icon:"💻", c:"#ef4444", t:"Algoritmi di ordinamento",      data:"3 mar 2026", views:680 },
+            { materia:"Informatica", icon:"💻", c:"#ef4444", t:"Programmazione ad oggetti",      data:"1 mar 2026", views:520 },
+            { materia:"Matematica",  icon:"∑",  c:"#f97316", t:"Logica booleana",               data:"27 feb 2026", views:310 },
+            { materia:"Informatica", icon:"💻", c:"#ef4444", t:"Reti e protocolli TCP/IP",       data:"22 feb 2026", views:290 },
+        ]
+    };
+
+    const coloriMateria = {
+        "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
+        "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
+        "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9",
+        "Biologia":"#059669","Geometria":"#7c3aed"
+    };
+
+    // ── LEGGI PARAMETRO URL ──
+    const params = new URLSearchParams(window.location.search);
+    const usernameRichiesto = (params.get('user') || '').toLowerCase().trim();
+
+    const utente = utentiRegistrati.find(u => u.username === usernameRichiesto);
+
+    if (!utente) {
+        // Utente non trovato
+        document.getElementById('pageContent').innerHTML = `
+            <div class="not-found">
+                <div class="not-found__icon">🔍</div>
+                <div class="not-found__title">Utente non trovato</div>
+                <div class="not-found__sub">
+                    Non esiste nessun utente con username <strong>"${usernameRichiesto || '???'}"</strong>.<br>
+                    Controlla il nome e riprova.
+                </div>
+                <a href="index.html" class="not-found__btn">← Torna alla home</a>
+            </div>`;
+        document.title = 'Utente non trovato — Appunti';
+    } else {
+        // Aggiorna titolo pagina
+        document.title = `${utente.nome} ${utente.cognome} (@${utente.username}) — Appunti`;
+
+        const appunti = appuntiPerUtente[utente.username] || [];
+
+        // Render pagina
+        document.getElementById('pageContent').innerHTML = `
+
+            <!-- COVER -->
+            <div class="cover">
+                <div class="cover__bg" style="background:${utente.copertina}"></div>
+                <div class="cover__pattern"></div>
+                <div class="cover__grad"></div>
+            </div>
+
+            <!-- PROFILE HEADER -->
+            <div class="profile-header">
+                <div class="profile-avatar">${utente.avatar}</div>
+                <div class="profile-info">
+                    <div class="profile-name">${utente.nome} ${utente.cognome}</div>
+                    <div class="profile-username">@<span>${utente.username}</span></div>
+                    <div class="profile-school">🏫 ${utente.scuola} · ${utente.anno}</div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-follow" id="followBtn" onclick="toggleFollow()">+ Segui</button>
+                    <button class="btn-share" onclick="condividi()">↗ Condividi</button>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="main">
+
+                <!-- BIO -->
+                <div class="bio-section">
+                    <div class="bio-text">${utente.bio}</div>
+                    <div class="bio-tags">
+                        ${utente.materie.map(m => `
+                            <span class="bio-tag" style="background:${coloriMateria[m]}22;color:${coloriMateria[m]};border-color:${coloriMateria[m]}44">
+                                ${m}
+                            </span>`).join('')}
+                    </div>
+                </div>
+
+                <!-- STATS -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-card__n">${utente.appuntiPubblicati}</div>
+                        <div class="stat-card__l">📄 Appunti</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__n">${utente.views >= 1000 ? (utente.views/1000).toFixed(1) + 'k' : utente.views}</div>
+                        <div class="stat-card__l">👁 Visualizzazioni</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__n">${utente.follower}</div>
+                        <div class="stat-card__l">👥 Follower</div>
+                    </div>
+                </div>
+
+                <!-- TABS -->
+                <div class="tabs-bar">
+                    <button class="tab-pill active" onclick="switchTab('appunti', this)">
+                        <span class="dot"></span> Appunti pubblicati
+                    </button>
+                    <button class="tab-pill" onclick="switchTab('info', this)">
+                        <span class="dot"></span> Info
+                    </button>
+                </div>
+
+                <!-- TAB: APPUNTI -->
+                <div class="tab-panel active" id="tab-appunti">
+                    ${appunti.length === 0
+                        ? `<div class="empty"><div class="empty__icon">📭</div><p>Nessun appunto pubblicato ancora.<br>Torna a controllare presto!</p></div>`
+                        : `<div class="notes-grid">
+                            ${appunti.map(a => `
+                                <div class="note-card">
+                                    <div class="note-card__thumb">
+                                        <div class="note-card__thumb-bg" style="background:radial-gradient(circle at 50% 40%,${a.c},transparent 72%)"></div>
+                                        <div class="note-card__thumb-icon">${a.icon}</div>
+                                    </div>
+                                    <div class="note-card__body">
+                                        <div class="note-card__chip" style="background:${a.c}22;color:${a.c};border:1px solid ${a.c}44">${a.materia}</div>
+                                        <div class="note-card__title">${a.t}</div>
+                                        <div class="note-card__meta">👁 ${a.views} · ${a.data}</div>
+                                    </div>
+                                </div>`).join('')}
+                           </div>`
+                    }
+                </div>
+
+                <!-- TAB: INFO -->
+                <div class="tab-panel" id="tab-info">
+                    <div class="bio-section" style="margin-bottom:12px">
+                        <div style="display:flex;flex-direction:column;gap:14px">
+                            <div style="display:flex;gap:14px;align-items:center">
+                                <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🏫</div>
+                                <div>
+                                    <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(242,240,236,0.4);margin-bottom:2px">Scuola</div>
+                                    <div style="font-size:0.9rem;font-weight:700">${utente.scuola}</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:14px;align-items:center">
+                                <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📅</div>
+                                <div>
+                                    <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(242,240,236,0.4);margin-bottom:2px">Anno</div>
+                                    <div style="font-size:0.9rem;font-weight:700">${utente.anno}</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:14px;align-items:center">
+                                <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">👥</div>
+                                <div>
+                                    <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(242,240,236,0.4);margin-bottom:2px">Social</div>
+                                    <div style="font-size:0.9rem;font-weight:700">${utente.follower} follower · ${utente.seguiti} seguiti</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:14px;align-items:center">
+                                <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🔖</div>
+                                <div>
+                                    <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(242,240,236,0.4);margin-bottom:2px">Appunti salvati</div>
+                                    <div style="font-size:0.9rem;font-weight:700">${utente.salvati} appunti salvati dagli altri</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>`;
+    }
+
+    // ── FUNZIONI ──
+    let isFollowing = false;
+
+    function toggleFollow() {
+        isFollowing = !isFollowing;
+        const btn = document.getElementById('followBtn');
+        if (isFollowing) {
+            btn.textContent = '✓ Seguito';
+            btn.classList.add('following');
+            toast('✅ Ora segui @' + utente.username + '!');
+        } else {
+            btn.textContent = '+ Segui';
+            btn.classList.remove('following');
+            toast('Hai smesso di seguire @' + utente.username);
+        }
+    }
+
+    function condividi() {
+        const url = window.location.href;
+        if (navigator.share) {
+            navigator.share({ title: `Profilo di ${utente.nome}`, url });
+        } else {
+            navigator.clipboard.writeText(url).then(() => toast('🔗 Link copiato!'));
+        }
+    }
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+</script>
+</body>
+</html>

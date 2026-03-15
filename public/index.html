@@ -20,8 +20,7 @@
             <a href="login.html" class="nav__login">Accedi</a>
         </ul>
         <div class="topnav__search">
-
-            <input type="text" id="searchInput" placeholder="Cerca argomento o materia…" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Cerca appunto o utente…" autocomplete="off">
             <button onclick="cercaAppunti()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
@@ -41,88 +40,27 @@
         <!-- SLIDER MATERIE -->
         <div class="subjects-slider">
             <div class="subjects-track" id="subjectsTrack">
-                <!-- duplicated for infinite loop -->
-                <div class="subject-card" style="--c:#f97316">
-                    <span class="subject-card__icon">∑</span>
-                    <span>Matematica</span>
-                </div>
-                <div class="subject-card" style="--c:#22c55e">
-                    <span class="subject-card__icon">🔬</span>
-                    <span>Scienze</span>
-                </div>
-                <div class="subject-card" style="--c:#3b82f6">
-                    <span class="subject-card__icon">⚛️</span>
-                    <span>Fisica</span>
-                </div>
-                <div class="subject-card" style="--c:#a855f7">
-                    <span class="subject-card__icon">🧪</span>
-                    <span>Chimica</span>
-                </div>
-                <div class="subject-card" style="--c:#ec4899">
-                    <span class="subject-card__icon">📖</span>
-                    <span>Storia</span>
-                </div>
-                <div class="subject-card" style="--c:#14b8a6">
-                    <span class="subject-card__icon">🌍</span>
-                    <span>Geografia</span>
-                </div>
-                <div class="subject-card" style="--c:#f59e0b">
-                    <span class="subject-card__icon">✏️</span>
-                    <span>Italiano</span>
-                </div>
-                <div class="subject-card" style="--c:#6366f1">
-                    <span class="subject-card__icon">🗣️</span>
-                    <span>Inglese</span>
-                </div>
-                <div class="subject-card" style="--c:#ef4444">
-                    <span class="subject-card__icon">💻</span>
-                    <span>Informatica</span>
-                </div>
-                <div class="subject-card" style="--c:#0ea5e9">
-                    <span class="subject-card__icon">🎨</span>
-                    <span>Arte</span>
-                </div>
-                <!-- duplicates for loop -->
-                <div class="subject-card" style="--c:#f97316">
-                    <span class="subject-card__icon">∑</span>
-                    <span>Matematica</span>
-                </div>
-                <div class="subject-card" style="--c:#22c55e">
-                    <span class="subject-card__icon">🔬</span>
-                    <span>Scienze</span>
-                </div>
-                <div class="subject-card" style="--c:#3b82f6">
-                    <span class="subject-card__icon">⚛️</span>
-                    <span>Fisica</span>
-                </div>
-                <div class="subject-card" style="--c:#a855f7">
-                    <span class="subject-card__icon">🧪</span>
-                    <span>Chimica</span>
-                </div>
-                <div class="subject-card" style="--c:#ec4899">
-                    <span class="subject-card__icon">📖</span>
-                    <span>Storia</span>
-                </div>
-                <div class="subject-card" style="--c:#14b8a6">
-                    <span class="subject-card__icon">🌍</span>
-                    <span>Geografia</span>
-                </div>
-                <div class="subject-card" style="--c:#f59e0b">
-                    <span class="subject-card__icon">✏️</span>
-                    <span>Italiano</span>
-                </div>
-                <div class="subject-card" style="--c:#6366f1">
-                    <span class="subject-card__icon">🗣️</span>
-                    <span>Inglese</span>
-                </div>
-                <div class="subject-card" style="--c:#ef4444">
-                    <span class="subject-card__icon">💻</span>
-                    <span>Informatica</span>
-                </div>
-                <div class="subject-card" style="--c:#0ea5e9">
-                    <span class="subject-card__icon">🎨</span>
-                    <span>Arte</span>
-                </div>
+                <div class="subject-card" style="--c:#f97316"><span class="subject-card__icon">∑</span><span>Matematica</span></div>
+                <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
+                <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
+                <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
+                <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
+                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
+                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
+                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
+                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
+                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
+                <!-- duplicates for infinite loop -->
+                <div class="subject-card" style="--c:#f97316"><span class="subject-card__icon">∑</span><span>Matematica</span></div>
+                <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
+                <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
+                <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
+                <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
+                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
+                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
+                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
+                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
+                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
             </div>
         </div>
     </header>
@@ -134,19 +72,30 @@
                 <h2 id="searchTitle">Risultati ricerca</h2>
                 <button onclick="chiudiRicerca()">✕ Chiudi</button>
             </div>
-            <div class="notes-grid" id="searchGrid"></div>
+
+            <!-- SEZIONE UTENTI -->
+            <div id="searchUsersSection" style="display:none; margin-bottom: 36px;">
+                <div class="search-section-label">👤 Utenti trovati</div>
+                <div class="users-grid" id="searchUsersGrid"></div>
+            </div>
+
+            <!-- SEZIONE APPUNTI -->
+            <div id="searchNotesSection" style="display:none;">
+                <div class="search-section-label">📄 Appunti trovati</div>
+                <div class="notes-grid" id="searchGrid"></div>
+            </div>
+
+            <p class="no-results" id="noResults" style="display:none">Nessun risultato trovato. Prova con un'altra ricerca!</p>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-
         <section class="section-label">
             <span>Ultimi appunti pubblicati</span>
         </section>
 
         <div class="notes-grid">
-
             <article class="note-card" data-subject="Matematica">
                 <div class="note-card__tag" style="--c:#f97316">Matematica</div>
                 <h3>Introduzione alle derivate</h3>
@@ -156,7 +105,6 @@
                     <span class="note-card__date">8 mar 2026</span>
                 </div>
             </article>
-
             <article class="note-card" data-subject="Scienze">
                 <div class="note-card__tag" style="--c:#22c55e">Scienze</div>
                 <h3>La cellula eucariotica</h3>
@@ -166,7 +114,6 @@
                     <span class="note-card__date">7 mar 2026</span>
                 </div>
             </article>
-
             <article class="note-card" data-subject="Storia">
                 <div class="note-card__tag" style="--c:#ec4899">Storia</div>
                 <h3>Prima Guerra Mondiale</h3>
@@ -176,7 +123,6 @@
                     <span class="note-card__date">6 mar 2026</span>
                 </div>
             </article>
-
             <article class="note-card" data-subject="Fisica">
                 <div class="note-card__tag" style="--c:#3b82f6">Fisica</div>
                 <h3>Le leggi di Newton</h3>
@@ -186,7 +132,6 @@
                     <span class="note-card__date">5 mar 2026</span>
                 </div>
             </article>
-
             <article class="note-card" data-subject="Italiano">
                 <div class="note-card__tag" style="--c:#f59e0b">Italiano</div>
                 <h3>Analisi del testo poetico</h3>
@@ -196,7 +141,6 @@
                     <span class="note-card__date">4 mar 2026</span>
                 </div>
             </article>
-
             <article class="note-card" data-subject="Informatica">
                 <div class="note-card__tag" style="--c:#ef4444">Informatica</div>
                 <h3>Algoritmi di ordinamento</h3>
@@ -206,7 +150,6 @@
                     <span class="note-card__date">3 mar 2026</span>
                 </div>
             </article>
-
         </div>
     </main>
 
@@ -215,48 +158,186 @@
     </footer>
 
     <script>
-        // Dati simulati appunti
+        // ── DATABASE UTENTI REGISTRATI ──
+        const utentiRegistrati = [
+            {
+                username: "yedda",
+                nome: "Yedda",
+                cognome: "B.",
+                avatar: "🌟",
+                bio: "Appassionata di scienze e matematica. Studio per diventare ingegnera!",
+                scuola: "Liceo Scientifico",
+                anno: "4° anno",
+                appuntiPubblicati: 12,
+                views: 2840,
+                salvati: 34,
+                materie: ["Matematica", "Fisica", "Chimica"]
+            },
+            {
+                username: "marco_r",
+                nome: "Marco",
+                cognome: "R.",
+                avatar: "👨‍🎓",
+                bio: "Matematica e informatica sono la mia passione.",
+                scuola: "Liceo Scientifico Volta",
+                anno: "5° anno",
+                appuntiPubblicati: 7,
+                views: 1240,
+                salvati: 23,
+                materie: ["Matematica", "Informatica"]
+            },
+            {
+                username: "giulia_m",
+                nome: "Giulia",
+                cognome: "M.",
+                avatar: "👩‍🔬",
+                bio: "Amo la biologia e le scienze naturali.",
+                scuola: "Liceo Scientifico",
+                anno: "3° anno",
+                appuntiPubblicati: 5,
+                views: 876,
+                salvati: 18,
+                materie: ["Scienze", "Chimica", "Biologia"]
+            },
+            {
+                username: "luca_b",
+                nome: "Luca",
+                cognome: "B.",
+                avatar: "👨‍📚",
+                bio: "Storia e letteratura sono il mio mondo.",
+                scuola: "Liceo Classico",
+                anno: "5° anno",
+                appuntiPubblicati: 9,
+                views: 2100,
+                salvati: 41,
+                materie: ["Storia", "Italiano", "Inglese"]
+            },
+            {
+                username: "sara_v",
+                nome: "Sara",
+                cognome: "V.",
+                avatar: "👩‍🔭",
+                bio: "Fisica quantistica e astronomia mi affascinano.",
+                scuola: "Liceo Scientifico",
+                anno: "4° anno",
+                appuntiPubblicati: 6,
+                views: 1580,
+                salvati: 29,
+                materie: ["Fisica", "Matematica"]
+            },
+            {
+                username: "anna_c",
+                nome: "Anna",
+                cognome: "C.",
+                avatar: "👩‍🎨",
+                bio: "Letteratura italiana e storia dell'arte.",
+                scuola: "Liceo delle Scienze Umane",
+                anno: "3° anno",
+                appuntiPubblicati: 4,
+                views: 720,
+                salvati: 15,
+                materie: ["Italiano", "Arte", "Storia"]
+            },
+            {
+                username: "diego_f",
+                nome: "Diego",
+                cognome: "F.",
+                avatar: "👨‍💻",
+                bio: "Dev wannabe. Algoritmi, strutture dati e caffè.",
+                scuola: "ITI Marconi",
+                anno: "5° anno",
+                appuntiPubblicati: 11,
+                views: 3200,
+                salvati: 52,
+                materie: ["Informatica", "Matematica"]
+            }
+        ];
+
+        // ── DATABASE APPUNTI ──
         const tuttiGliAppunti = [
-            { materia:"Matematica", titolo:"Introduzione alle derivate", autore:"Marco R.", data:"8 mar 2026", desc:"Concetti base del calcolo differenziale." },
-            { materia:"Matematica", titolo:"Integrali definiti", autore:"Paolo S.", data:"2 mar 2026", desc:"Metodi di integrazione e applicazioni geometriche." },
-            { materia:"Scienze", titolo:"La cellula eucariotica", autore:"Giulia M.", data:"7 mar 2026", desc:"Struttura, organelli e funzioni." },
-            { materia:"Scienze", titolo:"Fotosintesi clorofilliana", autore:"Elena T.", data:"1 mar 2026", desc:"Processo e reazioni chimiche." },
-            { materia:"Storia", titolo:"Prima Guerra Mondiale", autore:"Luca B.", data:"6 mar 2026", desc:"Cause, eventi e conseguenze." },
-            { materia:"Fisica", titolo:"Le leggi di Newton", autore:"Sara V.", data:"5 mar 2026", desc:"Meccanica classica con esempi." },
-            { materia:"Chimica", titolo:"Tavola periodica", autore:"Roberto N.", data:"4 mar 2026", desc:"Elementi, gruppi e periodi." },
-            { materia:"Italiano", titolo:"Analisi del testo poetico", autore:"Anna C.", data:"4 mar 2026", desc:"Metrica e figure retoriche." },
-            { materia:"Informatica", titolo:"Algoritmi di ordinamento", autore:"Diego F.", data:"3 mar 2026", desc:"BubbleSort, QuickSort, MergeSort." },
-            { materia:"Inglese", titolo:"Present Perfect vs Past Simple", autore:"Marta L.", data:"2 mar 2026", desc:"Differenze e usi pratici." },
-            { materia:"Geografia", titolo:"Climi del mondo", autore:"Fabio G.", data:"1 mar 2026", desc:"Fasce climatiche e biomi." },
-            { materia:"Arte", titolo:"Impressionismo francese", autore:"Chiara P.", data:"28 feb 2026", desc:"Monet, Renoir e il movimento." },
+            { materia:"Matematica", titolo:"Introduzione alle derivate", autore:"Marco R.", username:"marco_r", data:"8 mar 2026", desc:"Concetti base del calcolo differenziale." },
+            { materia:"Matematica", titolo:"Integrali definiti", autore:"Paolo S.", username:"paolo_s", data:"2 mar 2026", desc:"Metodi di integrazione e applicazioni geometriche." },
+            { materia:"Scienze", titolo:"La cellula eucariotica", autore:"Giulia M.", username:"giulia_m", data:"7 mar 2026", desc:"Struttura, organelli e funzioni." },
+            { materia:"Scienze", titolo:"Fotosintesi clorofilliana", autore:"Elena T.", username:"elena_t", data:"1 mar 2026", desc:"Processo e reazioni chimiche." },
+            { materia:"Storia", titolo:"Prima Guerra Mondiale", autore:"Luca B.", username:"luca_b", data:"6 mar 2026", desc:"Cause, eventi e conseguenze." },
+            { materia:"Fisica", titolo:"Le leggi di Newton", autore:"Sara V.", username:"sara_v", data:"5 mar 2026", desc:"Meccanica classica con esempi." },
+            { materia:"Chimica", titolo:"Tavola periodica", autore:"Roberto N.", username:"roberto_n", data:"4 mar 2026", desc:"Elementi, gruppi e periodi." },
+            { materia:"Italiano", titolo:"Analisi del testo poetico", autore:"Anna C.", username:"anna_c", data:"4 mar 2026", desc:"Metrica e figure retoriche." },
+            { materia:"Informatica", titolo:"Algoritmi di ordinamento", autore:"Diego F.", username:"diego_f", data:"3 mar 2026", desc:"BubbleSort, QuickSort, MergeSort." },
+            { materia:"Inglese", titolo:"Present Perfect vs Past Simple", autore:"Marta L.", username:"marta_l", data:"2 mar 2026", desc:"Differenze e usi pratici." },
+            { materia:"Geografia", titolo:"Climi del mondo", autore:"Fabio G.", username:"fabio_g", data:"1 mar 2026", desc:"Fasce climatiche e biomi." },
+            { materia:"Arte", titolo:"Impressionismo francese", autore:"Chiara P.", username:"chiara_p", data:"28 feb 2026", desc:"Monet, Renoir e il movimento." },
+            { materia:"Matematica", titolo:"Derivate — Regole fondamentali", autore:"Yedda B.", username:"yedda", data:"5 mar 2026", desc:"Tutte le regole base di derivazione con esempi." },
+            { materia:"Fisica", titolo:"Campo elettrico e potenziale", autore:"Yedda B.", username:"yedda", data:"3 mar 2026", desc:"Definizioni e applicazioni del campo elettrico." },
+            { materia:"Chimica", titolo:"Reazioni acido-base", autore:"Yedda B.", username:"yedda", data:"1 mar 2026", desc:"pH, indicatori e neutralizzazione." },
         ];
 
         const coloriMateria = {
             "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
             "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
-            "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9"
+            "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9",
+            "Biologia":"#059669","Geometria":"#7c3aed"
         };
 
         function cercaAppunti() {
             const q = document.getElementById('searchInput').value.trim().toLowerCase();
             if (!q) return;
 
-            const risultati = tuttiGliAppunti.filter(n =>
-                n.materia.toLowerCase().includes(q) ||
-                n.titolo.toLowerCase().includes(q) ||
-                n.desc.toLowerCase().includes(q)
+            // Cerca utenti (per username, nome, nome+cognome)
+            const utentiTrovati = utentiRegistrati.filter(u =>
+                u.username.toLowerCase().includes(q) ||
+                u.nome.toLowerCase().includes(q) ||
+                (u.nome + ' ' + u.cognome).toLowerCase().includes(q) ||
+                (u.nome.toLowerCase() + u.cognome.toLowerCase().replace('.', '')).includes(q.replace(' ', ''))
             );
 
-            document.getElementById('searchTitle').textContent =
-                risultati.length > 0
-                ? `${risultati.length} risultati per "${document.getElementById('searchInput').value}"`
-                : `Nessun risultato per "${document.getElementById('searchInput').value}"`;
+            // Cerca appunti
+            const appuntiTrovati = tuttiGliAppunti.filter(n =>
+                n.materia.toLowerCase().includes(q) ||
+                n.titolo.toLowerCase().includes(q) ||
+                n.desc.toLowerCase().includes(q) ||
+                n.autore.toLowerCase().includes(q)
+            );
 
-            const grid = document.getElementById('searchGrid');
-            grid.innerHTML = risultati.length === 0
-                ? '<p class="no-results">Nessun appunto trovato. Prova con un\'altra materia!</p>'
-                : risultati.map(n => `
-                    <article class="note-card">
+            const totale = utentiTrovati.length + appuntiTrovati.length;
+            const qDisplay = document.getElementById('searchInput').value.trim();
+
+            document.getElementById('searchTitle').textContent =
+                totale > 0 ? `${totale} risultati per "${qDisplay}"` : `Nessun risultato per "${qDisplay}"`;
+
+            // Render utenti
+            const usersSection = document.getElementById('searchUsersSection');
+            const usersGrid = document.getElementById('searchUsersGrid');
+            if (utentiTrovati.length > 0) {
+                usersSection.style.display = 'block';
+                usersGrid.innerHTML = utentiTrovati.map(u => `
+                    <div class="user-card" onclick="window.location.href='utenti.html?user=${u.username}'">
+                        <div class="user-card__avatar">${u.avatar}</div>
+                        <div class="user-card__body">
+                            <div class="user-card__name">${u.nome} ${u.cognome}</div>
+                            <div class="user-card__username">@${u.username}</div>
+                            <div class="user-card__bio">${u.bio}</div>
+                            <div class="user-card__tags">
+                                ${u.materie.map(m => `<span class="user-card__tag" style="--c:${coloriMateria[m]||'#888'}">${m}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="user-card__stats">
+                            <div class="user-card__stat"><strong>${u.appuntiPubblicati}</strong><span>appunti</span></div>
+                            <div class="user-card__stat"><strong>${u.views.toLocaleString('it')}</strong><span>views</span></div>
+                        </div>
+                        <div class="user-card__arrow">→</div>
+                    </div>`).join('');
+            } else {
+                usersSection.style.display = 'none';
+            }
+
+            // Render appunti
+            const notesSection = document.getElementById('searchNotesSection');
+            const notesGrid = document.getElementById('searchGrid');
+            if (appuntiTrovati.length > 0) {
+                notesSection.style.display = 'block';
+                notesGrid.innerHTML = appuntiTrovati.map(n => `
+                    <article class="note-card" onclick="window.location.href='utenti.html?user=${n.username}'">
                         <div class="note-card__tag" style="--c:${coloriMateria[n.materia]||'#888'}">${n.materia}</div>
                         <h3>${n.titolo}</h3>
                         <p>${n.desc}</p>
@@ -265,6 +346,11 @@
                             <span class="note-card__date">${n.data}</span>
                         </div>
                     </article>`).join('');
+            } else {
+                notesSection.style.display = 'none';
+            }
+
+            document.getElementById('noResults').style.display = totale === 0 ? 'block' : 'none';
 
             document.getElementById('searchOverlay').style.display = 'block';
             document.getElementById('searchOverlay').scrollIntoView({behavior:'smooth'});
@@ -287,18 +373,8 @@
                 cercaAppunti();
             });
         });
-        // ... codice precedente ...
 
-        // Subject card click → search
-        document.querySelectorAll('.subject-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const materia = card.querySelector('span:last-child').textContent;
-                document.getElementById('searchInput').value = materia;
-                cercaAppunti();
-            });
-        });
-
-        // ── SLIDER: drag scroll + ciclo infinito ──
+        // ── SLIDER: drag scroll ──
         const slider = document.querySelector('.subjects-slider');
         const track  = document.getElementById('subjectsTrack');
 
@@ -325,18 +401,9 @@
 
         slider.addEventListener('scroll', () => {
             const half = track.scrollWidth / 2;
-            if (slider.scrollLeft >= half) {
-                slider.scrollLeft -= half;
-            } else if (slider.scrollLeft <= 0) {
-                slider.scrollLeft += half;
-            }
+            if (slider.scrollLeft >= half) slider.scrollLeft -= half;
+            else if (slider.scrollLeft <= 0) slider.scrollLeft += half;
         });
-
     </script>
-</body>
-</html>
-    </script>
-        
-
 </body>
 </html>
