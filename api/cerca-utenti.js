@@ -23,8 +23,7 @@ module.exports = async (req, res) => {
          nome,
          cognome,
          foto_profilo_url,
-         scuola,
-         anno
+         email
        FROM utenti
        WHERE
          username ILIKE $1 OR
