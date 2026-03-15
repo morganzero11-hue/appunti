@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilo Utente — Appunti</title>
+    <title>Utenti — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,6 +56,7 @@
             transition: all .18s;
         }
         .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+        .nav__links a.active { color: var(--accent); }
 
         .nav__back {
             display: flex; align-items: center; gap: 7px;
@@ -65,10 +66,167 @@
             color: var(--muted);
             text-decoration: none; font-size: 0.84rem; font-weight: 800;
             transition: all .2s; white-space: nowrap;
+            cursor: pointer;
         }
         .nav__back:hover { color: var(--text); background: rgba(255,255,255,0.12); }
 
-        /* ── COVER ── */
+        /* ════════════════════════════════════
+           MODALITÀ RICERCA (no ?user=)
+        ════════════════════════════════════ */
+
+        .search-page {
+            margin-top: var(--nav-h);
+            min-height: calc(100vh - var(--nav-h));
+            display: flex; flex-direction: column; align-items: center;
+            padding: 60px 24px 80px;
+        }
+
+        .search-page__title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .search-page__sub {
+            font-size: 0.95rem; color: var(--muted);
+            margin-bottom: 40px; text-align: center;
+            font-weight: 500;
+        }
+
+        /* ── BARRA DI RICERCA ── */
+        .search-box {
+            width: 100%; max-width: 560px;
+            position: relative;
+            margin-bottom: 36px;
+        }
+
+        .search-box__input {
+            width: 100%;
+            background: var(--surface);
+            border: 2px solid var(--border2);
+            border-radius: 16px;
+            color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 1.05rem; font-weight: 600;
+            padding: 16px 58px 16px 20px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        .search-box__input::placeholder { color: rgba(242,240,236,0.25); font-weight: 500; }
+
+        .search-box__input:focus {
+            border-color: var(--accent);
+            background: rgba(240,192,64,0.04);
+            box-shadow: 0 0 0 4px rgba(240,192,64,0.1);
+        }
+
+        .search-box__btn {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--accent); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform .2s, box-shadow .2s;
+            flex-shrink: 0;
+        }
+        .search-box__btn:hover { transform: translateY(-50%) scale(1.08); box-shadow: 0 4px 14px rgba(240,192,64,0.35); }
+        .search-box__btn svg { color: #0a0a0a; }
+
+        /* ── RISULTATI RICERCA ── */
+        .results-container {
+            width: 100%; max-width: 560px;
+        }
+
+        .results-label {
+            font-size: 0.72rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--muted); margin-bottom: 12px;
+            padding-left: 2px;
+        }
+
+        /* ── CARD UTENTE NEI RISULTATI ── */
+        .user-result {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s, transform .2s;
+            text-decoration: none; color: var(--text);
+        }
+
+        .user-result:hover {
+            border-color: var(--accent);
+            background: rgba(240,192,64,0.04);
+            transform: translateX(4px);
+        }
+
+        /* Foto profilo */
+        .user-result__photo {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 2px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .user-result__photo img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* Info */
+        .user-result__info { flex: 1; min-width: 0; }
+
+        .user-result__name {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem; font-weight: 700;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .user-result__username {
+            font-size: 0.78rem; color: var(--accent);
+            font-weight: 700; margin-top: 2px;
+        }
+
+        .user-result__school {
+            font-size: 0.73rem; color: var(--muted);
+            margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* Freccia */
+        .user-result__arrow {
+            font-size: 1rem; color: var(--muted);
+            flex-shrink: 0;
+            transition: transform .2s, color .2s;
+        }
+        .user-result:hover .user-result__arrow { transform: translateX(4px); color: var(--accent); }
+
+        /* Nessun risultato / empty */
+        .no-match {
+            text-align: center; padding: 32px 20px;
+            color: var(--muted); font-size: 0.9rem;
+        }
+        .no-match__icon { font-size: 2.4rem; margin-bottom: 10px; opacity: .4; }
+
+        /* Stato iniziale */
+        .search-hint {
+            text-align: center; padding: 32px 20px;
+            color: var(--muted); font-size: 0.88rem; line-height: 1.6;
+        }
+        .search-hint__icon { font-size: 2.8rem; margin-bottom: 12px; opacity: .3; }
+
+        /* ════════════════════════════════════
+           MODALITÀ PROFILO (?user=xxx)
+        ════════════════════════════════════ */
+
         .cover {
             margin-top: var(--nav-h);
             height: 240px;
@@ -87,7 +245,6 @@
             background: linear-gradient(to bottom, transparent 30%, rgba(10,10,10,0.9) 100%);
         }
 
-        /* ── PROFILE HEADER ── */
         .profile-header {
             max-width: 860px;
             margin: -70px auto 0;
@@ -106,7 +263,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             overflow: hidden;
         }
-
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .profile-info { flex: 1; min-width: 0; padding-bottom: 12px; }
@@ -119,21 +275,16 @@
 
         .profile-username { font-size: 0.9rem; color: var(--muted); font-weight: 700; margin-top: 3px; }
         .profile-username span { color: var(--accent); }
-
         .profile-school { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
 
-        .profile-actions {
-            padding-bottom: 12px;
-            display: flex; gap: 8px; flex-shrink: 0;
-        }
+        .profile-actions { padding-bottom: 12px; display: flex; gap: 8px; flex-shrink: 0; }
 
         .btn-follow {
             padding: 9px 22px;
             background: var(--accent); color: #0a0a0a;
             border: none; border-radius: 10px;
             font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.87rem; font-weight: 800;
-            cursor: pointer;
+            font-size: 0.87rem; font-weight: 800; cursor: pointer;
             transition: transform .2s, box-shadow .2s;
         }
         .btn-follow:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,0.3); }
@@ -144,25 +295,15 @@
             background: var(--surface2); color: var(--muted);
             border: 1px solid var(--border2); border-radius: 10px;
             font-size: 0.87rem; font-weight: 800; cursor: pointer;
-            transition: all .2s;
-            font-family: 'Cabinet Grotesk', sans-serif;
+            transition: all .2s; font-family: 'Cabinet Grotesk', sans-serif;
         }
         .btn-share:hover { color: var(--text); background: rgba(255,255,255,0.12); }
 
-        /* ── MAIN ── */
-        .main {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 28px 32px 80px;
-        }
+        .main { max-width: 860px; margin: 0 auto; padding: 28px 32px 80px; }
 
-        /* ── BIO ── */
         .bio-section {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 22px 24px;
-            margin-bottom: 20px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 22px 24px; margin-bottom: 20px;
         }
 
         .bio-text { font-size: 0.95rem; color: rgba(242,240,236,0.75); line-height: 1.65; font-weight: 500; }
@@ -176,42 +317,32 @@
             border: 1px solid transparent;
         }
 
-        /* ── STATS ── */
-        .stats-row {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 12px; margin-bottom: 28px;
-        }
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
 
         .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 20px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px 20px;
             display: flex; flex-direction: column; gap: 3px;
         }
 
         .stat-card__n {
             font-family: 'Fraunces', serif;
-            font-size: 2rem; font-weight: 900;
-            color: var(--accent); line-height: 1;
+            font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1;
         }
 
         .stat-card__l {
             font-size: 0.72rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px;
-            color: var(--muted);
+            text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
         }
 
-        /* ── TABS ── */
         .tabs-bar { display: flex; gap: 6px; margin-bottom: 20px; }
 
         .tab-pill {
             background: none; border: 1.5px solid var(--border);
             border-radius: 30px; padding: 8px 20px;
             font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.85rem; font-weight: 800;
-            color: var(--muted); cursor: pointer; transition: all .2s;
-            display: flex; align-items: center; gap: 7px;
+            font-size: 0.85rem; font-weight: 800; color: var(--muted); cursor: pointer;
+            transition: all .2s; display: flex; align-items: center; gap: 7px;
         }
         .tab-pill:hover { border-color: var(--border2); color: var(--text); }
         .tab-pill.active { background: var(--text); color: #0a0a0a; border-color: var(--text); }
@@ -223,7 +354,6 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── NOTES GRID ── */
         .notes-grid { columns: 3; column-gap: 14px; }
 
         .note-card {
@@ -244,25 +374,21 @@
         .note-card__body { padding: 12px 14px 14px; }
 
         .note-card__chip {
-            display: inline-block;
-            font-size: 0.62rem; font-weight: 800;
+            display: inline-block; font-size: 0.62rem; font-weight: 800;
             text-transform: uppercase; letter-spacing: .8px;
             padding: 2px 9px; border-radius: 20px; margin-bottom: 6px;
         }
 
         .note-card__title {
             font-family: 'Fraunces', serif;
-            font-size: 0.88rem; font-weight: 700;
-            line-height: 1.3; color: var(--text);
+            font-size: 0.88rem; font-weight: 700; line-height: 1.3; color: var(--text);
         }
 
         .note-card__meta { font-size: 0.68rem; color: var(--muted); margin-top: 6px; }
 
-        /* ── INFO ROW ── */
         .info-row {
             display: flex; gap: 14px; align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
+            padding: 14px 0; border-bottom: 1px solid var(--border);
         }
         .info-row:last-child { border-bottom: none; }
 
@@ -273,15 +399,10 @@
             font-size: 1.1rem; flex-shrink: 0;
         }
 
-        .info-label {
-            font-size: 0.68rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
-            margin-bottom: 2px;
-        }
-
+        .info-label { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; }
         .info-value { font-size: 0.9rem; font-weight: 700; }
 
-        /* ── EMPTY / NOT FOUND ── */
+        /* ── SHARED ── */
         .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
         .empty__icon { font-size: 3rem; margin-bottom: 14px; opacity: .4; }
         .empty p { font-size: 0.9rem; line-height: 1.6; }
@@ -303,7 +424,6 @@
         }
         .not-found__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,.3); }
 
-        /* ── LOADING ── */
         .loading {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; min-height: calc(100vh - var(--nav-h));
@@ -318,7 +438,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── TOAST ── */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
             background: var(--accent); color: #0a0a0a;
@@ -328,8 +447,6 @@
             transition: all .3s; pointer-events: none; z-index: 9999;
         }
         .toast.show { opacity: 1; transform: translateY(0); }
-
-        @keyframes riseUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ── RESPONSIVE ── */
         @media (max-width: 700px) {
@@ -341,6 +458,7 @@
             .main { padding: 20px 16px 60px; }
             .nav__links { display: none; }
             .cover { height: 160px; }
+            .search-page { padding: 40px 16px 60px; }
         }
         @media (max-width: 480px) { .notes-grid { columns: 1; } }
     </style>
@@ -352,19 +470,15 @@
     <ul class="nav__links">
         <li><a href="index.html">Home</a></li>
         <li><a href="esplora.html">Esplora</a></li>
-        <li><a href="profilo.html">Il mio profilo</a></li>
-        <li><a href="utenti.html">Utenti</a></li>
-            <li><a href="utenti.html">Utenti</a></li>
-            <li><a href="impostazioni.html">Impostazioni</a></li>
+        <li><a href="profilo.html">Profilo</a></li>
+        <li><a href="utenti.html" class="active">Utenti</a></li>
+        <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-    <a href="javascript:history.back()" class="nav__back">← Indietro</a>
+    <span class="nav__back" id="navBack" style="display:none" onclick="history.back()">← Indietro</span>
 </nav>
 
 <div id="pageContent">
-    <div class="loading">
-        <div class="spinner"></div>
-        <span>Caricamento profilo…</span>
-    </div>
+    <div class="loading"><div class="spinner"></div></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -383,15 +497,132 @@
         "Informatica":"💻","Arte":"🎨","Biologia":"🧬","Geometria":"📐"
     };
 
-    // Legge ?user= dall'URL
     const username = new URLSearchParams(window.location.search).get('user') || '';
 
+    // ════════════════════════════════════
+    // MODALITÀ: RICERCA UTENTI (no ?user=)
+    // ════════════════════════════════════
+    function mostraModalitaRicerca() {
+        document.title = 'Utenti — Appunti';
+        document.getElementById('pageContent').innerHTML = `
+            <div class="search-page">
+                <div class="search-page__title">Cerca utenti</div>
+                <div class="search-page__sub">Digita il nome o lo username di un utente registrato</div>
+
+                <div class="search-box">
+                    <input
+                        class="search-box__input"
+                        id="userSearchInput"
+                        type="text"
+                        placeholder="Es. Yedda, marco_r, Sara…"
+                        autocomplete="off"
+                        oninput="cercaUtenti(this.value)"
+                    >
+                    <button class="search-box__btn" onclick="cercaUtenti(document.getElementById('userSearchInput').value)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="results-container" id="resultsContainer">
+                    <div class="search-hint">
+                        <div class="search-hint__icon">👥</div>
+                        Inizia a scrivere per trovare un utente
+                    </div>
+                </div>
+            </div>`;
+
+        // Focus automatico sulla barra
+        setTimeout(() => {
+            const inp = document.getElementById('userSearchInput');
+            if (inp) inp.focus();
+        }, 100);
+    }
+
+    // Debounce per non chiamare l'API ad ogni tasto
+    let debounceTimer;
+
+    async function cercaUtenti(query) {
+        const q = query.trim();
+        const container = document.getElementById('resultsContainer');
+        if (!container) return;
+
+        // Se vuoto, mostra hint
+        if (q.length === 0) {
+            container.innerHTML = `
+                <div class="search-hint">
+                    <div class="search-hint__icon">👥</div>
+                    Inizia a scrivere per trovare un utente
+                </div>`;
+            return;
+        }
+
+        // Se troppo corto (1 carattere), aspetta
+        if (q.length < 2) return;
+
+        // Debounce 300ms
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+            // Spinner mentre cerca
+            container.innerHTML = `<div style="text-align:center;padding:24px"><div class="spinner" style="margin:0 auto;width:28px;height:28px"></div></div>`;
+
+            try {
+                const res = await fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`);
+                const utenti = res.ok ? await res.json() : [];
+                renderRisultati(utenti, q);
+            } catch {
+                renderRisultati([], q);
+            }
+        }, 300);
+    }
+
+    function renderRisultati(utenti, q) {
+        const container = document.getElementById('resultsContainer');
+        if (!container) return;
+
+        if (utenti.length === 0) {
+            container.innerHTML = `
+                <div class="no-match">
+                    <div class="no-match__icon">🔍</div>
+                    Nessun utente trovato per "<strong>${q}</strong>"
+                </div>`;
+            return;
+        }
+
+        const html = utenti.map(u => {
+            // Foto profilo: se c'è l'URL usa <img>, altrimenti emoji/iniziali
+            const fotoHtml = u.foto_profilo_url
+                ? `<img src="${u.foto_profilo_url}" alt="${u.nome}">`
+                : `<span>${u.avatar || '👤'}</span>`;
+
+            return `
+                <a class="user-result" href="utenti.html?user=${encodeURIComponent(u.username)}">
+                    <div class="user-result__photo">${fotoHtml}</div>
+                    <div class="user-result__info">
+                        <div class="user-result__name">${u.nome} ${u.cognome}</div>
+                        <div class="user-result__username">@${u.username}</div>
+                        ${u.scuola ? `<div class="user-result__school">🏫 ${u.scuola}</div>` : ''}
+                    </div>
+                    <div class="user-result__arrow">→</div>
+                </a>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="results-label">${utenti.length} risultat${utenti.length === 1 ? 'o' : 'i'}</div>
+            ${html}`;
+    }
+
+    // ════════════════════════════════════
+    // MODALITÀ: PROFILO UTENTE (?user=xxx)
+    // ════════════════════════════════════
     let isFollowing = false;
     let utente = null;
 
-    // ── CARICA PROFILO DAL DATABASE ──
     async function caricaProfilo() {
-        if (!username) { mostraNotFound(''); return; }
+        // Mostra bottone "Indietro" nella navbar
+        document.getElementById('navBack').style.display = 'flex';
 
         try {
             const res = await fetch(`/api/utente?username=${encodeURIComponent(username)}`);
@@ -403,7 +634,6 @@
             document.title = `${utente.nome} ${utente.cognome} (@${utente.username}) — Appunti`;
             renderProfilo(utente);
 
-            // Carica appunti dell'utente
             const resA = await fetch(`/api/appunti?username=${encodeURIComponent(username)}`);
             const appunti = resA.ok ? await resA.json() : [];
             renderAppunti(appunti);
@@ -442,7 +672,6 @@
             </div>
 
             <div class="main">
-
                 <div class="bio-section">
                     <div class="bio-text">${u.bio || 'Nessuna bio disponibile.'}</div>
                     ${tagsHtml ? `<div class="bio-tags">${tagsHtml}</div>` : ''}
@@ -479,19 +708,17 @@
                 <div class="tab-panel" id="tab-info">
                     <div class="bio-section">
                         ${u.scuola ? `<div class="info-row"><div class="info-icon">🏫</div><div><div class="info-label">Scuola</div><div class="info-value">${u.scuola}</div></div></div>` : ''}
-                        ${u.anno ? `<div class="info-row"><div class="info-icon">📅</div><div><div class="info-label">Anno</div><div class="info-value">${u.anno}</div></div></div>` : ''}
+                        ${u.anno  ? `<div class="info-row"><div class="info-icon">📅</div><div><div class="info-label">Anno</div><div class="info-value">${u.anno}</div></div></div>` : ''}
                         <div class="info-row"><div class="info-icon">👥</div><div><div class="info-label">Social</div><div class="info-value">${u.follower || 0} follower · ${u.seguiti || 0} seguiti</div></div></div>
-                        <div class="info-row"><div class="info-icon">📧</div><div><div class="info-label">Membro dal</div><div class="info-value">${u.created_at ? new Date(u.created_at).toLocaleDateString('it-IT', {month:'long', year:'numeric'}) : '—'}</div></div></div>
+                        <div class="info-row"><div class="info-icon">📧</div><div><div class="info-label">Membro dal</div><div class="info-value">${u.created_at ? new Date(u.created_at).toLocaleDateString('it-IT',{month:'long',year:'numeric'}) : '—'}</div></div></div>
                     </div>
                 </div>
-
             </div>`;
     }
 
     function renderAppunti(appunti) {
         const tab = document.getElementById('tab-appunti');
         if (!tab) return;
-
         document.getElementById('statAppunti').textContent = appunti.length;
 
         if (appunti.length === 0) {
@@ -499,9 +726,9 @@
             return;
         }
 
-        const cardsHtml = appunti.map(a => {
-            const c    = coloriMateria[a.materia] || '#888';
-            const icon = iconeMateria[a.materia]  || '📄';
+        tab.innerHTML = `<div class="notes-grid">${appunti.map(a => {
+            const c = coloriMateria[a.materia] || '#888';
+            const icon = iconeMateria[a.materia] || '📄';
             return `
                 <div class="note-card">
                     <div class="note-card__thumb">
@@ -514,9 +741,7 @@
                         <div class="note-card__meta">👁 ${a.views || 0} · ${a.data || ''}</div>
                     </div>
                 </div>`;
-        }).join('');
-
-        tab.innerHTML = `<div class="notes-grid">${cardsHtml}</div>`;
+        }).join('')}</div>`;
     }
 
     function mostraNotFound(u) {
@@ -525,28 +750,19 @@
             <div class="not-found">
                 <div class="not-found__icon">🔍</div>
                 <div class="not-found__title">Utente non trovato</div>
-                <div class="not-found__sub">
-                    ${u ? `Nessun utente registrato con username <strong>"${u}"</strong>.` : 'Nessun username specificato.'}
-                </div>
-                <a href="index.html" class="not-found__btn">← Torna alla home</a>
+                <div class="not-found__sub">${u ? `Nessun utente con username <strong>"${u}"</strong>.` : 'Nessun username specificato.'}</div>
+                <a href="utenti.html" class="not-found__btn">← Cerca utenti</a>
             </div>`;
     }
 
+    // ── FUNZIONI PROFILO ──
     function toggleFollow() {
         if (!utente) return;
         isFollowing = !isFollowing;
         const btn = document.getElementById('followBtn');
-        if (isFollowing) {
-            btn.textContent = '✓ Seguito';
-            btn.classList.add('following');
-            toast('✅ Ora segui @' + utente.username);
-        } else {
-            btn.textContent = '+ Segui';
-            btn.classList.remove('following');
-            toast('Hai smesso di seguire @' + utente.username);
-        }
-        // TODO: chiamata API per salvare il follow
-        // await fetch('/api/follow', { method:'POST', body: JSON.stringify({ username: utente.username, follow: isFollowing }) });
+        btn.textContent = isFollowing ? '✓ Seguito' : '+ Segui';
+        btn.classList.toggle('following', isFollowing);
+        toast(isFollowing ? `✅ Ora segui @${utente.username}` : `Hai smesso di seguire @${utente.username}`);
     }
 
     function condividi() {
@@ -571,7 +787,12 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-    caricaProfilo();
+    // ── AVVIO ──
+    if (username) {
+        caricaProfilo();
+    } else {
+        mostraModalitaRicerca();
+    }
 </script>
 </body>
 </html>
