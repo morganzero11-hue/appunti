@@ -747,5 +747,14 @@
     caricaAppuntiSalvati();
 </script>
 
+    <script>
+        function aggiornaNavbar() {
+            const btnLogin = document.querySelector('.nav__login');
+            if (!btnLogin) return;
+            const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
+            btnLogin.style.display = loggato ? 'none' : '';
+        }
+        aggiornaNavbar();
+    </script>
 </body>
 </html>
