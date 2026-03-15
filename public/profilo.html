@@ -376,19 +376,18 @@
             </div>
 
             <div class="field-wrap">
-                <div class="field-label">Nickname</div>
-                <input class="field-input" id="nickIn" type="text" maxlength="30"
-                    placeholder="es. studente_curioso99"
-                    oninput="cnt('nickIn','nickCnt',30)">
-                <div class="char-counter"><span id="nickCnt">0</span>/30</div>
+                <div class="field-label">Nome</div>
+                <input class="field-input" id="nomeIn" type="text" maxlength="50" placeholder="Es. Mario">
             </div>
 
             <div class="field-wrap">
-                <div class="field-label">Bio</div>
-                <textarea class="field-textarea" id="bioIn" maxlength="160"
-                    placeholder="Materie preferite, obiettivi…"
-                    oninput="cnt('bioIn','bioCnt',160)"></textarea>
-                <div class="char-counter"><span id="bioCnt">0</span>/160</div>
+                <div class="field-label">Cognome</div>
+                <input class="field-input" id="cognomeIn" type="text" maxlength="50" placeholder="Es. Rossi">
+            </div>
+
+            <div class="field-wrap">
+                <div class="field-label">Email</div>
+                <input class="field-input" id="emailIn" type="email" maxlength="100" placeholder="tuaemail@esempio.it">
             </div>
 
             <button class="btn-save" onclick="salvaProfilo()">Salva profilo</button>
@@ -589,11 +588,38 @@
 
     // ── SALVA PROFILO (nickname + bio) ──
     async function salvaProfilo() {
-        const nick = document.getElementById('nickIn').value.trim();
-        if (!nick) { toast('⚠️ Inserisci un nickname!'); return; }
-        // TODO: chiamata API per salvare nickname e bio nel DB
-        // await fetch('/api/aggiorna-profilo', { method:'POST', body: JSON.stringify({ nick, bio }) });
-        toast('✅ Profilo salvato!');
+        const nome    = document.getElementById('nomeIn').value.trim();
+        const cognome = document.getElementById('cognomeIn').value.trim();
+        const email   = document.getElementById('emailIn').value.trim();
+
+        if (!nome || !cognome) { toast('⚠️ Nome e cognome sono obbligatori!'); return; }
+
+        const loggato = document.cookie.split(';').some(c => c.trim().startsWith('utente_id='));
+        if (!loggato) { toast('⚠️ Devi essere loggato!'); return; }
+
+        const btn = document.querySelector('.avatar-card .btn-save');
+        btn.textContent = 'Salvataggio…';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/aggiorna-profilo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, cognome, email })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                toast('✅ Profilo salvato!');
+            } else {
+                toast('⚠️ ' + (data.message || 'Errore nel salvataggio'));
+            }
+        } catch {
+            toast('⚠️ Errore di connessione');
+        }
+
+        btn.textContent = 'Salva profilo';
+        btn.disabled = false;
     }
 
     // ── PUBBLICA APPUNTO ──
@@ -696,33 +722,29 @@
         if (e.key === 'Escape') chiudiModale();
     });
 
+    // ── CARICA DATI PROFILO NEI CAMPI ──
+    async function caricaDatiProfilo() {
+        const username = document.cookie.match(/username=([^;]+)/);
+        if (!username) return;
+        try {
+            const res = await fetch('/api/utente?username=' + encodeURIComponent(decodeURIComponent(username[1])));
+            if (!res.ok) return;
+            const u = await res.json();
+            if (u.nome)    document.getElementById('nomeIn').value    = u.nome;
+            if (u.cognome) document.getElementById('cognomeIn').value = u.cognome;
+            if (u.email)   document.getElementById('emailIn').value   = u.email;
+            if (u.foto_profilo_url) {
+                document.getElementById('avatarImg').src = u.foto_profilo_url;
+                document.getElementById('avatarImg').style.display = 'block';
+                document.getElementById('avatarPh').style.display = 'none';
+            }
+        } catch {}
+    }
+
     // ── AVVIO ──
+    caricaDatiProfilo();
     caricaAppuntiPubblicati();
     caricaAppuntiSalvati();
-</script>
-
-<!-- INCOLLA QUESTO SCRIPT PRIMA DI </body> IN OGNI PAGINA HTML -->
-<script>
-    // Controlla se l'utente è loggato leggendo il cookie "username"
-    function isLoggato() {
-        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
-    }
-
-    function aggiornaNavbar() {
-        const btnLogin = document.querySelector('.nav__login');
-        if (!btnLogin) return;
-
-        if (isLoggato()) {
-            // Nasconde il tasto "Accedi"
-            btnLogin.style.display = 'none';
-        } else {
-            // Mostra il tasto "Accedi"
-            btnLogin.style.display = '';
-        }
-    }
-
-    // Esegui subito al caricamento della pagina
-    aggiornaNavbar();
 </script>
 
 </body>
