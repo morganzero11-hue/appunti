@@ -240,5 +240,28 @@
 
         caricaUltimiAppunti();
     </script>
+    <!-- INCOLLA QUESTO SCRIPT PRIMA DI </body> IN OGNI PAGINA HTML -->
+<script>
+    // Controlla se l'utente è loggato leggendo il cookie "username"
+    function isLoggato() {
+        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
+    }
+
+    function aggiornaNavbar() {
+        const btnLogin = document.querySelector('.nav__login');
+        if (!btnLogin) return;
+
+        if (isLoggato()) {
+            // Nasconde il tasto "Accedi"
+            btnLogin.style.display = 'none';
+        } else {
+            // Mostra il tasto "Accedi"
+            btnLogin.style.display = '';
+        }
+    }
+
+    // Esegui subito al caricamento della pagina
+    aggiornaNavbar();
+</script>
 </body>
 </html>
