@@ -18,15 +18,16 @@ module.exports = async (req, res) => {
       [username, password]
     );
 
-    if (result.rows.length > 0) {
-      // Imposta i cookie con i dati dell'utente loggato
-      res.setHeader('Set-Cookie', [
-        `utente_id=${result.rows[0].id}; Path=/; HttpOnly`,
-        `username=${result.rows[0].username}; Path=/`
-      ]);
+   // Nel tuo file di login, cambia questa parte:
+if (result.rows.length > 0) {
+  res.setHeader('Set-Cookie', [
+    // Rimosso HttpOnly così JS può leggerlo
+    `utente_id=${result.rows[0].id}; Path=/`, 
+    `username=${result.rows[0].username}; Path=/`
+  ]);
 
-      res.status(200).json({ success: true, message: 'Login OK' });
-    } else {
+  res.status(200).json({ success: true, message: 'Login OK' });
+} else {
       res.status(401).json({ success: false, message: 'Credenziali errate' });
     }
   } catch (err) {

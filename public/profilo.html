@@ -1,167 +1,50 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilo — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Cabinet+Grotesk:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> <style>
-        /* Mantengo solo gli stili essenziali per il layout se non sono in style.css */
-        :root { --cream: #f5f0e8; --ink: #1c1917; --accent: #d4522a; --border: #e5ddd0; --yellow: #f0c040; }
-        body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--cream); color: var(--ink); margin: 0; }
-        .layout { max-width: 1060px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 280px 1fr; gap: 28px; }
-        /* ... (gli altri stili che avevi vanno bene, ma l'importante è il JS sotto) ... */
-    </style>
-</head>
-<body>
+// Funzione per caricare i dati all'apertura
+async function caricaProfilo() {
+    const utenteId = getCookie('utente_id'); // La tua funzione helper per i cookie
+    if (!utenteId) {
+        window.location.href = 'login.html';
+        return;
+    }
 
-<nav class="nav">
-    <a href="index.html" class="nav__brand">📚 Appunti</a>
-    <ul class="nav__links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="esplora.html">Esplora</a></li>
-        <li><a href="profilo.html" class="active">Profilo</a></li>
-        <li><a href="utenti.html">Utenti</a></li>
-        <a href="login.html" id="btnAuth" class="nav__login">Accedi</a>
-    </ul>
-</nav>
+    try {
+        const res = await fetch(`/api/utente?id=${utenteId}`);
+        const user = await res.json();
 
-<div class="layout">
-    <aside class="left-col">
-        <div class="avatar-card">
-            <div class="avatar-ring" onclick="document.getElementById('avatarInput').click()">
-                <div class="avatar-circle">
-                    <img id="avatarImg" style="display:none; width:100%; border-radius:50%;">
-                    <div id="avatarPh">Aggiungi foto</div>
-                </div>
-                <input type="file" id="avatarInput" hidden onchange="uploadAvatar(event)">
-            </div>
+        if (res.ok) {
+            document.getElementById('nomeIn').value = user.nome || '';
+            document.getElementById('cognomeIn').value = user.cognome || '';
+            document.getElementById('emailIn').value = user.email || '';
+            // Se hai l'immagine
+            if (user.foto_profilo_url) {
+                document.getElementById('avatarImg').src = user.foto_profilo_url;
+                document.getElementById('avatarImg').style.display = 'block';
+                document.getElementById('avatarPh').style.display = 'none';
+            }
+        }
+    } catch (err) {
+        console.error("Errore caricamento dati:", err);
+    }
+}
 
-            <div class="field-wrap">
-                <label class="field-label">Nome</label>
-                <input class="field-input" id="nomeIn" type="text" placeholder="Nome">
-            </div>
-            <div class="field-wrap">
-                <label class="field-label">Cognome</label>
-                <input class="field-input" id="cognomeIn" type="text" placeholder="Cognome">
-            </div>
-            <div class="field-wrap">
-                <label class="field-label">Email</label>
-                <input class="field-input" id="emailIn" type="email" placeholder="Email">
-            </div>
-
-            <button class="btn-save" onclick="salvaProfilo()">Salva profilo</button>
-        </div>
-    </aside>
-
-    <main class="right-col">
-        <div class="tabs-bar">
-            <button class="tab-pill active">I tuoi appunti</button>
-        </div>
-        <div id="gridPub"><div class="spinner"></div></div>
-    </main>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-    // --- GESTIONE SESSIONE ---
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+// Funzione per salvare i dati nel DB
+async function salvaProfilo() {
+    const dati = {
+        id: getCookie('utente_id'),
+        nome: document.getElementById('nomeIn').value,
+        cognome: document.getElementById('cognomeIn').value,
+        email: document.getElementById('emailIn').value
     };
 
-    const utenteId = getCookie('utente_id');
-    const username = getCookie('username');
+    const res = await fetch('/api/aggiorna-profilo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dati)
+    });
 
-    // --- 1. CARICAMENTO DATI (Quello che ti mancava) ---
-    async function initProfilo() {
-        if (!utenteId) {
-            window.location.href = 'login.html'; // Reindirizza se non loggato
-            return;
-        }
-
-        try {
-            // Recupera i dati dal server
-            const res = await fetch(`/api/utente?id=${utenteId}`);
-            const user = await res.json();
-
-            if (user) {
-                document.getElementById('nomeIn').value = user.nome || '';
-                document.getElementById('cognomeIn').value = user.cognome || '';
-                document.getElementById('emailIn').value = user.email || '';
-                if (user.avatar_url) {
-                    document.getElementById('avatarImg').src = user.avatar_url;
-                    document.getElementById('avatarImg').style.display = 'block';
-                    document.getElementById('avatarPh').style.display = 'none';
-                }
-            }
-        } catch (err) {
-            console.error("Errore recupero dati", err);
-        }
-        
-        caricaAppuntiPubblicati();
+    if (res.ok) {
+        alert("Profilo aggiornato con successo nel database!");
     }
+}
 
-    // --- 2. SALVATAGGIO DATI ---
-    async function salvaProfilo() {
-        const payload = {
-            id: utenteId,
-            nome: document.getElementById('nomeIn').value.trim(),
-            cognome: document.getElementById('cognomeIn').value.trim(),
-            email: document.getElementById('emailIn').value.trim()
-        };
-
-        try {
-            const res = await fetch('/api/aggiorna-profilo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            toast(data.success ? '✅ Salvato!' : '⚠️ Errore');
-        } catch (err) {
-            toast('⚠️ Errore di connessione');
-        }
-    }
-
-    // --- 3. CARICAMENTO APPUNTI  JJJ ---
-    async function caricaAppuntiPubblicati() {
-        const grid = document.getElementById('gridPub');
-        try {
-            const res = await fetch(`/api/appunti?username=${username}`);
-            const appunti = await res.json();
-            
-            if (appunti.length === 0) {
-                grid.innerHTML = "<p>Nessun appunto caricato.</p>";
-                return;
-            }
-
-            grid.innerHTML = appunti.map(a => `
-                <div class="tt-card">
-                    <div class="tt-card__body">
-                        <strong>${a.titolo}</strong><br>
-                        <small>${a.materia}</small>
-                    </div>
-                </div>
-            `).join('');
-        } catch (err) {
-            grid.innerHTML = "Errore caricamento.";
-        }
-    }
-
-    // --- UTILITY ---
-    function toast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // Esegui all'avvio
-    document.addEventListener('DOMContentLoaded', initProfilo);
-</script>
-
-</body>
-</html>
+// Avvio
+document.addEventListener('DOMContentLoaded', caricaProfilo);

@@ -5,14 +5,15 @@ const pool = new Pool({
 });
 
 module.exports = async (req, res) => {
-  const { id } = req.query; // Riceve l'id passato da profilo.html
+  // Cerchiamo l'ID dai cookie o dalla query
+  const utenteId = req.cookies?.utente_id || req.query.id;
 
-  if (!id) return res.status(400).json({ error: 'ID mancante' });
+  if (!utenteId) return res.status(401).json({ error: 'Non autenticato' });
 
   try {
     const result = await pool.query(
-      'SELECT nome, cognome, email, username FROM utenti WHERE id = $1',
-      [id]
+      'SELECT id, username, nome, cognome, email, foto_profilo_url FROM utenti WHERE id = $1',
+      [utenteId]
     );
 
     if (result.rows.length > 0) {
