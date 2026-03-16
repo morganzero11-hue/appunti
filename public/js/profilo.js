@@ -1,48 +1,65 @@
-async function initProfilo() {
-    if (!utenteId) {
-        window.location.href = 'login.html';
-        return;
-    }
+async function uploadAvatar(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
     try {
-        const res = await fetch(`/api/utente?id=${utenteId}`);
-        const user = await res.json();
+        // 1. Upload su Vercel Blob
+        const response = await fetch(`/api/upload?filename=${file.name}&contentType=${file.type}`, {
+            method: 'POST',
+            body: file,
+        });
+        const newBlob = await response.json();
 
-        if (res.ok) {
-            document.getElementById('nomeIn').value = user.nome || '';
-            document.getElementById('cognomeIn').value = user.cognome || '';
-            document.getElementById('emailIn').value = user.email || '';
-            if (user.foto_profilo_url) {
-                document.getElementById('avatarImg').src = user.foto_profilo_url;
-                document.getElementById('avatarImg').style.display = 'block';
-                document.getElementById('avatarPh').style.display = 'none';
-            }
-        }
-    } catch (err) {
-        console.error("Errore nel caricamento dei dati:", err);
-    }
-}
+        // 2. Anteprima immediata nell'interfaccia
+        document.getElementById('avatarImg').src = newBlob.url;
+        document.getElementById('avatarImg').style.display = 'block';
+        document.getElementById('avatarPh').style.display = 'none';
 
-async function salvaProfilo() {
-    const payload = {
-        id: utenteId,
-        nome: document.getElementById('nomeIn').value.trim(),
-        cognome: document.getElementById('cognomeIn').value.trim(),
-        email: document.getElementById('emailIn').value.trim()
-    };
-
-    try {
-        const res = await fetch('/api/aggiorna-profilo', {
+        // 3. Salva l'URL nel Database (colonna foto_profilo_url vista in DBeaver)
+        const utenteId = getCookie('utente_id');
+        await fetch('/api/aggiorna-profilo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({ id: utenteId, foto_profilo_url: newBlob.url })
         });
-        
-        if (res.ok) alert("✅ Profilo aggiornato nel database!");
-        else alert("⚠️ Errore durante il salvataggio.");
+
+        alert("Foto profilo aggiornata!");
+    } catch (error) {
+        console.error("Errore upload:", error);
+    }
+
+}
+async function pubblicaAppunto() {
+    const fileIn = document.getElementById('fileAppunto');
+    const titolo = document.getElementById('titoloAppunto').value;
+    const materia = document.getElementById('materiaAppunto').value;
+    const utenteId = getCookie('utente_id');
+
+    if (!fileIn.files[0]) return alert("Seleziona un file!");
+
+    try {
+        // 1. Carica il file su Vercel Blob
+        const file = fileIn.files[0];
+        const resBlob = await fetch(`/api/upload?filename=${file.name}`, {
+            method: 'POST',
+            body: file,
+        });
+        const blob = await resBlob.json();
+
+        // 2. Salva nel Database (tabella appunti)
+        const resDb = await fetch('/api/appunti', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                utente_id: utenteId,
+                titolo: titolo,
+                materia: materia,
+                file_url: blob.url // URL pubblico di Vercel Blob
+            })
+        });
+
+        if (resDb.ok) alert("Appunto pubblicato con successo!");
     } catch (err) {
-        alert("⚠️ Errore di connessione.");
+        console.error("Errore durante la pubblicazione:", err);
     }
 }
-
-document.addEventListener('DOMContentLoaded', initProfilo);

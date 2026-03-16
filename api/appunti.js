@@ -1,73 +1,25 @@
 const { Pool } = require('pg');
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: true }
-});
-
-module.exports = async (req, res) => {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Solo GET ammesso' });
-  }
-
-  const { username, limit } = req.query;
-
-  try {
-    let result;
-
-    if (username) {
-      // Appunti di un utente specifico
-      result = await pool.query(
-        `SELECT
-           a.id,
-           a.titolo,
-           a.materia,
-           a.file_url,
-           a.data_caricamento,
-           u.username,
-           u.nome,
-           u.cognome
-         FROM appunti a
-         JOIN utenti u ON u.id = a.utente_id
-         WHERE u.username = $1
-         ORDER BY a.data_caricamento DESC`,
-        [username.toLowerCase()]
-      );
-    } else {
-      // Ultimi appunti per la home
-      const lim = parseInt(limit) || 6;
-      result = await pool.query(
-        `SELECT
-           a.id,
-           a.titolo,
-           a.materia,
-           a.file_url,
-           a.data_caricamento,
-           u.username,
-           u.nome,
-           u.cognome
-         FROM appunti a
-         JOIN utenti u ON u.id = a.utente_id
-         ORDER BY a.data_caricamento DESC
-         LIMIT $1`,
-        [lim]
-      );
+export default async function handler(req, res) {
+    if (req.method === 'POST') {
+        const { utente_id, titolo, materia, file_url } = req.body;
+        try {
+            await pool.query(
+                'INSERT INTO appunti (utente_id, titolo, materia, file_url) VALUES ($1, $2, $3, $4)',
+                [utente_id, titolo, materia, file_url]
+            );
+            res.status(200).json({ success: true });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    } else if (req.method === 'GET') {
+        // Recupera tutti gli appunti per la pagina "Esplora"
+        try {
+            const result = await pool.query('SELECT * FROM appunti ORDER BY data_ricaricamento DESC');
+            res.status(200).json(result.rows);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
     }
-
-    const rows = result.rows.map(r => ({
-      ...r,
-      autore: `${r.nome} ${r.cognome}`,
-      data: r.data_caricamento
-        ? new Date(r.data_caricamento).toLocaleDateString('it-IT', {
-            day: 'numeric', month: 'short', year: 'numeric'
-          })
-        : ''
-    }));
-
-    return res.status(200).json(rows);
-
-  } catch (err) {
-    console.error('Errore appunti:', err);
-    return res.status(500).json({ message: 'Errore server', error: err.message });
-  }
-};
+}
