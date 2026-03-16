@@ -18,9 +18,10 @@ module.exports = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, username, nome, cognome, foto_profilo_url, created_at
-       FROM utenti
-       WHERE username = $1`,
+      // DOPO
+`SELECT id, username, nome, cognome, email, foto_profilo_url, created_at
+ FROM utenti
+ WHERE username = $1`,
       [username.toLowerCase()]
     );
 

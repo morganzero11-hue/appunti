@@ -723,24 +723,34 @@
     });
 
     // ── CARICA DATI PROFILO NEI CAMPI ──
-    async function caricaDatiProfilo() {
-        const username = document.cookie.match(/username=([^;]+)/);
-        if (!username) return;
-        try {
-            const res = await fetch('/api/utente?username=' + encodeURIComponent(decodeURIComponent(username[1])));
-            if (!res.ok) return;
-            const u = await res.json();
-            if (u.nome)    document.getElementById('nomeIn').value    = u.nome;
-            if (u.cognome) document.getElementById('cognomeIn').value = u.cognome;
-            if (u.email)   document.getElementById('emailIn').value   = u.email;
-            if (u.foto_profilo_url) {
-                document.getElementById('avatarImg').src = u.foto_profilo_url;
-                document.getElementById('avatarImg').style.display = 'block';
-                document.getElementById('avatarPh').style.display = 'none';
-            }
-        } catch {}
-    }
+async function caricaDatiProfilo() {
+    // Legge il cookie username in modo robusto
+    const match = document.cookie.split(';')
+        .map(c => c.trim())
+        .find(c => c.startsWith('username='));
+    
+    if (!match) return; // non loggato
+    
+    const usernameVal = decodeURIComponent(match.split('=').slice(1).join('='));
+    
+    try {
+        const res = await fetch('/api/utente?username=' + encodeURIComponent(usernameVal));
+        if (!res.ok) return;
+        const u = await res.json();
 
+        if (u.nome)    document.getElementById('nomeIn').value    = u.nome;
+        if (u.cognome) document.getElementById('cognomeIn').value = u.cognome;
+        if (u.email)   document.getElementById('emailIn').value   = u.email;
+
+        if (u.foto_profilo_url) {
+            document.getElementById('avatarImg').src = u.foto_profilo_url;
+            document.getElementById('avatarImg').style.display = 'block';
+            document.getElementById('avatarPh').style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Errore caricamento profilo:', err);
+    }
+}
     // ── AVVIO ──
     caricaDatiProfilo();
     caricaAppuntiPubblicati();
