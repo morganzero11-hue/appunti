@@ -1,0 +1,48 @@
+async function initProfilo() {
+    if (!utenteId) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/utente?id=${utenteId}`);
+        const user = await res.json();
+
+        if (res.ok) {
+            document.getElementById('nomeIn').value = user.nome || '';
+            document.getElementById('cognomeIn').value = user.cognome || '';
+            document.getElementById('emailIn').value = user.email || '';
+            if (user.foto_profilo_url) {
+                document.getElementById('avatarImg').src = user.foto_profilo_url;
+                document.getElementById('avatarImg').style.display = 'block';
+                document.getElementById('avatarPh').style.display = 'none';
+            }
+        }
+    } catch (err) {
+        console.error("Errore nel caricamento dei dati:", err);
+    }
+}
+
+async function salvaProfilo() {
+    const payload = {
+        id: utenteId,
+        nome: document.getElementById('nomeIn').value.trim(),
+        cognome: document.getElementById('cognomeIn').value.trim(),
+        email: document.getElementById('emailIn').value.trim()
+    };
+
+    try {
+        const res = await fetch('/api/aggiorna-profilo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) alert("✅ Profilo aggiornato nel database!");
+        else alert("⚠️ Errore durante il salvataggio.");
+    } catch (err) {
+        alert("⚠️ Errore di connessione.");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initProfilo);

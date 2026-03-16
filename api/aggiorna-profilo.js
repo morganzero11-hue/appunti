@@ -10,6 +10,7 @@ module.exports = async (req, res) => {
   const { id, nome, cognome, email } = req.body;
 
   try {
+    // Aggiorna le colonne del database basate sul tuo DBeaver
     await pool.query(
       'UPDATE utenti SET nome = $1, cognome = $2, email = $3 WHERE id = $4',
       [nome, cognome, email, id]

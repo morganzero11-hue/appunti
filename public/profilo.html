@@ -1,50 +1,47 @@
-// Funzione per caricare i dati all'apertura
-async function caricaProfilo() {
-    const utenteId = getCookie('utente_id'); // La tua funzione helper per i cookie
-    if (!utenteId) {
-        window.location.href = 'login.html';
-        return;
-    }
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo | Appunti</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
 
-    try {
-        const res = await fetch(`/api/utente?id=${utenteId}`);
-        const user = await res.json();
+<nav class="nav">
+    <a href="index.html">📚 Appunti</a>
+    <div class="nav-right">
+        <a href="esplora.html">Esplora</a>
+        <a href="profilo.html" class="active">Profilo</a>
+        <a href="login.html" id="btnAuth">Login</a>
+    </div>
+</nav>
 
-        if (res.ok) {
-            document.getElementById('nomeIn').value = user.nome || '';
-            document.getElementById('cognomeIn').value = user.cognome || '';
-            document.getElementById('emailIn').value = user.email || '';
-            // Se hai l'immagine
-            if (user.foto_profilo_url) {
-                document.getElementById('avatarImg').src = user.foto_profilo_url;
-                document.getElementById('avatarImg').style.display = 'block';
-                document.getElementById('avatarPh').style.display = 'none';
-            }
-        }
-    } catch (err) {
-        console.error("Errore caricamento dati:", err);
-    }
-}
+<div class="profile-container">
+    <div class="avatar-section">
+        <div class="avatar-circle" onclick="document.getElementById('fileIn').click()">
+            <img id="avatarImg" style="display:none;">
+            <span id="avatarPh">Aggiungi foto</span>
+        </div>
+        <input type="file" id="fileIn" hidden>
+    </div>
 
-// Funzione per salvare i dati nel DB
-async function salvaProfilo() {
-    const dati = {
-        id: getCookie('utente_id'),
-        nome: document.getElementById('nomeIn').value,
-        cognome: document.getElementById('cognomeIn').value,
-        email: document.getElementById('emailIn').value
-    };
+    <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="nomeIn" placeholder="Il tuo nome">
+    </div>
+    <div class="form-group">
+        <label>Cognome</label>
+        <input type="text" id="cognomeIn" placeholder="Il tuo cognome">
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="emailIn" placeholder="La tua email">
+    </div>
 
-    const res = await fetch('/api/aggiorna-profilo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dati)
-    });
+    <button class="btn-primary" onclick="salvaProfilo()">Salva modifiche</button>
+</div>
 
-    if (res.ok) {
-        alert("Profilo aggiornato con successo nel database!");
-    }
-}
-
-// Avvio
-document.addEventListener('DOMContentLoaded', caricaProfilo);
+<script src="js/auth.js"></script>
+<script src="js/profilo.js"></script>
+</body>
+</html>
