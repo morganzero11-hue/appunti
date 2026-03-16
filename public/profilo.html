@@ -752,9 +752,51 @@ async function caricaDatiProfilo() {
     }
 }
     // ── AVVIO ──
+
+
+    caricaDatiProfilo();
+
+    // ── CARICA DATI PROFILO DAL DB ──
+async function caricaDatiProfilo() {
+    // Se non c'è l'username nei cookie, l'utente non è loggato
+    if (!username) return; 
+
+    try {
+        // Chiamata alla tua API per recuperare i dati. 
+        // Adatta l'URL se il tuo file api/utente.js si aspetta l'id o l'username
+        const res = await fetch(`/api/utente?username=${encodeURIComponent(username)}`);
+        const data = await res.json();
+
+        // Controlla come ti risponde la tua API (es. data.nome oppure data.utente.nome)
+        // Qui assumo che l'API restituisca direttamente l'oggetto utente
+        if (data) {
+            document.getElementById('nomeIn').value = data.nome || '';
+            document.getElementById('cognomeIn').value = data.cognome || '';
+            document.getElementById('emailIn').value = data.email || '';
+            
+            // Opzionale: se la tua API restituisce anche l'URL dell'avatar
+            if (data.avatar_url) {
+                document.getElementById('avatarImg').src = data.avatar_url;
+                document.getElementById('avatarImg').style.display = 'block';
+                document.getElementById('avatarPh').style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error("Errore nel caricamento dei dati profilo:", error);
+    }
+}
+
+
+    caricaAppuntiPubblicati();
+    caricaAppuntiSalvati();
+    // ── ESECUZIONE AL CARICAMENTO DELLA PAGINA ──
+document.addEventListener("DOMContentLoaded", () => {
     caricaDatiProfilo();
     caricaAppuntiPubblicati();
     caricaAppuntiSalvati();
+});
+
+
 </script>
 
     <script>
