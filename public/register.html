@@ -74,7 +74,10 @@
         .form { display: flex; flex-direction: column; gap: 14px; }
 
         .field { display: flex; flex-direction: column; gap: 5px; }
-        .field__label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
+        /* Modifica label per ospitare l'etichetta "Opzionale" */
+        .field__label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+        .field__label .optional { font-size: 0.65rem; color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
+        
         .field__wrap { position: relative; }
         .field__icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; transition: color .2s; }
         .field__input { width: 100%; background: rgba(255,255,255,0.05); border: 1.5px solid var(--border2); border-radius: 12px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.95rem; font-weight: 600; padding: 12px 14px 12px 42px; outline: none; transition: border-color .2s, background .2s, box-shadow .2s; }
@@ -158,7 +161,6 @@
 <div class="page">
 <div class="page__inner">
 
-    <!-- LEFT -->
     <div class="left">
         <a href="index.html" class="brand">
             <span class="brand__icon">📚</span>
@@ -191,10 +193,8 @@
         </div>
     </div>
 
-    <!-- DIVIDER -->
     <div class="divider"></div>
 
-    <!-- RIGHT -->
     <div class="right">
         <div class="card">
             <div class="card__title">Crea account 🎓</div>
@@ -240,17 +240,28 @@
                 </div>
 
                 <div class="field">
+                    <div class="field__label">
+                        <span>Scuola</span>
+                        <span class="optional">Opzionale</span>
+                    </div>
+                    <div class="field__wrap">
+                        <input class="field__input" type="text" id="scuola" placeholder="Es: Liceo Scientifico Volta" autocomplete="organization">
+                        <span class="field__icon">🏫</span>
+                    </div>
+                </div>
+
+                <div class="field">
                     <div class="field__label">Password</div>
                     <div class="field__wrap">
-                        <input class="field__input" type="password" id="password" placeholder="Min. 8 caratteri" autocomplete="new-password" required oninput="aggiornaForza(this.value)">
+                        <input class="field__input" type="password" id="password" placeholder="Min. 8 car., 1 num., 1 sim." autocomplete="new-password" required oninput="aggiornaForza(this.value)">
                         <span class="field__icon">🔒</span>
-                        <button type="button" class="field__toggle" id="togglePwd" onclick="togglePwd('password','togglePwd')">👁</button>
+                        <button type="button" class="field__toggle" id="togglePwdBtn" onclick="togglePwd('password','togglePwdBtn')">👁</button>
                     </div>
                     <div class="strength-wrap">
                         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
                         <div class="strength-label" id="strengthLabel">Inserisci una password</div>
                     </div>
-                    <div class="field__error" id="err-password">Min. 8 caratteri</div>
+                    <div class="field__error" id="err-password">Deve avere: 8 caratteri, 1 numero, 1 simbolo</div>
                 </div>
 
                 <div class="field">
@@ -258,7 +269,7 @@
                     <div class="field__wrap">
                         <input class="field__input" type="password" id="confermaPassword" placeholder="Ripeti la password" autocomplete="new-password" required>
                         <span class="field__icon">🔐</span>
-                        <button type="button" class="field__toggle" id="togglePwd2" onclick="togglePwd('confermaPassword','togglePwd2')">👁</button>
+                        <button type="button" class="field__toggle" id="togglePwd2Btn" onclick="togglePwd('confermaPassword','togglePwd2Btn')">👁</button>
                     </div>
                     <div class="field__error" id="err-conferma">Le password non coincidono</div>
                 </div>
@@ -304,11 +315,18 @@
 </div>
 
 <script>
+    /* 1. AGGIUNTO: Toggle password funzionante */
     function togglePwd(inputId, btnId) {
         const input = document.getElementById(inputId);
         const btn   = document.getElementById(btnId);
-        input.type  = input.type === 'password' ? 'text' : 'password';
-        btn.textContent = input.type === 'password' ? '👁' : '🙈';
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            btn.textContent = '👁';
+        }
     }
 
     function aggiornaForza(val) {
@@ -364,11 +382,17 @@
         const pw2      = document.getElementById('confermaPassword').value;
         const terms    = document.getElementById('termsCb').checked;
 
+        /* 2. AGGIUNTO: Controllo Password (8 car, 1 num, 1 speciale) */
+        const pwdRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
         if (errore('nome',    !nome))    ok = false;
         if (errore('cognome', !cognome)) ok = false;
         if (errore('username', !/^[a-zA-Z0-9_]{3,30}$/.test(username))) ok = false;
         if (errore('email',   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) ok = false;
-        if (errore('password', pw.length < 8)) ok = false;
+        
+        /* Uso la nuova validazione password */
+        if (errore('password', !pwdRegex.test(pw))) ok = false; 
+        
         if (errore('conferma', pw !== pw2))    ok = false;
         if (errore('terms',   !terms))         ok = false;
 
@@ -384,11 +408,13 @@
         btn.textContent = 'Creazione account…';
         btn.classList.add('loading');
 
+        /* 3. AGGIUNTO: Raccolta del campo "scuola" nel payload */
         const payload = {
             nome:     document.getElementById('nome').value.trim(),
             cognome:  document.getElementById('cognome').value.trim(),
             username: document.getElementById('username').value.trim(),
             email:    document.getElementById('email').value.trim(),
+            scuola:   document.getElementById('scuola').value.trim(), 
             password: document.getElementById('password').value,
         };
 
