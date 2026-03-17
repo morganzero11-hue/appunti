@@ -28,7 +28,7 @@
             color: var(--text);
         }
 
-        /* ── TOPNAV (identica alle altre pagine) ── */
+        /* ── TOPNAV ── */
         .topnav {
             position: fixed; top: 0; left: 0; right: 0;
             height: var(--nav-h);
@@ -56,15 +56,6 @@
         }
         .topnav__links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
         .topnav__links a.active { background: rgba(255,255,255,0.1); color: #ffd166; }
-        .nav__login {
-            background: #e63946; color: #fff;
-            padding: 7px 18px; border-radius: 8px;
-            font-size: 0.87rem; font-weight: 800;
-            text-decoration: none; white-space: nowrap;
-            font-family: 'DM Sans', sans-serif;
-            transition: transform .2s, box-shadow .2s;
-        }
-        .nav__login:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(230,57,70,0.35); }
 
         /* ── FEED CONTAINER ── */
         .feed {
@@ -89,10 +80,7 @@
 
         .card:nth-child(odd)  .card__bg { background: radial-gradient(ellipse at 20% 80%, rgba(200,240,96,0.04) 0%, transparent 60%); }
         .card:nth-child(even) .card__bg { background: radial-gradient(ellipse at 80% 20%, rgba(96,184,240,0.04) 0%, transparent 60%); }
-        .card__bg {
-            position: absolute; inset: 0;
-            pointer-events: none; z-index: 0;
-        }
+        .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 
         .card__content {
             padding: 32px 32px 32px 40px;
@@ -102,10 +90,7 @@
             max-width: 680px;
         }
 
-        .card__meta {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 14px;
-        }
+        .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
         .card__avatar {
             width: 38px; height: 38px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -114,7 +99,6 @@
         }
         .card__author { font-size: 0.88rem; font-weight: 800; }
         .card__school { font-size: 0.75rem; color: var(--muted); }
-        .card__time   { font-size: 0.72rem; color: var(--muted); margin-left: auto; }
 
         .card__subject {
             display: inline-flex; align-items: center; gap: 6px;
@@ -131,29 +115,6 @@
             letter-spacing: -0.5px; margin-bottom: 14px;
         }
 
-        .card__preview {
-            background: var(--surface); border: 1px solid var(--border2);
-            border-radius: 14px; padding: 18px 22px;
-            font-size: 0.88rem; line-height: 1.7;
-            color: rgba(242,240,236,0.82);
-            max-height: 220px; overflow: hidden;
-            position: relative; margin-bottom: 18px;
-        }
-        .card__preview::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-            height: 60px;
-            background: linear-gradient(transparent, var(--surface));
-            border-radius: 0 0 14px 14px;
-        }
-
-        .card__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-        .card__tag {
-            padding: 3px 10px; border-radius: 20px;
-            font-size: 0.72rem; font-weight: 700;
-            background: var(--surface2); color: var(--muted);
-            border: 1px solid var(--border2);
-        }
-
         .card__actions { display: flex; align-items: center; gap: 10px; }
         .card__btn {
             padding: 9px 20px; border-radius: 10px;
@@ -162,6 +123,7 @@
             cursor: pointer; border: none;
             display: inline-flex; align-items: center; gap: 7px;
             transition: transform .2s, box-shadow .2s;
+            text-decoration: none;
         }
         .card__btn:hover { transform: translateY(-2px); }
         .card__btn--accent { background: var(--accent); color: #0f0f0f; }
@@ -182,7 +144,6 @@
         }
         .side-btn:hover { color: var(--text); transform: scale(1.08); }
         .side-btn.liked { color: #ff4d6d; }
-        .side-btn.saved { color: var(--accent); }
         .side-btn__icon {
             width: 48px; height: 48px; border-radius: 14px;
             background: var(--surface); border: 1px solid var(--border2);
@@ -191,9 +152,7 @@
         }
         .side-btn:hover .side-btn__icon { background: var(--surface2); }
         .side-btn.liked .side-btn__icon  { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3); }
-        .side-btn.saved .side-btn__icon  { background: rgba(200,240,96,0.1);  border-color: rgba(200,240,96,0.3);  }
         .side-btn__count { font-size: 0.72rem; font-weight: 800; }
-
         .card + .card { border-top: 1px solid var(--border); }
 
         /* scroll hint */
@@ -231,16 +190,15 @@
         .modal__sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 24px; }
         .modal__field { margin-bottom: 16px; }
         .modal__label { font-size: 0.78rem; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
-        .modal__input, .modal__textarea, .modal__select {
+        .modal__input, .modal__select {
             width: 100%; background: var(--surface2); border: 1px solid var(--border2);
             border-radius: 10px; color: var(--text);
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 0.88rem; font-weight: 600;
             padding: 10px 14px; outline: none; transition: border-color .2s;
         }
-        .modal__input:focus, .modal__textarea:focus, .modal__select:focus { border-color: var(--accent); }
-        .modal__input::placeholder, .modal__textarea::placeholder { color: var(--muted); font-weight: 400; }
-        .modal__textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+        .modal__input:focus, .modal__select:focus { border-color: var(--accent); }
+        .modal__input::placeholder { color: var(--muted); font-weight: 400; }
         .modal__select option { background: #222; }
         .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
         .modal__btn {
@@ -274,56 +232,50 @@
 </head>
 <body>
 
-<!-- TOPNAV — identica a index.html / impostazioni.html / utenti.html -->
 <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
         <li><a href="esplora.html" class="active">Esplora</a></li>
         <li><a href="profilo.html">Profilo</a></li>
-        <li><a href="utenti.html">Utenti</a></li>
-        <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-
 </nav>
 
-<!-- FEED -->
 <div class="feed" id="feed"></div>
 
-<!-- SCROLL HINT -->
 <div class="scroll-hint" id="scrollHint">
     <span style="font-size:1.2rem">↓</span>
     Scorri per scoprire
 </div>
 
-<!-- UPLOAD MODAL -->
 <div class="modal-overlay" id="modal">
     <div class="modal">
-        <div class="modal__title">✦ Carica un appunto</div>
-        <div class="modal__sub">Condividi con tutta la community di Appunti</div>
+        <div class="modal__title">✦ Carica un file</div>
+        <div class="modal__sub">Condividi i tuoi appunti in PDF o Immagine</div>
+        
         <div class="modal__field">
             <label class="modal__label">Titolo</label>
             <input class="modal__input" id="mTitolo" type="text" placeholder="es. Derivate — regole fondamentali">
         </div>
+        
         <div class="modal__field">
             <label class="modal__label">Materia</label>
             <select class="modal__select" id="mMateria">
                 <option>Matematica</option>
                 <option>Fisica</option>
                 <option>Scienze</option>
-                <option>Chimica</option>
                 <option>Storia</option>
                 <option>Italiano</option>
                 <option>Inglese</option>
                 <option>Informatica</option>
-                <option>Arte</option>
-                <option>Geografia</option>
             </select>
         </div>
+        
         <div class="modal__field">
-            <label class="modal__label">Contenuto</label>
-            <textarea class="modal__textarea" id="mContenuto" placeholder="Scrivi o incolla il tuo appunto qui..."></textarea>
+            <label class="modal__label">Seleziona Documento (PDF/IMG)</label>
+            <input class="modal__input" id="mFile" type="file" accept=".pdf, image/*">
         </div>
+
         <div class="modal__actions">
             <button class="modal__btn modal__btn--ghost" onclick="chiudiModal()">Annulla</button>
             <button class="modal__btn modal__btn--accent" onclick="pubblicaAppunto()">🚀 Pubblica</button>
@@ -333,115 +285,96 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="js/auth.js"></script>
 <script src="js/esplora.js"></script>
+
 <script>
-/* ── RENDER FEED (usa dati da esplora.js) ── */
-function renderFeed(lista) {
-    const feed = document.getElementById('feed');
-    feed.innerHTML = '';
-    if (!lista || lista.length === 0) {
-        feed.innerHTML = `
-            <div style="height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
-                <div style="font-size:3rem">📭</div>
-                <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto ancora</div>
-                <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Sii il primo a condividere qualcosa con la community!</div>
-                <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica il primo appunto</button>
-            </div>`;
-        return;
+    /* ── SCROLL HINT ── */
+    const feedEl = document.getElementById('feed');
+    feedEl.addEventListener('scroll', () => {
+        if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
+        else document.getElementById('scrollHint').classList.remove('hidden');
+    }, { passive: true });
+
+    /* ── KEYBOARD SCROLL ── */
+    document.addEventListener('keydown', e => {
+        const h = window.innerHeight - 62;
+        if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
+        if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
+    });
+
+    /* ── MODAL ── */
+    function apriModal()  { document.getElementById('modal').classList.add('open'); }
+    function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
+    document.getElementById('modal').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal')) chiudiModal();
+    });
+
+    /* ── VERO CARICAMENTO CON API ── */
+    async function pubblicaAppunto() {
+        const titolo = document.getElementById('mTitolo').value.trim();
+        const materia = document.getElementById('mMateria').value;
+        const fileInput = document.getElementById('mFile').files[0];
+
+        if (!titolo || !fileInput) { 
+            toast('⚠️ Inserisci il titolo e seleziona un file!'); 
+            return; 
+        }
+
+        toast('⏳ Caricamento file in corso... attendi.');
+        
+        // Cambia testo al bottone per evitare doppi click
+        const btn = document.querySelector('.modal__btn--accent');
+        btn.textContent = 'Caricamento...';
+        btn.disabled = true;
+
+        try {
+            // 1. Carica su Vercel Blob
+            const blobRes = await fetch(`/api/upload?filename=${encodeURIComponent(fileInput.name)}`, {
+                method: 'POST',
+                body: fileInput
+            });
+            if (!blobRes.ok) throw new Error('Errore durante il caricamento del file su Blob');
+            const blobData = await blobRes.json();
+
+            // 2. Salva nel Database Postgres
+            const dbRes = await fetch('/api/appunti', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    utente_id: "Utente Anonimo", 
+                    titolo: titolo,
+                    materia: materia,
+                    file_url: blobData.url
+                })
+            });
+            if (!dbRes.ok) throw new Error('Errore salvataggio nel Database');
+
+            toast('🚀 Appunto pubblicato con successo!');
+            chiudiModal();
+            
+            // Pulisci i campi
+            document.getElementById('mTitolo').value = '';
+            document.getElementById('mFile').value = '';
+            
+            // Aggiorna il feed
+            initEsplora();
+
+        } catch (error) {
+            console.error(error);
+            toast('❌ Errore: Riprova più tardi.');
+        } finally {
+            // Ripristina il bottone
+            btn.textContent = '🚀 Pubblica';
+            btn.disabled = false;
+        }
     }
 
-    const COLORI = {
-        'Matematica':'#d97706','Fisica':'#2563eb','Scienze':'#16a34a',
-        'Chimica':'#7c3aed','Storia':'#be185d','Italiano':'#b45309',
-        'Inglese':'#4f46e5','Informatica':'#dc2626','Arte':'#0891b2','Geografia':'#0d9488'
-    };
-    const avatarColori = ['#7c3aed','#be185d','#2563eb','#16a34a','#d97706','#0891b2','#dc2626'];
-
-    lista.forEach(a => {
-        const mc = COLORI[a.materia] || '#888';
-        const autore = String(a.utente_id || 'Anonimo');
-        const iniziale = autore[0].toUpperCase();
-        const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
-        const data_str = formatData ? formatData(a.data_caricamento) : '';
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = a.id;
-        card.innerHTML = `
-            <div class="card__bg"></div>
-            <div class="card__content">
-                <div class="card__meta">
-                    <div class="card__avatar" style="background:${ac}22;color:${ac};border-color:${ac}44">${iniziale}</div>
-                    <div>
-                        <div class="card__author">${autore}</div>
-                        ${data_str ? `<div class="card__school">${data_str}</div>` : ''}
-                    </div>
-                </div>
-                <div class="card__subject" style="background:${mc}18;color:${mc};border-color:${mc}44">${a.materia || 'Generale'}</div>
-                <div class="card__title">${a.titolo || 'Senza titolo'}</div>
-                <div class="card__actions">
-                    ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn card__btn--accent">📥 Apri appunto</a>` : ''}
-                    <button class="card__btn card__btn--ghost" onclick="toggleLike(${a.id}, this)">
-                        🤍 <span class="like-count">0</span>
-                    </button>
-                </div>
-            </div>
-            <div class="card__sidebar">
-                <button class="side-btn" id="like-${a.id}" onclick="toggleLike(${a.id}, this)">
-                    <div class="side-btn__icon">🤍</div>
-                    <span class="side-btn__count" id="like-count-${a.id}">0</span>
-                </button>
-                <button class="side-btn" onclick="toast('🔗 Link copiato!')">
-                    <div class="side-btn__icon">🔗</div>
-                    <span class="side-btn__count">Condividi</span>
-                </button>
-            </div>
-        `;
-        feed.appendChild(card);
-    });
-}
-
-/* ── SCROLL HINT ── */
-const feedEl = document.getElementById('feed');
-feedEl.addEventListener('scroll', () => {
-    if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
-    else document.getElementById('scrollHint').classList.remove('hidden');
-}, { passive: true });
-
-/* ── KEYBOARD ── */
-document.addEventListener('keydown', e => {
-    const h = window.innerHeight - 62;
-    if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
-    if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
-});
-
-/* ── MODAL ── */
-function apriModal()  { document.getElementById('modal').classList.add('open'); }
-function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
-document.getElementById('modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('modal')) chiudiModal();
-});
-
-function pubblicaAppunto() {
-    const titolo   = document.getElementById('mTitolo').value.trim();
-    const materia  = document.getElementById('mMateria').value;
-    const contenuto= document.getElementById('mContenuto').value.trim();
-    if (!titolo || !contenuto) { toast('⚠️ Compila titolo e contenuto!'); return; }
-    toast('🚀 Appunto pubblicato!');
-    chiudiModal();
-    document.getElementById('mTitolo').value = '';
-    document.getElementById('mContenuto').value = '';
-}
-
-/* ── TOAST ── */
-function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-}
-
-
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
 </script>
+
 </body>
 </html>

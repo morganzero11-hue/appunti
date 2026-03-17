@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
@@ -16,7 +17,8 @@ export default async function handler(req, res) {
     } else if (req.method === 'GET') {
         // Recupera tutti gli appunti per la pagina "Esplora"
         try {
-            const result = await pool.query('SELECT * FROM appunti ORDER BY data_ricaricamento DESC');
+            // FIX: Corretto in data_caricamento
+            const result = await pool.query('SELECT * FROM appunti ORDER BY data_caricamento DESC');
             res.status(200).json(result.rows);
         } catch (err) {
             res.status(500).json({ error: err.message });
