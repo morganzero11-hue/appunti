@@ -20,7 +20,7 @@
             --accent:   #c8f060;
             --red:      #ff4444;
             --blue:     #60b8f0;
-            --nav-h:    60px;
+            --nav-h:    62px;
             --sidebar:  240px;
             --r:        14px;
         }
@@ -34,38 +34,21 @@
             min-height: 100vh;
         }
 
-        /* ─── NAVBAR ─── */
-        .nav {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: var(--nav-h);
-            background: rgba(15,15,15,0.97);
-            backdrop-filter: blur(12px);
-            display: flex; align-items: center;
-            padding: 0 32px; gap: 28px;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-        .nav__brand {
-            font-family: 'Fraunces', serif;
-            font-size: 1.3rem; font-weight: 900;
-            color: var(--accent);
-            text-decoration: none; white-space: nowrap;
-        }
-        .nav__links { list-style: none; display: flex; gap: 2px; flex: 1; }
-        .nav__links a {
-            padding: 6px 13px; border-radius: 8px;
-            color: var(--muted);
-            text-decoration: none; font-size: 0.87rem; font-weight: 700;
-            transition: all .18s;
-        }
-        .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-        .nav__links a.active { color: var(--accent); }
-        .nav__login {
-            background: var(--accent); color: #0e0e13;
-            padding: 7px 18px; border-radius: 8px;
-            font-size: 0.87rem; font-weight: 800;
-            text-decoration: none; white-space: nowrap;
-        }
+        /* ─── NUOVA NAVBAR ─── */
+        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: #1c1c24; display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; margin-right: 30px; }
+        .topnav__logo { position: relative; width: 26px; height: 26px; }
+        .topnav__logo span { position: absolute; width: 14px; height: 14px; border-radius: 3px; }
+        .topnav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
+        .topnav__logo span:nth-child(2) { background: #ff4d6d; top: 6px; left: 6px; z-index: 2; }
+        .topnav__logo span:nth-child(3) { background: #60b8f0; top: 12px; left: 12px; z-index: 1; }
+        .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; margin: 0; padding: 0; }
+        .topnav__links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: all .2s; }
+        .topnav__links a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .topnav__links a.active { background: #2c2c38; color: #fbbf24; }
+        .topnav__login { background: #f43f5e; color: #fff; padding: 8px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.95rem; transition: opacity .2s; }
+        .topnav__login:hover { opacity: 0.8; }
+        @media (max-width: 768px) { .topnav__links { display: none; } }
 
         /* ─── PAGE LAYOUT ─── */
         .page {
@@ -267,27 +250,29 @@
             .sidebar__label, .sidebar__divider { display: none; }
             .sidebar__item { padding: 7px 12px; font-size: 0.8rem; }
             .main { padding: 24px 16px; }
-            .nav__links { display: none; }
+            .topnav__links { display: none; }
         }
     </style>
 </head>
 <body>
 
-<nav class="nav">
-    <a href="index.html" class="nav__brand">📚 Appunti</a>
-    <ul class="nav__links">
+<nav class="topnav">
+    <a href="index.html" class="topnav__brand">
+        <div class="topnav__logo"><span></span><span></span><span></span></div>
+        Appunti
+    </a>
+    <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
         <li><a href="esplora.html">Esplora</a></li>
         <li><a href="profilo.html">Profilo</a></li>
         <li><a href="utenti.html">Utenti</a></li>
         <li><a href="impostazioni.html" class="active">Impostazioni</a></li>
-        <a href="login.html" class="nav__login">Accedi</a>
     </ul>
+    <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
 <div class="page">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar__label">Account</div>
         <button class="sidebar__item active" onclick="mostraSezione('account', this)">
@@ -307,7 +292,6 @@
 
     <main class="main">
 
-        <!-- ── ACCOUNT ── -->
         <div class="section active" id="s-account">
             <div class="section__title">Account</div>
             <div class="section__sub">Gestisci le informazioni del tuo account.</div>
@@ -359,7 +343,6 @@
             </div>
         </div>
 
-        <!-- ── ASPETTO ── -->
         <div class="section" id="s-aspetto">
             <div class="section__title">Aspetto</div>
             <div class="section__sub">Personalizza come vedi l'app.</div>
@@ -421,7 +404,6 @@
             </div>
         </div>
 
-        <!-- ── ZONA PERICOLO (solo logout) ── -->
         <div class="section" id="s-zona-pericolo">
             <div class="section__title" style="color:var(--red)">🚪 Logout</div>
             <div class="section__sub">Disconnettiti dal tuo account su questo dispositivo.</div>
@@ -488,12 +470,14 @@
 
     /* ── NAVBAR AUTH ── */
     function aggiornaNavbar() {
-        const btnLogin = document.querySelector('.nav__login');
+        const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
         const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
-        btnLogin.style.display = loggato ? 'none' : '';
+        if (loggato) {
+            btnLogin.style.display = 'none';
+        }
     }
-    aggiornaNavbar();
+    document.addEventListener("DOMContentLoaded", aggiornaNavbar);
 </script>
 
 </body>
