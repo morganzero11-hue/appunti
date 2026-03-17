@@ -1,19 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Esplora - Appunti</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="esplora-page">
+
+    <nav class="topnav">
+        <div class="topnav__brand">📚 Appunti</div>
+        <ul class="topnav__links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="esplora.html" class="active">Esplora</a></li>
+            <li><a href="profilo.html">Profilo</a></li>
+            <li><a href="utenti.html">Utenti</a></li>
+            <li><a href="impostazioni.html">Impostazioni</a></li>
+        </ul>
+        <a href="login.html" class="nav__login">Accedi</a>
+    </nav>
+
     <div class="filter-bar">
-        <div class="filter-chip" onclick="filtra('tutti')">Tutti</div>
-        <div class="filter-chip" onclick="filtra('Matematica')">Matematica</div>
-        <div class="filter-chip" onclick="filtra('piopio')">Piopio</div>
+        <div class="filter-chip active" onclick="filtra('tutti', this)">Tutti</div>
+        <div class="filter-chip" onclick="filtra('Matematica', this)">Matematica</div>
+        <div class="filter-chip" onclick="filtra('Scienze', this)">Scienze</div>
+        <div class="filter-chip" onclick="filtra('piopio', this)">Piopio</div>
     </div>
 
     <div id="feed" class="feed-container">
         </div>
+
+    <div id="progressDots" class="progress-dots"></div>
 
     <script src="js/esplora.js"></script>
 </body>
