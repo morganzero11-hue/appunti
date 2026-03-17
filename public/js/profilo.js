@@ -57,40 +57,23 @@ async function salvaProfilo() {
 }
 
 // ==========================================
-// 3. UPLOAD AVATAR (FOTO PROFILO) SU VERCEL BLOB
+// 3. UPLOAD AVATAR (FOTO PROFILO)
 // ==========================================
 async function uploadAvatar(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Feedback visivo: l'utente capisce che sta caricando
-    const avatarPh = document.getElementById('avatarPh');
-    const avatarImg = document.getElementById('avatarImg');
-    
-    // Se è visibile il placeholder, cambiamo l'icona in una clessidra
-    if (avatarPh.style.display !== 'none') {
-        avatarPh.innerHTML = '⏳'; 
-    } else {
-        avatarImg.style.opacity = '0.5'; // Opacizza l'immagine vecchia durante l'upload
-    }
-
     try {
-        // 1. Caricamento su Vercel Blob
-        const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}`, {
+        const response = await fetch(`/api/upload?filename=${file.name}&contentType=${file.type}`, {
             method: 'POST',
             body: file,
         });
-        
-        if (!response.ok) throw new Error("Errore durante l'upload su Blob");
         const newBlob = await response.json();
 
-        // 2. Aggiornamento UI istantaneo
-        avatarImg.src = newBlob.url;
-        avatarImg.style.display = 'block';
-        avatarImg.style.opacity = '1';
-        avatarPh.style.display = 'none';
+        document.getElementById('avatarImg').src = newBlob.url;
+        document.getElementById('avatarImg').style.display = 'block';
+        document.getElementById('avatarPh').style.display = 'none';
 
-        // 3. Aggiornamento nel Database PostgreSQL
         const utenteId = getCookie('utente_id');
         await fetch('/api/aggiorna-profilo', {
             method: 'POST',
@@ -98,41 +81,76 @@ async function uploadAvatar(event) {
             body: JSON.stringify({ id: utenteId, foto_profilo_url: newBlob.url })
         });
 
-        alert("✅ Foto profilo aggiornata con successo!");
+        alert("✅ Foto profilo aggiornata!");
     } catch (error) {
         console.error("Errore upload:", error);
-        alert("❌ Errore durante il caricamento dell'immagine.");
-        // Ripristina l'UI in caso di errore
-        avatarPh.innerHTML = '👤';
-        avatarImg.style.opacity = '1';
     }
 }
 
 // ==========================================
-// 4. CARICA GLI APPUNTI DELL'UTENTE
+// 4. PUBBLICAZIONE NUOVO APPUNTO
+// ==========================================
+async function pubblicaAppunto() {
+    const fileIn = document.getElementById('fileAppunto');
+    const titolo = document.getElementById('titoloAppunto').value;
+    const materia = document.getElementById('materiaAppunto').value;
+    const utenteId = getCookie('utente_id');
+
+    if (!fileIn.files[0]) return alert("Seleziona un file!");
+
+    try {
+        const file = fileIn.files[0];
+        const resBlob = await fetch(`/api/upload?filename=${file.name}`, {
+            method: 'POST',
+            body: file,
+        });
+        const blob = await resBlob.json();
+
+        const resDb = await fetch('/api/appunti', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                utente_id: utenteId,
+                titolo: titolo,
+                materia: materia,
+                file_url: blob.url
+            })
+        });
+
+        if (resDb.ok) {
+            alert("✅ Appunto pubblicato con successo!");
+            caricaMieiAppunti(); // Ricarica la lista per mostrare il nuovo appunto
+        }
+    } catch (err) {
+        console.error("Errore durante la pubblicazione:", err);
+    }
+}
+
+// ==========================================
+// 5. CARICA GLI APPUNTI DELL'UTENTE
 // ==========================================
 async function caricaMieiAppunti() {
     const utenteId = getCookie('utente_id');
     const container = document.getElementById('listaMieiAppunti');
     
-    if (!container) return; 
+    if (!container) return; // Se il container non c'è, ignora
 
     try {
         const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
         const appunti = await res.json();
 
         if (appunti.length === 0) {
-            container.innerHTML = "<p style='color: var(--muted);'>Non hai ancora caricato nulla.</p>";
+            container.innerHTML = "<p style='color: #999;'>Non hai ancora caricato nulla.</p>";
             return;
         }
 
         container.innerHTML = appunti.map(a => `
-            <div class="note-card" style="background: var(--surface); padding: 16px; border-radius: 12px; border: 1px solid var(--border2); margin-bottom: 12px;">
-                <span style="font-size: 0.75rem; background: var(--surface2); padding: 4px 10px; border-radius: 8px; font-weight: bold; color: var(--accent);">${a.materia}</span>
-                <h3 style="margin: 8px 0; font-family: 'Fraunces', serif;">${a.titolo}</h3>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.8rem; color: var(--muted);">
-                    <span>${new Date(a.data_caricamento || Date.now()).toLocaleDateString('it-IT')}</span>
-                    <a href="${a.file_url}" target="_blank" style="color: #0f0f0f; background: var(--accent); padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: 800;">Apri File</a>
+            <div class="note-card">
+                <span class="note-card__tag" style="--c: var(--accent2)">${a.materia}</span>
+                <h3>${a.titolo}</h3>
+                <div class="note-card__footer">
+                    <span>${new Date(a.data_caricamento || Date.now()).toLocaleDateString()}</span>
+                    <a href="${a.file_url}" target="_blank" style="color: var(--accent); font-weight: bold; text-decoration: none;">Apri File</a>
                 </div>
             </div>
         `).join('');
