@@ -9,23 +9,26 @@
 </head>
 <body>
 
+    <!-- TOP NAVBAR -->
     <nav class="topnav">
         <div class="topnav__brand">📚 Appunti</div>
         <ul class="topnav__links">
-            <li><a href="index.html" id="nav-home">Home</a></li>
-            <li><a href="esplora.html" id="nav-esplora">Esplora</a></li>
-            <li><a href="profilo.html" id="nav-profilo">Profilo</a></li>
-            <li><a href="utenti.html" id="nav-utenti">Utenti</a></li>
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="esplora.html">Esplora</a></li>
+            <li><a href="profilo.html">Profilo</a></li>
+            <li><a href="utenti.html">Utenti</a></li>
+            <li><a href="impostazioni.html">Impostazioni</a></li>
+            <a href="login.html" class="nav__login">Accedi</a>
         </ul>
         <div class="topnav__search">
-            <input type="text" id="searchInput" placeholder="Cerca..." autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Cerca appunto o utente…" autocomplete="off">
             <button onclick="cerca()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
         </div>
-        <a href="login.html" class="nav__login" id="authBtn">Accedi</a>
     </nav>
 
+    <!-- HERO BANNER CON SLIDER MATERIE -->
     <header class="hero">
         <div class="hero__overlay"></div>
         <div class="hero__content">
@@ -41,43 +44,224 @@
                 <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
                 <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
                 <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
+                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
+                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
+                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
+                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
+                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
+                <!-- duplicati per loop infinito -->
                 <div class="subject-card" style="--c:#f97316"><span class="subject-card__icon">∑</span><span>Matematica</span></div>
                 <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
+                <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
+                <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
+                <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
+                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
+                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
+                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
+                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
+                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
             </div>
         </div>
     </header>
 
+    <!-- RISULTATI RICERCA -->
     <div class="search-overlay" id="searchOverlay" style="display:none">
         <div class="search-overlay__inner">
             <div class="search-overlay__header">
                 <h2 id="searchTitle">Risultati ricerca</h2>
                 <button onclick="chiudiRicerca()">✕ Chiudi</button>
             </div>
-            <div id="searchUsersSection" style="display:none">
-                <div class="search-section-label">👤 Utenti</div>
+            <div id="searchUsersSection" style="display:none; margin-bottom:36px">
+                <div class="search-section-label">👤 Utenti trovati</div>
                 <div class="users-grid" id="searchUsersGrid"></div>
             </div>
             <div id="searchNotesSection" style="display:none">
-                <div class="search-section-label">📄 Appunti</div>
+                <div class="search-section-label">📄 Appunti trovati</div>
                 <div class="notes-grid" id="searchNotesGrid"></div>
             </div>
-            <p class="no-results" id="noResults" style="display:none">Nessun risultato.</p>
+            <p class="no-results" id="noResults" style="display:none">Nessun risultato trovato.</p>
         </div>
     </div>
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
-        <section class="section-label"><span>Ultimi appunti pubblicati</span></section>
-        <div class="notes-grid" id="homeNotesGrid"></div>
+        <section class="section-label">
+            <span>Ultimi appunti pubblicati</span>
+        </section>
+        <div class="notes-grid" id="homeNotesGrid">
+            <div class="notes-empty">Caricamento in corso…</div>
+        </div>
     </main>
 
     <footer class="site-footer">
-        <p>© 2026 <strong>Appunti</strong></p>
+        <p>© 2026 <strong>Appunti</strong> — Tutti i diritti riservati</p>
     </footer>
 
-    <script src="main.js"></script>
     <script>
-        // Caricamento specifico della Home
+        const coloriMateria = {
+            "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
+            "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
+            "Italiano":"#f59e0b","Inglese":"#6366f1","Informatica":"#ef4444","Arte":"#0ea5e9",
+            "Biologia":"#059669","Geometria":"#7c3aed"
+        };
+
+        // ── CARICA ULTIMI APPUNTI DAL DATABASE ──
+        async function caricaUltimiAppunti() {
+            const grid = document.getElementById('homeNotesGrid');
+            try {
+                const res  = await fetch('/api/appunti?limit=6');
+                const data = await res.json();
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<div class="notes-empty">Nessun appunto pubblicato ancora.</div>';
+                    return;
+                }
+                grid.innerHTML = data.map(n => cardAppunto(n)).join('');
+            } catch {
+                grid.innerHTML = '<div class="notes-empty">Impossibile caricare gli appunti.</div>';
+            }
+        }
+
+        function cardAppunto(n) {
+            const c = coloriMateria[n.materia] || '#888';
+            return `
+                <article class="note-card" onclick="window.location.href='utenti.html?user=${n.username}'">
+                    <div class="note-card__tag" style="--c:${c}">${n.materia}</div>
+                    <h3>${n.titolo}</h3>
+                    <p>${n.descrizione || ''}</p>
+                    <div class="note-card__footer">
+                        <span class="note-card__author">👤 ${n.autore}</span>
+                        <span class="note-card__date">${n.data}</span>
+                    </div>
+                </article>`;
+        }
+
+        function cardUtente(u) {
+            const tags = (u.materie || [])
+                .map(m => `<span class="user-card__tag" style="--c:${coloriMateria[m]||'#888'}">${m}</span>`)
+                .join('');
+            return `
+                <div class="user-card" onclick="window.location.href='utenti.html?user=${u.username}'">
+                    <div class="user-card__avatar">${u.avatar || '👤'}</div>
+                    <div class="user-card__body">
+                        <div class="user-card__name">${u.nome} ${u.cognome}</div>
+                        <div class="user-card__username">@${u.username}</div>
+                        <div class="user-card__bio">${u.bio || ''}</div>
+                        <div class="user-card__tags">${tags}</div>
+                    </div>
+                    <div class="user-card__stats">
+                        <div class="user-card__stat"><strong>${u.appunti_pubblicati || 0}</strong><span>appunti</span></div>
+                        <div class="user-card__stat"><strong>${u.views || 0}</strong><span>views</span></div>
+                    </div>
+                    <div class="user-card__arrow">→</div>
+                </div>`;
+        }
+
+        // ── CERCA UTENTI + APPUNTI DAL DATABASE ──
+        async function cerca() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) return;
+
+            try {
+                const [resU, resA] = await Promise.all([
+                    fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`),
+                    fetch(`/api/cerca-appunti?q=${encodeURIComponent(q)}`)
+                ]);
+                const utenti  = resU.ok  ? await resU.json()  : [];
+                const appunti = resA.ok  ? await resA.json()  : [];
+                mostraRisultati(q, utenti, appunti);
+            } catch {
+                mostraRisultati(q, [], []);
+            }
+        }
+
+        function mostraRisultati(q, utenti, appunti) {
+            const totale = utenti.length + appunti.length;
+
+            document.getElementById('searchTitle').textContent =
+                totale > 0 ? `${totale} risultati per "${q}"` : `Nessun risultato per "${q}"`;
+
+            const usersSection = document.getElementById('searchUsersSection');
+            if (utenti.length > 0) {
+                usersSection.style.display = 'block';
+                document.getElementById('searchUsersGrid').innerHTML = utenti.map(cardUtente).join('');
+            } else {
+                usersSection.style.display = 'none';
+            }
+
+            const notesSection = document.getElementById('searchNotesSection');
+            if (appunti.length > 0) {
+                notesSection.style.display = 'block';
+                document.getElementById('searchNotesGrid').innerHTML = appunti.map(cardAppunto).join('');
+            } else {
+                notesSection.style.display = 'none';
+            }
+
+            document.getElementById('noResults').style.display = totale === 0 ? 'block' : 'none';
+            document.getElementById('searchOverlay').style.display = 'block';
+            document.getElementById('searchOverlay').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function chiudiRicerca() {
+            document.getElementById('searchOverlay').style.display = 'none';
+            document.getElementById('searchInput').value = '';
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') cerca();
+        });
+
+        document.querySelectorAll('.subject-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('searchInput').value = card.querySelector('span:last-child').textContent;
+                cerca();
+            });
+        });
+
+        // Slider drag + loop
+        const slider = document.querySelector('.subjects-slider');
+        const track  = document.getElementById('subjectsTrack');
+        let isDragging = false, startX, scrollStart;
+
+        slider.addEventListener('mousedown', e => {
+            isDragging = true; startX = e.pageX - slider.offsetLeft; scrollStart = slider.scrollLeft;
+            slider.classList.add('dragging');
+        });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            e.preventDefault();
+            slider.scrollLeft = scrollStart - (e.pageX - slider.offsetLeft - startX);
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; slider.classList.remove('dragging'); });
+        slider.addEventListener('scroll', () => {
+            const half = track.scrollWidth / 2;
+            if (slider.scrollLeft >= half) slider.scrollLeft -= half;
+            else if (slider.scrollLeft <= 0) slider.scrollLeft += half;
+        });
+
         caricaUltimiAppunti();
     </script>
+    <!-- INCOLLA QUESTO SCRIPT PRIMA DI </body> IN OGNI PAGINA HTML -->
+<script>
+    // Controlla se l'utente è loggato leggendo il cookie "username"
+    function isLoggato() {
+        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
+    }
+
+    function aggiornaNavbar() {
+        const btnLogin = document.querySelector('.nav__login');
+        if (!btnLogin) return;
+
+        if (isLoggato()) {
+            // Nasconde il tasto "Accedi"
+            btnLogin.style.display = 'none';
+        } else {
+            // Mostra il tasto "Accedi"
+            btnLogin.style.display = '';
+        }
+    }
+
+    // Esegui subito al caricamento della pagina
+    aggiornaNavbar();
+</script>
 </body>
 </html>

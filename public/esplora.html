@@ -4,33 +4,377 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esplora — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Cabinet+Grotesk:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #0f0f0f;
+            --surface: #181818;
+            --surface2:#222222;
+            --border:  rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.14);
+            --text:    #f2f0ec;
+            --muted:   rgba(242,240,236,0.45);
+            --accent:  #c8f060;
+            --nav-h:   62px;
+        }
+
+        html, body { height: 100%; overflow: hidden; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ── TOPNAV ── */
+        .topnav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(26,26,46,0.97);
+            backdrop-filter: blur(12px);
+            display: flex; align-items: center;
+            gap: 32px; padding: 0 32px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .topnav__brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem; font-weight: 900;
+            color: #fff; letter-spacing: -0.5px; white-space: nowrap;
+            text-decoration: none;
+        }
+        .topnav__links {
+            list-style: none; display: flex; gap: 4px; flex: 1;
+        }
+        .topnav__links a {
+            display: block; padding: 6px 14px; border-radius: 8px;
+            color: rgba(255,255,255,0.65); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500; transition: all .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .topnav__links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .topnav__links a.active { background: rgba(255,255,255,0.1); color: #ffd166; }
+
+        /* ── FEED CONTAINER ── */
+        .feed {
+            position: fixed;
+            top: var(--nav-h); left: 0; right: 0;
+            bottom: 0;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .feed::-webkit-scrollbar { display: none; }
+
+        /* ── CARD ── */
+        .card {
+            height: calc(100vh - var(--nav-h));
+            scroll-snap-align: start;
+            display: grid;
+            grid-template-columns: 1fr 72px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:nth-child(odd)  .card__bg { background: radial-gradient(ellipse at 20% 80%, rgba(200,240,96,0.04) 0%, transparent 60%); }
+        .card:nth-child(even) .card__bg { background: radial-gradient(ellipse at 80% 20%, rgba(96,184,240,0.04) 0%, transparent 60%); }
+        .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+        .card__content {
+            padding: 32px 32px 32px 40px;
+            display: flex; flex-direction: column;
+            justify-content: flex-end;
+            position: relative; z-index: 1;
+            max-width: 680px;
+        }
+
+        .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .card__avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 800; flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .card__author { font-size: 0.88rem; font-weight: 800; }
+        .card__school { font-size: 0.75rem; color: var(--muted); }
+
+        .card__subject {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 800;
+            margin-bottom: 12px; align-self: flex-start;
+            border: 1px solid transparent;
+        }
+
+        .card__title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 900; line-height: 1.15;
+            letter-spacing: -0.5px; margin-bottom: 14px;
+        }
+
+        .card__actions { display: flex; align-items: center; gap: 10px; }
+        .card__btn {
+            padding: 9px 20px; border-radius: 10px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.84rem; font-weight: 800;
+            cursor: pointer; border: none;
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: transform .2s, box-shadow .2s;
+            text-decoration: none;
+        }
+        .card__btn:hover { transform: translateY(-2px); }
+        .card__btn--accent { background: var(--accent); color: #0f0f0f; }
+        .card__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
+        .card__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+        /* right sidebar */
+        .card__sidebar {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            padding: 0 0 40px 0; gap: 24px;
+            position: relative; z-index: 1;
+        }
+        .side-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            cursor: pointer; border: none; background: none;
+            color: var(--muted); transition: color .2s, transform .2s;
+        }
+        .side-btn:hover { color: var(--text); transform: scale(1.08); }
+        .side-btn.liked { color: #ff4d6d; }
+        .side-btn__icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: var(--surface); border: 1px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; transition: background .2s, border-color .2s;
+        }
+        .side-btn:hover .side-btn__icon { background: var(--surface2); }
+        .side-btn.liked .side-btn__icon  { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3); }
+        .side-btn__count { font-size: 0.72rem; font-weight: 800; }
+        .card + .card { border-top: 1px solid var(--border); }
+
+        /* scroll hint */
+        .scroll-hint {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: var(--muted); font-size: 0.72rem; font-weight: 700;
+            pointer-events: none; z-index: 50;
+            animation: bounce 2s ease-in-out infinite;
+            opacity: 1; transition: opacity .4s;
+        }
+        .scroll-hint.hidden { opacity: 0; }
+        @keyframes bounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(-6px); }
+        }
+
+        /* upload modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+            z-index: 200; display: none;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface); border: 1px solid var(--border2);
+            border-radius: 20px; padding: 32px;
+            width: 520px; max-width: 95vw;
+            animation: modalIn .3s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform: scale(.95) translateY(12px); } to { opacity:1; transform: none; } }
+        .modal__title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
+        .modal__sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 24px; }
+        .modal__field { margin-bottom: 16px; }
+        .modal__label { font-size: 0.78rem; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        .modal__input, .modal__select {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+            border-radius: 10px; color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.88rem; font-weight: 600;
+            padding: 10px 14px; outline: none; transition: border-color .2s;
+        }
+        .modal__input:focus, .modal__select:focus { border-color: var(--accent); }
+        .modal__input::placeholder { color: var(--muted); font-weight: 400; }
+        .modal__select option { background: #222; }
+        .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
+        .modal__btn {
+            flex: 1; padding: 11px; border-radius: 11px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.88rem; font-weight: 800;
+            cursor: pointer; border: none; transition: transform .2s, box-shadow .2s;
+        }
+        .modal__btn:hover { transform: translateY(-1px); }
+        .modal__btn--accent { background: var(--accent); color: #0f0f0f; }
+        .modal__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.3); }
+        .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+        /* toast */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--accent); color: #0f0f0f;
+            padding: 10px 20px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem;
+            opacity: 0; transform: translateY(10px);
+            transition: all .3s; pointer-events: none; z-index: 9999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 600px) {
+            .card__content { padding: 20px 16px 24px; }
+            .card__title { font-size: 1.4rem; }
+            .topnav__links { display: none; }
+        }
+    </style>
 </head>
-<body class="body-esplora">
+<body>
 
-    <nav class="topnav">
-        <div class="topnav__brand">📚 Appunti</div>
-        <ul class="topnav__links">
-            <li><a href="index.html" id="nav-home">Home</a></li>
-            <li><a href="esplora.html" id="nav-esplora">Esplora</a></li>
-            <li><a href="profilo.html" id="nav-profilo">Profilo</a></li>
-            <li><a href="utenti.html" id="nav-utenti">Utenti</a></li>
-        </ul>
-        <div class="topnav__search">
-            <input type="text" id="searchInput" placeholder="Cerca...">
-            <button onclick="cerca()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+<nav class="topnav">
+    <a href="index.html" class="topnav__brand">📚 Appunti</a>
+    <ul class="topnav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="esplora.html" class="active">Esplora</a></li>
+        <li><a href="profilo.html">Profilo</a></li>
+    </ul>
+</nav>
+
+<div class="feed" id="feed"></div>
+
+<div class="scroll-hint" id="scrollHint">
+    <span style="font-size:1.2rem">↓</span>
+    Scorri per scoprire
+</div>
+
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal__title">✦ Carica un file</div>
+        <div class="modal__sub">Condividi i tuoi appunti in PDF o Immagine</div>
+        
+        <div class="modal__field">
+            <label class="modal__label">Titolo</label>
+            <input class="modal__input" id="mTitolo" type="text" placeholder="es. Derivate — regole fondamentali">
         </div>
-        <a href="login.html" class="nav__login" id="authBtn">Accedi</a>
-    </nav>
+        
+        <div class="modal__field">
+            <label class="modal__label">Materia</label>
+            <select class="modal__select" id="mMateria">
+                <option>Matematica</option>
+                <option>Fisica</option>
+                <option>Scienze</option>
+                <option>Storia</option>
+                <option>Italiano</option>
+                <option>Inglese</option>
+                <option>Informatica</option>
+            </select>
+        </div>
+        
+        <div class="modal__field">
+            <label class="modal__label">Seleziona Documento (PDF/IMG)</label>
+            <input class="modal__input" id="mFile" type="file" accept=".pdf, image/*">
+        </div>
 
-    <div class="feed" id="feed"></div>
-
-    <div class="scroll-hint" id="scrollHint">
-        <span>↓ Scorri per scoprire</span>
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--ghost" onclick="chiudiModal()">Annulla</button>
+            <button class="modal__btn modal__btn--accent" onclick="pubblicaAppunto()">🚀 Pubblica</button>
+        </div>
     </div>
+</div>
 
-    <script src="main.js"></script>
-    <script src="js/esplora.js"></script> 
+<div class="toast" id="toast"></div>
+
+<script src="js/esplora.js"></script>
+
+<script>
+    /* ── SCROLL HINT ── */
+    const feedEl = document.getElementById('feed');
+    feedEl.addEventListener('scroll', () => {
+        if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
+        else document.getElementById('scrollHint').classList.remove('hidden');
+    }, { passive: true });
+
+    /* ── KEYBOARD SCROLL ── */
+    document.addEventListener('keydown', e => {
+        const h = window.innerHeight - 62;
+        if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
+        if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
+    });
+
+    /* ── MODAL ── */
+    function apriModal()  { document.getElementById('modal').classList.add('open'); }
+    function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
+    document.getElementById('modal').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal')) chiudiModal();
+    });
+
+    /* ── VERO CARICAMENTO CON API ── */
+    async function pubblicaAppunto() {
+        const titolo = document.getElementById('mTitolo').value.trim();
+        const materia = document.getElementById('mMateria').value;
+        const fileInput = document.getElementById('mFile').files[0];
+
+        if (!titolo || !fileInput) { 
+            toast('⚠️ Inserisci il titolo e seleziona un file!'); 
+            return; 
+        }
+
+        toast('⏳ Caricamento file in corso... attendi.');
+        
+        // Cambia testo al bottone per evitare doppi click
+        const btn = document.querySelector('.modal__btn--accent');
+        btn.textContent = 'Caricamento...';
+        btn.disabled = true;
+
+        try {
+            // 1. Carica su Vercel Blob
+            const blobRes = await fetch(`/api/upload?filename=${encodeURIComponent(fileInput.name)}`, {
+                method: 'POST',
+                body: fileInput
+            });
+            if (!blobRes.ok) throw new Error('Errore durante il caricamento del file su Blob');
+            const blobData = await blobRes.json();
+
+            // 2. Salva nel Database Postgres
+            const dbRes = await fetch('/api/appunti', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    utente_id: "Utente Anonimo", 
+                    titolo: titolo,
+                    materia: materia,
+                    file_url: blobData.url
+                })
+            });
+            if (!dbRes.ok) throw new Error('Errore salvataggio nel Database');
+
+            toast('🚀 Appunto pubblicato con successo!');
+            chiudiModal();
+            
+            // Pulisci i campi
+            document.getElementById('mTitolo').value = '';
+            document.getElementById('mFile').value = '';
+            
+            // Aggiorna il feed
+            initEsplora();
+
+        } catch (error) {
+            console.error(error);
+            toast('❌ Errore: Riprova più tardi.');
+        } finally {
+            // Ripristina il bottone
+            btn.textContent = '🚀 Pubblica';
+            btn.disabled = false;
+        }
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+</script>
+
 </body>
 </html>
