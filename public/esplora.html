@@ -1,26 +1,20 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Esplora Appunti</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="esplora-page">
-
+<body>
     <div class="filter-bar">
-        <div class="filter-chip active" onclick="filtra('tutti', this)">Tutti</div>
-        <div class="filter-chip" onclick="filtra('Matematica', this)">Matematica</div>
-        <div class="filter-chip" onclick="filtra('Scienze', this)">Scienze</div>
-        <div class="filter-chip" onclick="filtra('piopio', this)">Piopio</div>
+        <div class="filter-chip" onclick="filtra('tutti')">Tutti</div>
+        <div class="filter-chip" onclick="filtra('Matematica')">Matematica</div>
+        <div class="filter-chip" onclick="filtra('piopio')">Piopio</div>
     </div>
 
     <div id="feed" class="feed-container">
         </div>
 
-    <div id="progressDots" class="progress-dots"></div>
-
-    <script src="js/auth.js"></script>
     <script src="js/esplora.js"></script>
 </body>
 </html>
