@@ -2,33 +2,527 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Esplora - Appunti</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #0f0f0f;
+            --surface: #181818;
+            --surface2:#222222;
+            --border:  rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.14);
+            --text:    #f2f0ec;
+            --muted:   rgba(242,240,236,0.45);
+            --accent:  #c8f060;
+            --nav-h:   58px;
+        }
+
+        html, body { height: 100%; overflow: hidden; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ── NAVBAR ── */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(15,15,15,0.96);
+            backdrop-filter: blur(16px);
+            display: flex; align-items: center;
+            padding: 0 24px; gap: 20px;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav__brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem; font-weight: 900;
+            color: var(--accent); text-decoration: none;
+        }
+        .nav__tabs {
+            display: flex; gap: 2px;
+            flex: 1; justify-content: center;
+        }
+        .nav__tab {
+            padding: 6px 16px; border-radius: 8px;
+            font-size: 0.85rem; font-weight: 700;
+            color: var(--muted); cursor: pointer;
+            border: none; background: none;
+            transition: all .2s;
+        }
+        .nav__tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .nav__tab.active { color: var(--accent); background: rgba(200,240,96,0.08); }
+        .nav__upload {
+            background: var(--accent); color: #0f0f0f;
+            border: none; border-radius: 9px;
+            padding: 7px 16px; font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.84rem; font-weight: 800;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .nav__upload:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(200,240,96,0.3); }
+
+        /* ── FEED CONTAINER ── */
+        .feed {
+            position: fixed;
+            top: var(--nav-h); left: 0; right: 0;
+            bottom: 0;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .feed::-webkit-scrollbar { display: none; }
+
+        /* ── CARD ── */
+        .card {
+            height: calc(100vh - var(--nav-h));
+            scroll-snap-align: start;
+            display: grid;
+            grid-template-columns: 1fr 72px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* card backgrounds alternating subtle gradient */
+        .card:nth-child(odd)  .card__bg { background: radial-gradient(ellipse at 20% 80%, rgba(200,240,96,0.04) 0%, transparent 60%); }
+        .card:nth-child(even) .card__bg { background: radial-gradient(ellipse at 80% 20%, rgba(96,184,240,0.04) 0%, transparent 60%); }
+        .card__bg {
+            position: absolute; inset: 0;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* left: content */
+        .card__content {
+            padding: 32px 32px 32px 40px;
+            display: flex; flex-direction: column;
+            justify-content: flex-end;
+            position: relative; z-index: 1;
+            max-width: 680px;
+        }
+
+        .card__meta {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 14px;
+        }
+        .card__avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 800;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .card__author { font-size: 0.88rem; font-weight: 800; }
+        .card__school { font-size: 0.75rem; color: var(--muted); }
+        .card__time   { font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+
+        .card__subject {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 800;
+            margin-bottom: 12px; align-self: flex-start;
+            border: 1px solid transparent;
+        }
+
+        .card__title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 900; line-height: 1.15;
+            letter-spacing: -0.5px;
+            margin-bottom: 14px;
+        }
+
+        .card__preview {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 14px;
+            padding: 18px 22px;
+            font-size: 0.88rem; line-height: 1.7;
+            color: rgba(242,240,236,0.82);
+            max-height: 220px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .card__preview::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, var(--surface));
+            border-radius: 0 0 14px 14px;
+        }
+        .card__preview h3 { font-size: 0.82rem; font-weight: 800; color: var(--accent); margin-bottom: 6px; margin-top: 12px; }
+        .card__preview h3:first-child { margin-top: 0; }
+        .card__preview p { margin-bottom: 6px; }
+        .card__preview ul { padding-left: 16px; }
+        .card__preview li { margin-bottom: 3px; }
+
+        .card__tags {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-bottom: 20px;
+        }
+        .card__tag {
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 700;
+            background: var(--surface2); color: var(--muted);
+            border: 1px solid var(--border2);
+        }
+
+        .card__actions {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card__btn {
+            padding: 9px 20px; border-radius: 10px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.84rem; font-weight: 800;
+            cursor: pointer; border: none;
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .card__btn:hover { transform: translateY(-2px); }
+        .card__btn--accent { background: var(--accent); color: #0f0f0f; }
+        .card__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
+        .card__btn--ghost {
+            background: var(--surface2); color: var(--text);
+            border: 1px solid var(--border2);
+        }
+
+        /* right: sidebar actions */
+        .card__sidebar {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            padding: 0 0 40px 0; gap: 24px;
+            position: relative; z-index: 1;
+        }
+        .side-btn {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 4px;
+            cursor: pointer; border: none; background: none;
+            color: var(--muted); transition: color .2s, transform .2s;
+        }
+        .side-btn:hover { color: var(--text); transform: scale(1.08); }
+        .side-btn.liked { color: #ff4d6d; }
+        .side-btn.saved { color: var(--accent); }
+        .side-btn__icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: var(--surface); border: 1px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            transition: background .2s, border-color .2s;
+        }
+        .side-btn:hover .side-btn__icon { background: var(--surface2); }
+        .side-btn.liked  .side-btn__icon { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3); }
+        .side-btn.saved  .side-btn__icon { background: rgba(200,240,96,0.1); border-color: rgba(200,240,96,0.3); }
+        .side-btn__count { font-size: 0.72rem; font-weight: 800; }
+
+        /* divider between cards */
+        .card + .card { border-top: 1px solid var(--border); }
+
+        /* scroll hint */
+        .scroll-hint {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: var(--muted); font-size: 0.72rem; font-weight: 700;
+            pointer-events: none; z-index: 50;
+            animation: bounce 2s ease-in-out infinite;
+            opacity: 1; transition: opacity .4s;
+        }
+        .scroll-hint.hidden { opacity: 0; }
+        @keyframes bounce {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50%      { transform: translateX(-50%) translateY(-6px); }
+        }
+
+        /* upload modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            z-index: 200; display: none;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 20px;
+            padding: 32px; width: 520px; max-width: 95vw;
+            animation: modalIn .3s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform: scale(.95) translateY(12px); } to { opacity:1; transform: none; } }
+        .modal__title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem; font-weight: 900;
+            margin-bottom: 6px;
+        }
+        .modal__sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 24px; }
+        .modal__field { margin-bottom: 16px; }
+        .modal__label { font-size: 0.78rem; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        .modal__input, .modal__textarea, .modal__select {
+            width: 100%; background: var(--surface2);
+            border: 1px solid var(--border2); border-radius: 10px;
+            color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.88rem; font-weight: 600;
+            padding: 10px 14px; outline: none;
+            transition: border-color .2s;
+        }
+        .modal__input:focus, .modal__textarea:focus, .modal__select:focus { border-color: var(--accent); }
+        .modal__input::placeholder, .modal__textarea::placeholder { color: var(--muted); font-weight: 400; }
+        .modal__textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+        .modal__select option { background: #222; }
+        .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
+        .modal__btn {
+            flex: 1; padding: 11px; border-radius: 11px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.88rem; font-weight: 800;
+            cursor: pointer; border: none;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .modal__btn:hover { transform: translateY(-1px); }
+        .modal__btn--accent { background: var(--accent); color: #0f0f0f; }
+        .modal__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.3); }
+        .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+        /* toast */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--accent); color: #0f0f0f;
+            padding: 10px 20px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem;
+            opacity: 0; transform: translateY(10px);
+            transition: all .3s; pointer-events: none; z-index: 9999;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 600px) {
+            .card__content { padding: 20px 16px 24px; }
+            .card__title { font-size: 1.4rem; }
+            .nav__tabs { display: none; }
+        }
+    </style>
 </head>
-<body class="esplora-page">
+<body>
 
-    <nav class="topnav">
-        <div class="topnav__brand">📚 Appunti</div>
-        <ul class="topnav__links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="esplora.html" class="active">Esplora</a></li>
-            <li><a href="profilo.html">Profilo</a></li>
-            <li><a href="utenti.html">Utenti</a></li>
-            <li><a href="impostazioni.html">Impostazioni</a></li>
-        </ul>
-    </nav>
-
-    <div class="filter-bar">
-        <div class="filter-chip active" onclick="filtra('tutti', this)">Tutti</div>
-        <div class="filter-chip" onclick="filtra('Matematica', this)">Matematica</div>
-        <div class="filter-chip" onclick="filtra('Scienze', this)">Scienze</div>
-        <div class="filter-chip" onclick="filtra('piopio', this)">Piopio</div>
+<!-- NAVBAR -->
+<nav class="nav">
+    <a href="index.html" class="nav__brand">📚 Appunti</a>
+    <div class="nav__tabs">
+        <button class="nav__tab active">Per te</button>
+        <button class="nav__tab">Seguiti</button>
+        <button class="nav__tab">Trending</button>
     </div>
+    <button class="nav__upload" onclick="apriModal()">✦ Carica appunto</button>
+</nav>
 
-    <div id="feed" class="feed-container">
+<!-- FEED -->
+<div class="feed" id="feed"></div>
+
+<!-- SCROLL HINT -->
+<div class="scroll-hint" id="scrollHint">
+    <span style="font-size:1.2rem">↓</span>
+    Scorri per scoprire
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal__title">✦ Carica un appunto</div>
+        <div class="modal__sub">Condividi con tutta la community di Appunti</div>
+        <div class="modal__field">
+            <label class="modal__label">Titolo</label>
+            <input class="modal__input" id="mTitolo" type="text" placeholder="es. Derivate — regole fondamentali">
         </div>
+        <div class="modal__field">
+            <label class="modal__label">Materia</label>
+            <select class="modal__select" id="mMateria">
+                <option>∑ Matematica</option>
+                <option>⚛️ Fisica</option>
+                <option>🔬 Scienze</option>
+                <option>🧪 Chimica</option>
+                <option>📖 Storia</option>
+                <option>✏️ Italiano</option>
+                <option>🗣️ Inglese</option>
+                <option>💻 Informatica</option>
+                <option>🎨 Arte</option>
+                <option>🌍 Geografia</option>
+            </select>
+        </div>
+        <div class="modal__field">
+            <label class="modal__label">Contenuto</label>
+            <textarea class="modal__textarea" id="mContenuto" placeholder="Scrivi o incolla il tuo appunto qui..."></textarea>
+        </div>
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--ghost" onclick="chiudiModal()">Annulla</button>
+            <button class="modal__btn modal__btn--accent" onclick="pubblicaAppunto()">🚀 Pubblica</button>
+        </div>
+    </div>
+</div>
 
-    <script src="js/esplora.js"></script>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── DATI ── */
+const appunti = [];
+
+/* ── RENDER FEED ── */
+function renderFeed(lista) {
+    const feed = document.getElementById('feed');
+    feed.innerHTML = '';
+    if (lista.length === 0) {
+        feed.innerHTML = `
+            <div style="height:calc(100vh - 58px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
+                <div style="font-size:3rem">📭</div>
+                <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto ancora</div>
+                <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Sii il primo a condividere qualcosa con la community!</div>
+                <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica il primo appunto</button>
+            </div>`;
+        return;
+    }
+    lista.forEach(a => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = a.id;
+        card.innerHTML = `
+            <div class="card__bg"></div>
+            <div class="card__content">
+                <div class="card__meta">
+                    <div class="card__avatar" style="background:${a.avatarColor}22;color:${a.avatarColor};border-color:${a.avatarColor}44">${a.iniziale}</div>
+                    <div>
+                        <div class="card__author">@${a.autore}</div>
+                        <div class="card__school">${a.scuola}</div>
+                    </div>
+                    <div class="card__time">${a.tempo}</div>
+                </div>
+                <div class="card__subject" style="background:${a.materiaColor}18;color:${a.materiaColor};border-color:${a.materiaColor}44">${a.materia}</div>
+                <div class="card__title">${a.titolo}</div>
+                <div class="card__preview">${a.contenuto}</div>
+                <div class="card__tags">${a.tags.map(t => `<span class="card__tag">${t}</span>`).join('')}</div>
+                <div class="card__actions">
+                    <button class="card__btn card__btn--accent" onclick="toast('📥 Appunto scaricato!')">📥 Scarica PDF</button>
+                    <button class="card__btn card__btn--ghost" onclick="toast('👁️ Apri appunto completo')">Leggi tutto</button>
+                </div>
+            </div>
+            <div class="card__sidebar">
+                <button class="side-btn ${a.liked ? 'liked' : ''}" id="like-${a.id}" onclick="toggleLike(${a.id})">
+                    <div class="side-btn__icon">${a.liked ? '❤️' : '🤍'}</div>
+                    <span class="side-btn__count" id="like-count-${a.id}">${fmt(a.like)}</span>
+                </button>
+                <button class="side-btn ${a.saved ? 'saved' : ''}" id="save-${a.id}" onclick="toggleSave(${a.id})">
+                    <div class="side-btn__icon">${a.saved ? '🔖' : '📌'}</div>
+                    <span class="side-btn__count" id="save-count-${a.id}">${fmt(a.salvataggi)}</span>
+                </button>
+                <button class="side-btn" onclick="toast('💬 Commenti in arrivo!')">
+                    <div class="side-btn__icon">💬</div>
+                    <span class="side-btn__count">${fmt(a.commenti)}</span>
+                </button>
+                <button class="side-btn" onclick="toast('🔗 Link copiato!')">
+                    <div class="side-btn__icon">🔗</div>
+                    <span class="side-btn__count">Condividi</span>
+                </button>
+            </div>
+        `;
+        feed.appendChild(card);
+    });
+}
+
+function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n; }
+
+renderFeed(appunti);
+
+/* ── NAV TABS ── */
+document.querySelectorAll('.nav__tab').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav__tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (i === 2) {
+            const sorted = [...appunti].sort((a,b) => b.like - a.like);
+            renderFeed(sorted);
+        } else {
+            renderFeed(appunti);
+        }
+        document.getElementById('feed').scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
+/* ── SCROLL HINT ── */
+const feedEl = document.getElementById('feed');
+feedEl.addEventListener('scroll', () => {
+    if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
+    else document.getElementById('scrollHint').classList.remove('hidden');
+}, { passive: true });
+
+/* ── LIKE / SAVE ── */
+function toggleLike(id) {
+    const a = appunti.find(x => x.id === id);
+    a.liked = !a.liked;
+    a.like += a.liked ? 1 : -1;
+    const btn = document.getElementById('like-' + id);
+    btn.classList.toggle('liked', a.liked);
+    btn.querySelector('.side-btn__icon').textContent = a.liked ? '❤️' : '🤍';
+    document.getElementById('like-count-' + id).textContent = fmt(a.like);
+}
+function toggleSave(id) {
+    const a = appunti.find(x => x.id === id);
+    a.saved = !a.saved;
+    a.salvataggi += a.saved ? 1 : -1;
+    const btn = document.getElementById('save-' + id);
+    btn.classList.toggle('saved', a.saved);
+    btn.querySelector('.side-btn__icon').textContent = a.saved ? '🔖' : '📌';
+    document.getElementById('save-count-' + id).textContent = fmt(a.salvataggi);
+    if (a.saved) toast('🔖 Salvato nei tuoi appunti!');
+}
+
+/* ── MODAL ── */
+function apriModal() { document.getElementById('modal').classList.add('open'); }
+function chiudiModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) chiudiModal(); });
+
+function pubblicaAppunto() {
+    const titolo = document.getElementById('mTitolo').value.trim();
+    const materia = document.getElementById('mMateria').value;
+    const contenuto = document.getElementById('mContenuto').value.trim();
+    if (!titolo || !contenuto) { toast('⚠️ Compila titolo e contenuto!'); return; }
+
+    const colori = { '∑ Matematica':'#d97706','⚛️ Fisica':'#2563eb','🔬 Scienze':'#16a34a','🧪 Chimica':'#7c3aed','📖 Storia':'#be185d','✏️ Italiano':'#b45309','🗣️ Inglese':'#4f46e5','💻 Informatica':'#dc2626','🎨 Arte':'#0891b2','🌍 Geografia':'#0d9488' };
+    const avatarColori = ['#7c3aed','#be185d','#2563eb','#16a34a','#d97706','#0891b2'];
+
+    const nuovoAppunto = {
+        id: Date.now(), autore: 'tu',
+        iniziale: 'T', avatarColor: avatarColori[Math.floor(Math.random()*avatarColori.length)],
+        scuola: 'La tua scuola',
+        materia, materiaColor: colori[materia] || '#888',
+        titolo, contenuto: `<p>${contenuto.replace(/\n/g,'</p><p>')}</p>`,
+        tags: [], like: 0, salvataggi: 0, commenti: 0,
+        tempo: 'adesso', liked: false, saved: false
+    };
+
+    appunti.unshift(nuovoAppunto);
+    renderFeed(appunti);
+    chiudiModal();
+    document.getElementById('mTitolo').value = '';
+    document.getElementById('mContenuto').value = '';
+    document.getElementById('feed').scrollTo({ top: 0, behavior: 'smooth' });
+    toast('🚀 Appunto pubblicato!');
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+    const h = window.innerHeight - 58;
+    if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
+    if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
+});
+</script>
 </body>
 </html>

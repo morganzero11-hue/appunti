@@ -208,17 +208,6 @@
         .btn--danger:hover { background: rgba(255,68,68,0.18); box-shadow: none; }
         .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 
-        /* ─── NOTIFICATION ROW ─── */
-        .notif-row {
-            display: flex; align-items: center;
-            padding: 14px 22px; gap: 14px;
-            border-bottom: 1px solid var(--border);
-        }
-        .notif-row:last-child { border-bottom: none; }
-        .notif-row__text { flex: 1; }
-        .notif-row__label { font-size: 0.87rem; font-weight: 700; }
-        .notif-row__desc { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
-
         /* ─── DANGER ZONE ─── */
         .danger-zone {
             background: rgba(255,68,68,0.04);
@@ -226,44 +215,6 @@
             border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
         }
         .danger-zone .setting-row:hover { background: rgba(255,68,68,0.05); }
-
-        /* ─── PRIVACY ─── */
-        .privacy-options { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-        .privacy-opt {
-            display: flex; align-items: center; gap: 14px;
-            padding: 14px 18px; border-radius: 10px;
-            border: 1.5px solid var(--border); cursor: pointer;
-            transition: border-color .2s, background .2s;
-            background: none; color: var(--text); text-align: left; width: 100%;
-        }
-        .privacy-opt:hover { background: var(--surface2); border-color: var(--border2); }
-        .privacy-opt.active { border-color: var(--accent); background: rgba(200,240,96,0.04); }
-        .privacy-opt__radio {
-            width: 18px; height: 18px; border-radius: 50%;
-            border: 2px solid var(--border2); flex-shrink: 0;
-            position: relative; transition: border-color .2s;
-        }
-        .privacy-opt.active .privacy-opt__radio { border-color: var(--accent); }
-        .privacy-opt.active .privacy-opt__radio::after {
-            content: ''; position: absolute;
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--accent); top: 50%; left: 50%; transform: translate(-50%,-50%);
-        }
-        .privacy-opt__text { flex: 1; }
-        .privacy-opt__label { font-size: 0.87rem; font-weight: 800; }
-        .privacy-opt__desc { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
-        .privacy-opt__icon { font-size: 1.2rem; }
-
-        /* ─── MATERIE ─── */
-        .materie-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .materia-tag {
-            padding: 6px 14px; border-radius: 30px;
-            font-size: 0.78rem; font-weight: 800;
-            cursor: pointer; border: 1.5px solid var(--border2);
-            color: var(--muted); transition: all .18s; background: none;
-        }
-        .materia-tag:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
-        .materia-tag.active { color: #0f0f0f; border-color: transparent; }
 
         /* ─── THEME ─── */
         .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
@@ -342,24 +293,10 @@
         <button class="sidebar__item active" onclick="mostraSezione('account', this)">
             <span class="s-icon">👤</span> Account
         </button>
-        <button class="sidebar__item" onclick="mostraSezione('sicurezza', this)">
-            <span class="s-icon">🔒</span> Sicurezza
-        </button>
 
         <div class="sidebar__label">Preferenze</div>
         <button class="sidebar__item" onclick="mostraSezione('aspetto', this)">
             <span class="s-icon">🎨</span> Aspetto
-        </button>
-        <button class="sidebar__item" onclick="mostraSezione('materie', this)">
-            <span class="s-icon">📚</span> Materie
-        </button>
-        <button class="sidebar__item" onclick="mostraSezione('notifiche', this)">
-            <span class="s-icon">🔔</span> Notifiche
-        </button>
-
-        <div class="sidebar__label">Privacy</div>
-        <button class="sidebar__item" onclick="mostraSezione('privacy', this)">
-            <span class="s-icon">🛡️</span> Privacy
         </button>
 
         <div class="sidebar__divider"></div>
@@ -419,38 +356,6 @@
             <div class="btn-row">
                 <button class="btn btn--accent" onclick="salva('Account aggiornato!')">💾 Salva modifiche</button>
                 <button class="btn btn--ghost" onclick="annulla()">Annulla</button>
-            </div>
-        </div>
-
-        <!-- ── SICUREZZA ── -->
-        <div class="section" id="s-sicurezza">
-            <div class="section__title">Sicurezza</div>
-            <div class="section__sub">Tieni al sicuro il tuo account.</div>
-            <div class="setting-group">
-                <div class="setting-row">
-                    <div class="setting-row__icon">🔑</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Password attuale</div>
-                        <input class="setting-input" type="password" placeholder="••••••••">
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <div class="setting-row__icon">🔐</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Nuova password</div>
-                        <input class="setting-input" id="newPass" type="password" placeholder="Min. 8 caratteri">
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <div class="setting-row__icon">✅</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Conferma password</div>
-                        <input class="setting-input" id="confPass" type="password" placeholder="Ripeti la nuova password">
-                    </div>
-                </div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn--accent" onclick="cambiaPassword()">🔒 Cambia password</button>
             </div>
         </div>
 
@@ -516,94 +421,6 @@
             </div>
         </div>
 
-        <!-- ── MATERIE ── -->
-        <div class="section" id="s-materie">
-            <div class="section__title">Materie preferite</div>
-            <div class="section__sub">Seleziona le materie che ti interessano.</div>
-            <div class="setting-group">
-                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
-                    <div style="display:flex;align-items:center;gap:16px;width:100%">
-                        <div class="setting-row__icon">📌</div>
-                        <div class="setting-row__text">
-                            <div class="setting-row__label">Le tue materie</div>
-                            <div class="setting-row__desc">Tocca per selezionare / deselezionare</div>
-                        </div>
-                    </div>
-                    <div class="materie-grid" id="materieGrid"></div>
-                </div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn--accent" onclick="salva('Materie salvate!')">💾 Salva preferenze</button>
-            </div>
-        </div>
-
-        <!-- ── NOTIFICHE ── -->
-        <div class="section" id="s-notifiche">
-            <div class="section__title">Notifiche</div>
-            <div class="section__sub">Scegli quando e come vuoi essere avvisato.</div>
-            <div class="setting-group">
-                <div class="notif-row">
-                    <div class="notif-row__text">
-                        <div class="notif-row__label">🔥 Mi piace ai tuoi appunti</div>
-                        <div class="notif-row__desc">Quando qualcuno mette like a un tuo appunto</div>
-                    </div>
-                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
-                </div>
-                <div class="notif-row">
-                    <div class="notif-row__text">
-                        <div class="notif-row__label">💬 Commenti</div>
-                        <div class="notif-row__desc">Quando qualcuno commenta i tuoi appunti</div>
-                    </div>
-                    <label class="toggle"><input type="checkbox" checked onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
-                </div>
-                <div class="notif-row">
-                    <div class="notif-row__text">
-                        <div class="notif-row__label">📣 Aggiornamenti app</div>
-                        <div class="notif-row__desc">Novità e nuove funzionalità di Appunti</div>
-                    </div>
-                    <label class="toggle"><input type="checkbox" onchange="salva('Salvato!')"><span class="toggle__track"></span></label>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── PRIVACY ── -->
-        <div class="section" id="s-privacy">
-            <div class="section__title">Privacy</div>
-            <div class="section__sub">Controlla chi può vedere i tuoi contenuti.</div>
-            <div class="setting-group">
-                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
-                    <div style="display:flex;align-items:center;gap:16px;width:100%">
-                        <div class="setting-row__icon">👁️</div>
-                        <div class="setting-row__text">
-                            <div class="setting-row__label">Visibilità profilo</div>
-                            <div class="setting-row__desc">Chi può vedere il tuo profilo e i tuoi appunti</div>
-                        </div>
-                    </div>
-                    <div class="privacy-options">
-                        <button class="privacy-opt active" onclick="setPrivacy(this)">
-                            <span class="privacy-opt__icon">🌍</span>
-                            <div class="privacy-opt__text">
-                                <div class="privacy-opt__label">Pubblico</div>
-                                <div class="privacy-opt__desc">Tutti possono vedere il tuo profilo</div>
-                            </div>
-                            <div class="privacy-opt__radio"></div>
-                        </button>
-                        <button class="privacy-opt" onclick="setPrivacy(this)">
-                            <span class="privacy-opt__icon">🔒</span>
-                            <div class="privacy-opt__text">
-                                <div class="privacy-opt__label">Privato</div>
-                                <div class="privacy-opt__desc">Solo tu puoi vedere il tuo profilo</div>
-                            </div>
-                            <div class="privacy-opt__radio"></div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="btn-row">
-                <button class="btn btn--accent" onclick="salva('Privacy aggiornata!')">💾 Salva</button>
-            </div>
-        </div>
-
         <!-- ── ZONA PERICOLO (solo logout) ── -->
         <div class="section" id="s-zona-pericolo">
             <div class="section__title" style="color:var(--red)">🚪 Logout</div>
@@ -635,34 +452,6 @@
         btn.classList.add('active');
     }
 
-    /* ── MATERIE ── */
-    const tutteMaterie = [
-        { n:'∑ Matematica', c:'#d97706' }, { n:'🔬 Scienze',    c:'#16a34a' },
-        { n:'⚛️ Fisica',    c:'#2563eb' }, { n:'🧪 Chimica',    c:'#7c3aed' },
-        { n:'📖 Storia',    c:'#be185d' }, { n:'🌍 Geografia',  c:'#0d9488' },
-        { n:'✏️ Italiano',  c:'#d97706' }, { n:'🗣️ Inglese',   c:'#4f46e5' },
-        { n:'💻 Informatica',c:'#dc2626'},{ n:'🎨 Arte',       c:'#0891b2' },
-    ];
-    let materieAttive = new Set();
-    function renderMaterie() {
-        document.getElementById('materieGrid').innerHTML = tutteMaterie.map(m => `
-            <button class="materia-tag ${materieAttive.has(m.n) ? 'active' : ''}"
-                style="${materieAttive.has(m.n) ? `background:${m.c};color:#fff;border-color:${m.c}` : ''}"
-                onclick="toggleMateria('${m.n}', '${m.c}', this)">${m.n}</button>`).join('');
-    }
-    function toggleMateria(nome, colore, el) {
-        if (materieAttive.has(nome)) {
-            materieAttive.delete(nome);
-            el.classList.remove('active');
-            el.style.background = ''; el.style.color = ''; el.style.borderColor = '';
-        } else {
-            materieAttive.add(nome);
-            el.classList.add('active');
-            el.style.background = colore; el.style.color = '#fff'; el.style.borderColor = colore;
-        }
-    }
-    renderMaterie();
-
     /* ── TEMA ── */
     function setTema(tema, el) {
         document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
@@ -678,32 +467,13 @@
         salva('Colore aggiornato!');
     }
 
-    /* ── PRIVACY ── */
-    function setPrivacy(el) {
-        document.querySelectorAll('.privacy-opt').forEach(o => o.classList.remove('active'));
-        el.classList.add('active');
-        salva('Privacy aggiornata!');
-    }
-
-    /* ── PASSWORD ── */
-    function cambiaPassword() {
-        const np = document.getElementById('newPass').value;
-        const cp = document.getElementById('confPass').value;
-        if (!np) { salva('⚠️ Inserisci la nuova password!'); return; }
-        if (np.length < 8) { salva('⚠️ Minimo 8 caratteri!'); return; }
-        if (np !== cp) { salva('⚠️ Le password non coincidono!'); return; }
-        salva('🔒 Password aggiornata!');
-    }
-
     /* ── LOGOUT ── */
     async function eseguiLogout() {
         try {
             await fetch('/api/logout', { method: 'POST' });
         } catch {}
-        // Cancella i cookie anche lato client
         document.cookie = 'utente_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        // Reindirizza al login
         window.location.href = 'login.html';
     }
 
