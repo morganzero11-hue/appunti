@@ -26,7 +26,9 @@ async function initProfilo() {
 
         document.getElementById('valNome').textContent = user.nome || 'Non impostato';
         document.getElementById('valCognome').textContent = user.cognome || 'Non impostato';
-        document.getElementById('valEmail').textContent = user.email || 'Non impostata';
+        
+        // QUI C'E' LA MODIFICA
+        document.getElementById('valScuola').textContent = user.scuola || 'Non inserita';
         
         if (user.foto_profilo_url) {
             const img = document.getElementById('avatarImg');
@@ -38,7 +40,9 @@ async function initProfilo() {
         console.error("Errore recupero profilo:", err);
         document.getElementById('valNome').textContent = "Ospite";
         document.getElementById('valCognome').textContent = "";
-        document.getElementById('valEmail').textContent = "Effettua il login";
+        
+        // ANCHE QUI E' STATO AGGIORNATO
+        document.getElementById('valScuola').textContent = "Effettua il login";
     }
 }
 
