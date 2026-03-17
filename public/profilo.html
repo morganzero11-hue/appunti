@@ -111,6 +111,34 @@
         <button class="btn-save" onclick="salvaProfilo()">Salva modifiche</button>
     </div>
 </div>
+<hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd;">
+
+<div class="profile-card">
+    <div class="section-label">
+        <span>Pubblica un nuovo appunto</span>
+    </div>
+    
+    <div class="form-group">
+        <label>TITOLO</label>
+        <input type="text" id="titoloAppunto" placeholder="Es: Appunti di Fisica">
+    </div>
+    <div class="form-group">
+        <label>MATERIA</label>
+        <input type="text" id="materiaAppunto" placeholder="Es: Scienze">
+    </div>
+    <div class="form-group">
+        <label>FILE (PDF o Immagine)</label>
+        <input type="file" id="fileAppunto" accept=".pdf,image/*">
+    </div>
+    <button class="btn-save" style="background: var(--accent2);" onclick="pubblicaAppunto()">Pubblica su Esplora</button>
+</div>
+
+<div class="section-label" style="margin-top: 40px;">
+    <span>I miei appunti caricati</span>
+</div>
+<div id="listaMieiAppunti" class="notes-grid">
+    </div>
+    
 
 <div class="form-group">
     <label>Titolo Appunto</label>
