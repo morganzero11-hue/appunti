@@ -3,136 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilo Utente — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0f0f0f; --surface: #181818; --surface2: #222222;
-            --text: #f2f0ec; --muted: rgba(242,240,236,0.45);
-            --accent: #c8f060; --accent2: #ff4d6d; --nav-h: 62px;
-            --radius: 20px;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
-        
-        /* Navbar */
-        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(26,26,46,0.97); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .topnav__brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; }
-        .topnav__links { list-style: none; display: flex; gap: 10px; }
-        .topnav__links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: all .2s; }
-        .topnav__links a:hover, .topnav__links a.active { background: rgba(255,255,255,0.1); color: #fff; }
-        .nav__login { background: var(--accent2); color: #fff; padding: 7px 18px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.87rem; }
-
-        /* Contenitore Profilo */
-        .profile-wrapper { margin-top: calc(var(--nav-h) + 40px); max-width: 600px; margin-left: auto; margin-right: auto; padding: 0 20px; }
-        .profile-card { background: var(--surface); border-radius: var(--radius); padding: 40px; border: 1px solid rgba(255,255,255,0.07); margin-bottom: 30px; }
-        .section-label { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.5rem; margin-bottom: 24px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: block; }
-        
-        /* Avatar */
-        .avatar-upload { text-align: center; margin-bottom: 35px; }
-        .avatar-preview { width: 120px; height: 120px; background: var(--surface2); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--muted); overflow: hidden; cursor: pointer; transition: border-color .2s; }
-        .avatar-preview:hover { border-color: var(--accent); }
-        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-preview span { font-size: 2rem; }
-        
-        /* Info Testuali */
-        .info-group { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
-        .info-label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;}
-        .info-value { font-size: 1.2rem; font-weight: 700; color: #fff; }
-
-        /* Form Input */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--muted); }
-        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--surface2); color: #fff; font-family: 'DM Sans', sans-serif; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-        
-        .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: transform 0.2s; font-size: 1rem; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.2); }
-        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Griglia Appunti */
-        .notes-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .note-card { background: var(--surface2); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .note-card h3 { font-size: 1.1rem; margin-bottom: 5px; color: #fff; }
-        .note-card p { font-size: 0.85rem; color: var(--muted); }
-        .note-link { color: var(--accent); text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 8px 16px; background: rgba(200,240,96,0.1); border-radius: 8px; }
-    </style>
+    <title>Profilo — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav class="topnav">
-    <a href="index.html" class="topnav__brand">📚 Appunti</a>
-    <ul class="topnav__links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="esplora.html">Esplora</a></li>
-        <li><a href="profilo.html" class="active">Profilo</a></li>
-    </ul>
-    <a href="logout.html" class="nav__login">Logout</a>
-</nav>
+    <nav class="topnav">
+        <div class="topnav__brand">📚 Appunti</div>
+        <ul class="topnav__links">
+            <li><a href="index.html" id="nav-home">Home</a></li>
+            <li><a href="esplora.html" id="nav-esplora">Esplora</a></li>
+            <li><a href="profilo.html" id="nav-profilo">Profilo</a></li>
+            <li><a href="utenti.html" id="nav-utenti">Utenti</a></li>
+        </ul>
+        <div class="topnav__search">
+            <input type="text" id="searchInput" placeholder="Cerca...">
+            <button onclick="cerca()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+        </div>
+        <a href="login.html" class="nav__login" id="authBtn">Accedi</a>
+    </nav>
 
-<div class="profile-wrapper">
-    
-    <div class="profile-card">
-        <span class="section-label">Il tuo Profilo</span>
-
-        <div class="avatar-upload">
-            <div class="avatar-preview" onclick="document.getElementById('fileIn').click()" title="Clicca per cambiare foto">
-                <img id="avatarImg" style="display:none;">
-                <span id="avatarPh">📸</span>
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <span class="section-label">Il tuo Profilo</span>
+            <div class="avatar-upload">
+                <div class="avatar-preview" onclick="document.getElementById('fileIn').click()">
+                    <img id="avatarImg" style="display:none;">
+                    <span id="avatarPh">📸</span>
+                </div>
+                <input type="file" id="fileIn" hidden onchange="uploadAvatar(event)" accept="image/*">
             </div>
-            <input type="file" id="fileIn" hidden onchange="uploadAvatar(event)" accept="image/*">
-            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Clicca sulla foto per cambiarla</div>
-        </div>
 
-        <div class="info-group">
-            <span class="info-label">NOME</span>
-            <div class="info-value" id="valNome">Caricamento...</div>
-        </div>
-        
-        <div class="info-group">
-            <span class="info-label">COGNOME</span>
-            <div class="info-value" id="valCognome">Caricamento...</div>
-        </div>
-
-        <div class="info-group">
-            <span class="info-label">EMAIL</span>
-            <div class="info-value" id="valEmail">Caricamento...</div>
-        </div>
+            <div class="info-group">
+                <span class="info-label">NOME</span>
+                <div class="info-value" id="valNome">Caricamento...</div>
+            </div>
+            </div>
     </div>
 
-    <div class="profile-card">
-        <span class="section-label">Pubblica un nuovo appunto</span>
-        
-        <div class="form-group">
-            <label>TITOLO</label>
-            <input type="text" id="titoloAppunto" placeholder="Es: Formule di Trigonometria">
-        </div>
-        <div class="form-group">
-            <label>MATERIA</label>
-            <select id="materiaAppunto">
-                <option>Matematica</option>
-                <option>Fisica</option>
-                <option>Scienze</option>
-                <option>Storia</option>
-                <option>Italiano</option>
-                <option>Inglese</option>
-                <option>Informatica</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>FILE (PDF o Immagine)</label>
-            <input type="file" id="fileAppunto" accept=".pdf,image/*">
-        </div>
-        <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Pubblica su Esplora</button>
-    </div>
-
-    <span class="section-label" style="border:none; margin-bottom: 15px;">I miei appunti caricati</span>
-    <div id="listaMieiAppunti" class="notes-grid">
-        </div>
-
-</div>
-
-<script src="js/profilo.js"></script>
-
+    <script src="main.js"></script>
+    <script src="js/profilo.js"></script>
 </body>
 </html>
