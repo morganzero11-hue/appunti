@@ -26,8 +26,6 @@ async function initProfilo() {
 
         document.getElementById('valNome').textContent = user.nome || 'Non impostato';
         document.getElementById('valCognome').textContent = user.cognome || 'Non impostato';
-        
-        // QUI C'E' LA MODIFICA
         document.getElementById('valScuola').textContent = user.scuola || 'Non inserita';
         
         if (user.foto_profilo_url) {
@@ -40,8 +38,6 @@ async function initProfilo() {
         console.error("Errore recupero profilo:", err);
         document.getElementById('valNome').textContent = "Ospite";
         document.getElementById('valCognome').textContent = "";
-        
-        // ANCHE QUI E' STATO AGGIORNATO
         document.getElementById('valScuola').textContent = "Effettua il login";
     }
 }
@@ -144,7 +140,7 @@ async function pubblicaAppunto() {
     }
 }
 
-// 4. CARICA I MIEI APPUNTI
+// 4. CARICA I MIEI APPUNTI (Aggiornato per mostrare il bottone Elimina)
 async function caricaMieiAppunti() {
     let utenteId = getCookieSafe('utente_id') || '1';
     const container = document.getElementById('listaMieiAppunti');
@@ -160,16 +156,52 @@ async function caricaMieiAppunti() {
         }
 
         container.innerHTML = appunti.map(a => `
-            <div class="note-card">
+            <div class="note-card" id="nota-${a.id}">
                 <div>
                     <h3>${a.titolo}</h3>
                     <p>${a.materia} • ${new Date(a.data_caricamento || Date.now()).toLocaleDateString()}</p>
                 </div>
-                <a href="${a.file_url}" target="_blank" class="note-link">Apri File</a>
+                <div class="note-actions">
+                    <a href="${a.file_url}" target="_blank" class="note-link">Apri File</a>
+                    <button class="btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
+                </div>
             </div>
         `).join('');
     } catch (err) {
         console.error("Errore caricamento tuoi appunti:", err);
+    }
+}
+
+// 5. ELIMINA APPUNTO (Nuova funzione)
+async function eliminaAppunto(appuntoId) {
+    if (!confirm("Sei sicuro di voler eliminare questo appunto? L'azione è irreversibile.")) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/appunti?id=${appuntoId}`, {
+            method: 'DELETE'
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || "Errore durante l'eliminazione");
+        }
+
+        // Rimuove l'elemento dalla pagina senza doverla ricaricare
+        const notaCard = document.getElementById(`nota-${appuntoId}`);
+        if (notaCard) {
+            notaCard.remove();
+        }
+        
+        const container = document.getElementById('listaMieiAppunti');
+        if (container.children.length === 0) {
+            caricaMieiAppunti(); // Ricarica per mostrare il messaggio "Non hai ancora caricato nulla"
+        }
+
+    } catch (err) {
+        console.error("Errore eliminazione:", err);
+        alert("❌ Non è stato possibile eliminare l'appunto.");
     }
 }
 
