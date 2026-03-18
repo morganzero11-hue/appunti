@@ -28,7 +28,7 @@
             color: var(--text);
         }
 
-        /* ─── NUOVA NAVBAR ─── */
+        /* ─── NAVBAR ─── */
         .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: #1c1c24; display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; margin-right: 30px; }
         .topnav__logo { position: relative; width: 26px; height: 26px; }
@@ -65,8 +65,6 @@
             overflow: hidden;
         }
 
-        .card:nth-child(odd)  .card__bg { background: radial-gradient(ellipse at 20% 80%, rgba(200,240,96,0.04) 0%, transparent 60%); }
-        .card:nth-child(even) .card__bg { background: radial-gradient(ellipse at 80% 20%, rgba(96,184,240,0.04) 0%, transparent 60%); }
         .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 
         .card__content {
@@ -78,7 +76,6 @@
         }
 
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        
         .card__author { font-size: 0.88rem; font-weight: 800; }
         .card__school { font-size: 0.75rem; color: var(--muted); }
 
@@ -110,7 +107,6 @@
         .card__btn:hover { transform: translateY(-2px); }
         .card__btn--accent { background: var(--accent); color: #0f0f0f; }
         .card__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
-        .card__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 
         /* right sidebar */
         .card__sidebar {
@@ -120,7 +116,6 @@
             position: relative; z-index: 1;
         }
         
-        /* -- NUOVA REGOLA PER L'AVATAR NELLA SIDEBAR -- */
         .sidebar-avatar {
             width: 52px; height: 52px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -192,7 +187,6 @@
             padding: 10px 14px; outline: none; transition: border-color .2s;
         }
         .modal__input:focus, .modal__select:focus { border-color: var(--accent); }
-        .modal__input::placeholder { color: var(--muted); font-weight: 400; }
         .modal__select option { background: #222; }
         .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
         .modal__btn {
@@ -203,7 +197,6 @@
         }
         .modal__btn:hover { transform: translateY(-1px); }
         .modal__btn--accent { background: var(--accent); color: #0f0f0f; }
-        .modal__btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.3); }
         .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 
         /* toast */
@@ -268,6 +261,7 @@
                 <option>Italiano</option>
                 <option>Inglese</option>
                 <option>Informatica</option>
+                <option>Altro</option>
             </select>
         </div>
         
@@ -285,9 +279,129 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="js/esplora.js"></script>
-
 <script>
+    /* ── HELPER COOKIE ── */
+    function getCookieSafe(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    let tuttiAppunti = [];
+
+    /* ── INIT: Recupera dal server ── */
+    async function initEsplora() {
+        try {
+            const res = await fetch('/api/appunti');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            tuttiAppunti = await res.json();
+            renderFeed(tuttiAppunti);
+        } catch (err) {
+            console.error('Errore recupero appunti:', err);
+            mostraErrore();
+        }
+    }
+
+    /* ── FORMATTA DATA ── */
+    function formatData(dateStr) {
+        if (!dateStr) return 'Recente';
+        const d = new Date(dateStr);
+        if (isNaN(d)) return 'Recente';
+        const diff = Math.floor((new Date() - d) / 1000);
+        if (diff < 60)     return 'adesso';
+        if (diff < 3600)   return `${Math.floor(diff / 60)} min fa`;
+        if (diff < 86400)  return `${Math.floor(diff / 3600)} ore fa`;
+        if (diff < 604800) return `${Math.floor(diff / 86400)} giorni fa`;
+        return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+    }
+
+    /* ── RENDER FEED (Stile "TikTok") ── */
+    function renderFeed(lista) {
+        const feed = document.getElementById('feed');
+        feed.innerHTML = '';
+
+        if (!lista || lista.length === 0) {
+            feed.innerHTML = `
+                <div style="height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
+                    <div style="font-size:3rem">📭</div>
+                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto ancora</div>
+                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Sii il primo a condividere qualcosa con la community!</div>
+                    <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica un file</button>
+                </div>`;
+            return;
+        }
+
+        const COLORI = {
+            'Matematica':'#d97706','Fisica':'#2563eb','Scienze':'#16a34a',
+            'Storia':'#be185d','Italiano':'#b45309','Inglese':'#4f46e5','Informatica':'#dc2626', 'Altro':'#888888'
+        };
+        const avatarColori = ['#7c3aed','#be185d','#2563eb','#16a34a','#d97706','#0891b2','#dc2626'];
+
+        lista.forEach(a => {
+            const mc = COLORI[a.materia] || '#888';
+            
+            const username = a.username || a.utente_id || 'Anonimo'; 
+            const autore = String(a.nome ? `${a.nome} ${a.cognome || ''}` : username);
+            const iniziale = autore[0].toUpperCase();
+            const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
+            const data_str = formatData(a.data_caricamento);
+
+            const fotoHTML = a.foto_profilo_url 
+                ? `<img src="${a.foto_profilo_url}" alt="Foto Profilo" style="width: 100%; height: 100%; object-fit: cover;">`
+                : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            // Lo sfondo colorato dinamico
+            card.innerHTML = `
+                <div class="card__bg" style="background: radial-gradient(ellipse at center, ${mc}33 0%, transparent 70%);"></div>
+                
+                <div class="card__content">
+                    <div class="card__meta">
+                        <div>
+                            <div class="card__author">@${username}</div>
+                            <div class="card__school">${data_str}</div>
+                        </div>
+                    </div>
+                    <div class="card__subject" style="background:${mc}18;color:${mc};border-color:${mc}44">${a.materia || 'Generale'}</div>
+                    <div class="card__title">${a.titolo || 'Senza titolo'}</div>
+                    <div class="card__actions">
+                        ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn card__btn--accent">📥 Apri Appunto</a>` : ''}
+                    </div>
+                </div>
+                
+                <div class="card__sidebar">
+                    <a href="utenti.html?user=${encodeURIComponent(username)}" class="sidebar-avatar" style="background:${ac}22; border: 2px solid #fff;">
+                        ${fotoHTML}
+                    </a>
+
+                    <button class="side-btn" onclick="toast('🤍 Mi piace aggiunto!')">
+                        <div class="side-btn__icon">🤍</div>
+                        <span class="side-btn__count">Like</span>
+                    </button>
+                    <button class="side-btn" onclick="navigator.clipboard.writeText('${a.file_url}'); toast('🔗 Link copiato!')">
+                        <div class="side-btn__icon">🔗</div>
+                        <span class="side-btn__count">Copia</span>
+                    </button>
+                </div>
+            `;
+            feed.appendChild(card);
+        });
+    }
+
+    function mostraErrore() {
+        const feed = document.getElementById('feed');
+        if (!feed) return;
+        feed.innerHTML = `
+            <div style="height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
+                <div style="font-size:3rem">⚠️</div>
+                <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Errore Server</div>
+                <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Impossibile caricare dal database.</div>
+            </div>`;
+    }
+
     /* ── SCROLL HINT ── */
     const feedEl = document.getElementById('feed');
     feedEl.addEventListener('scroll', () => {
@@ -314,6 +428,14 @@
         const titolo = document.getElementById('mTitolo').value.trim();
         const materia = document.getElementById('mMateria').value;
         const fileInput = document.getElementById('mFile').files[0];
+        
+        // RECUPERA L'ID REALE DAL COOKIE
+        const utenteId = getCookieSafe('utente_id');
+
+        if (!utenteId) {
+            toast('⚠️ Devi effettuare il login per pubblicare!');
+            return;
+        }
 
         if (!titolo || !fileInput) { 
             toast('⚠️ Inserisci il titolo e seleziona un file!'); 
@@ -322,13 +444,11 @@
 
         toast('⏳ Caricamento file in corso... attendi.');
         
-        // Cambia testo al bottone per evitare doppi click
         const btn = document.querySelector('.modal__btn--accent');
         btn.textContent = 'Caricamento...';
         btn.disabled = true;
 
         try {
-            // 1. Carica su Vercel Blob
             const blobRes = await fetch(`/api/upload?filename=${encodeURIComponent(fileInput.name)}`, {
                 method: 'POST',
                 body: fileInput
@@ -336,12 +456,12 @@
             if (!blobRes.ok) throw new Error('Errore durante il caricamento del file su Blob');
             const blobData = await blobRes.json();
 
-            // 2. Salva nel Database Postgres
+            // INVIA L'ID REALE AL DATABASE
             const dbRes = await fetch('/api/appunti', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    utente_id: "Utente Anonimo", 
+                    utente_id: utenteId, 
                     titolo: titolo,
                     materia: materia,
                     file_url: blobData.url
@@ -352,18 +472,15 @@
             toast('🚀 Appunto pubblicato con successo!');
             chiudiModal();
             
-            // Pulisci i campi
             document.getElementById('mTitolo').value = '';
             document.getElementById('mFile').value = '';
             
-            // Aggiorna il feed
             initEsplora();
 
         } catch (error) {
             console.error(error);
             toast('❌ Errore: Riprova più tardi.');
         } finally {
-            // Ripristina il bottone
             btn.textContent = '🚀 Pubblica';
             btn.disabled = false;
         }
@@ -374,14 +491,18 @@
         t.textContent = msg; t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
     }
-</script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
+    /* ── AUTH E AVVIO ── */
+    function aggiornaNavbar() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
-        const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
+        const loggato = getCookieSafe('username') !== null;
         if (loggato) { btnLogin.style.display = 'none'; }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        aggiornaNavbar();
+        initEsplora();
     });
 </script>
 
