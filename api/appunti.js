@@ -1,64 +1,84 @@
 const { Pool } = require('pg');
 
-const pool = new Pool({ 
-    connectionString: process.env.DATABASE_URL, 
-    ssl: { rejectUnauthorized: false } 
-});
+// Configurazione database
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
-    // 1. GESTIONE POST: Salva un nuovo appunto nel database
-    if (req.method === 'POST') {
-        const { utente_id, titolo, materia, file_url } = req.body;
-        try {
-            await pool.query(
-                'INSERT INTO appunti (utente_id, titolo, materia, file_url) VALUES ($1, $2, $3, $4)',
-                [utente_id, titolo, materia, file_url]
-            );
-            return res.status(200).json({ success: true });
-        } catch (err) {
-            console.error("Errore inserimento:", err);
-            return res.status(500).json({ error: err.message });
-        }
-        
-    // 2. GESTIONE GET: Recupera gli appunti dal database
-    } else if (req.method === 'GET') {
-        const { utente_id } = req.query;
+    // ==========================================
+    // 1. LETTURA APPUNTI (GET)
+    // ==========================================
+    if (req.method === 'GET') {
+        const { utente_id, username } = req.query;
+
         try {
             let result;
-            if (utente_id) {
+
+            if (username) {
+                // Se c'è lo username, uniamo la tabella appunti con la tabella utenti
+                result = await pool.query(`
+                    SELECT a.* FROM appunti a
+                    JOIN utenti u ON a.utente_id = u.id
+                    WHERE u.username ILIKE $1
+                    ORDER BY a.data_caricamento DESC
+                `, [username]);
+            } 
+            else if (utente_id) {
+                // Se c'è l'ID utente (es. per il proprio profilo)
                 result = await pool.query(
                     'SELECT * FROM appunti WHERE utente_id = $1 ORDER BY data_caricamento DESC',
                     [utente_id]
                 );
-            } else {
-                result = await pool.query(
-                    'SELECT * FROM appunti ORDER BY data_caricamento DESC'
-                );
+            } 
+            else {
+                // Se non c'è nulla, restituisce tutti gli appunti (per la pagina Esplora)
+                result = await pool.query('SELECT * FROM appunti ORDER BY data_caricamento DESC');
             }
+
             return res.status(200).json(result.rows);
         } catch (err) {
-            console.error("Errore recupero:", err);
             return res.status(500).json({ error: err.message });
         }
+    }
+
+    // ==========================================
+    // 2. CREAZIONE NUOVO APPUNTO (POST)
+    // ==========================================
+    if (req.method === 'POST') {
+        const { utente_id, titolo, materia, file_url } = req.body;
         
-    // 3. GESTIONE DELETE: Elimina un appunto dal database
-    } else if (req.method === 'DELETE') {
-        const { id } = req.query; // Recuperiamo l'ID dell'appunto da eliminare
-        
+        if (!utente_id || !titolo || !file_url) {
+            return res.status(400).json({ error: "Dati mancanti" });
+        }
+
+        try {
+            await pool.query(
+                'INSERT INTO appunti (utente_id, titolo, materia, file_url, data_caricamento) VALUES ($1, $2, $3, $4, NOW())',
+                [utente_id, titolo, materia, file_url]
+            );
+            return res.status(201).json({ success: true });
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // ==========================================
+    // 3. ELIMINAZIONE APPUNTO (DELETE)
+    // ==========================================
+    if (req.method === 'DELETE') {
+        const { id } = req.query;
+
         if (!id) {
             return res.status(400).json({ error: "ID appunto mancante" });
         }
 
         try {
-            // Eseguiamo la query di cancellazione
             await pool.query('DELETE FROM appunti WHERE id = $1', [id]);
-            return res.status(200).json({ success: true, message: "Appunto eliminato" });
+            return res.status(200).json({ success: true });
         } catch (err) {
-            console.error("Errore cancellazione:", err);
             return res.status(500).json({ error: err.message });
         }
-        
-    } else {
-        return res.status(405).json({ error: "Metodo non consentito" });
     }
+
+    // Se si usa un metodo non supportato
+    return res.status(405).end();
 }
