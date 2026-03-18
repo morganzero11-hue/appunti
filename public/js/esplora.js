@@ -26,7 +26,7 @@ function formatData(dateStr) {
     return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
 }
 
-/* ── RENDER FEED (Stile "Card") ── */
+/* ── RENDER FEED (Stile "TikTok") ── */
 function renderFeed(lista) {
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
@@ -50,30 +50,47 @@ function renderFeed(lista) {
 
     lista.forEach(a => {
         const mc = COLORI[a.materia] || '#888';
-        const autore = String(a.utente_id || 'Anonimo');
+        
+        // Cerchiamo di recuperare username e foto se disponibili dalla JOIN SQL
+        // Altrimenti usiamo fallback
+        const username = a.username || a.utente_id || 'Anonimo'; 
+        const autore = String(a.nome ? `${a.nome} ${a.cognome || ''}` : username);
         const iniziale = autore[0].toUpperCase();
         const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
         const data_str = formatData(a.data_caricamento);
 
+        // Se abbiamo la foto dal db la mostriamo, altrimenti iniziale colorata
+        const fotoHTML = a.foto_profilo_url 
+            ? `<img src="${a.foto_profilo_url}" alt="Foto Profilo" style="width: 100%; height: 100%; object-fit: cover;">`
+            : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
+
         const card = document.createElement('div');
         card.className = 'card';
+        
+        // 1. Aggiungiamo un background dinamico in base alla materia come "Preview"
+        // 2. Spostiamo l'avatar nella sidebar di destra con il link al profilo
         card.innerHTML = `
-            <div class="card__bg"></div>
+            <div class="card__bg" style="background: radial-gradient(ellipse at center, ${mc}33 0%, transparent 70%);"></div>
+            
             <div class="card__content">
                 <div class="card__meta">
-                    <div class="card__avatar" style="background:${ac}22;color:${ac};border-color:${ac}44">${iniziale}</div>
                     <div>
-                        <div class="card__author">${autore}</div>
+                        <div class="card__author">@${username}</div>
                         <div class="card__school">${data_str}</div>
                     </div>
                 </div>
                 <div class="card__subject" style="background:${mc}18;color:${mc};border-color:${mc}44">${a.materia || 'Generale'}</div>
                 <div class="card__title">${a.titolo || 'Senza titolo'}</div>
                 <div class="card__actions">
-                    ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn card__btn--accent">📥 Apri PDF/Immagine</a>` : ''}
+                    ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn card__btn--accent">📥 Apri Appunto</a>` : ''}
                 </div>
             </div>
+            
             <div class="card__sidebar">
+                <a href="utenti.html?user=${encodeURIComponent(username)}" class="sidebar-avatar" style="background:${ac}22; border: 2px solid #fff;">
+                    ${fotoHTML}
+                </a>
+
                 <button class="side-btn" onclick="toast('🤍 Mi piace aggiunto!')">
                     <div class="side-btn__icon">🤍</div>
                     <span class="side-btn__count">Like</span>
