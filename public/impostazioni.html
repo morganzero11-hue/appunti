@@ -172,6 +172,7 @@
         }
         .setting-input:focus { border-color: var(--accent); }
         .setting-input::placeholder { color: var(--muted); font-weight: 400; }
+        .setting-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ─── BUTTONS ─── */
         .btn {
@@ -301,7 +302,7 @@
                     <div class="setting-row__text">
                         <div class="setting-row__label">Username</div>
                         <div class="setting-row__desc">Il nome che appare sui tuoi appunti</div>
-                        <input class="setting-input" id="setNick" type="text" maxlength="30" placeholder="es. studente_curioso99">
+                        <input class="setting-input" id="setNick" type="text" maxlength="30" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
@@ -309,7 +310,7 @@
                     <div class="setting-row__text">
                         <div class="setting-row__label">Email</div>
                         <div class="setting-row__desc">Usata per notifiche e recupero account</div>
-                        <input class="setting-input" id="setEmail" type="email" placeholder="tuaemail@esempio.it">
+                        <input class="setting-input" id="setEmail" type="email" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
@@ -317,7 +318,7 @@
                     <div class="setting-row__text">
                         <div class="setting-row__label">Scuola / Università</div>
                         <div class="setting-row__desc">Opzionale — visibile nel profilo</div>
-                        <input class="setting-input" id="setScuola" type="text" placeholder="es. Liceo Scientifico Volta">
+                        <input class="setting-input" id="setScuola" type="text" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
@@ -339,7 +340,7 @@
             </div>
             <div class="btn-row">
                 <button class="btn btn--accent" onclick="salva('Account aggiornato!')">💾 Salva modifiche</button>
-                <button class="btn btn--ghost" onclick="annulla()">Annulla</button>
+                <button class="btn btn--ghost" onclick="caricaDatiAccount()">Annulla</button>
             </div>
         </div>
 
@@ -426,6 +427,44 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    /* ── HELPER COOKIE ── */
+    function getCookieSafe(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    /* ── CARICAMENTO DATI ACCOUNT ── */
+    async function caricaDatiAccount() {
+        const utenteId = getCookieSafe('utente_id');
+        
+        // Se non sei loggato, disabilita i campi e metti un placeholder
+        if (!utenteId) {
+            document.getElementById('setNick').disabled = true;
+            document.getElementById('setNick').placeholder = 'Effettua il login';
+            document.getElementById('setEmail').disabled = true;
+            document.getElementById('setEmail').placeholder = 'Effettua il login';
+            document.getElementById('setScuola').disabled = true;
+            document.getElementById('setScuola').placeholder = 'Effettua il login';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/utente?id=${utenteId}`);
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById('setNick').value = user.username || '';
+                document.getElementById('setEmail').value = user.email || '';
+                document.getElementById('setScuola').value = user.scuola || '';
+            }
+        } catch (err) {
+            console.error("Errore nel caricamento dei dati utente:", err);
+            salva("Errore nel recuperare i dati");
+        }
+    }
+
+
     /* ── NAVIGAZIONE ── */
     function mostraSezione(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -434,14 +473,13 @@
         btn.classList.add('active');
     }
 
-    /* ── TEMA ── */
+    /* ── TEMA E ASPETTO ── */
     function setTema(tema, el) {
         document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
         salva('Tema ' + tema + ' applicato!');
     }
 
-    /* ── ACCENTO ── */
     function setAccento(colore, el) {
         document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
         el.classList.add('active');
@@ -449,14 +487,13 @@
         salva('Colore aggiornato!');
     }
 
-    /* ── LOGOUT MODIFICATO ── */
+    /* ── LOGOUT ── */
     async function eseguiLogout() {
         try {
             await fetch('/api/logout', { method: 'POST' });
         } catch {}
         document.cookie = 'utente_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        // Redirige a index.html come richiesto
         window.location.href = 'index.html';
     }
 
@@ -467,8 +504,6 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-    function annulla() { salva('Modifiche annullate'); }
-
     /* ── NAVBAR AUTH ── */
     function aggiornaNavbar() {
         const btnLogin = document.getElementById('navLoginBtn');
@@ -478,7 +513,12 @@
             btnLogin.style.display = 'none';
         }
     }
-    document.addEventListener("DOMContentLoaded", aggiornaNavbar);
+
+    // Al caricamento della pagina, aggiorna la navbar e compila i campi utente
+    document.addEventListener("DOMContentLoaded", () => {
+        aggiornaNavbar();
+        caricaDatiAccount();
+    });
 </script>
 
 </body>
