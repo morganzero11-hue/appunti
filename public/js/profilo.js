@@ -102,12 +102,13 @@ async function uploadAvatar(event) {
     }
 }
 
-// 3. PUBBLICAZIONE APPUNTO
+// 3. PUBBLICAZIONE APPUNTO CON PREVIEW
 async function pubblicaAppunto() {
     let utenteId = getCookieSafe('utente_id');
     if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
 
     const fileIn = document.getElementById('fileAppunto');
+    const coverIn = document.getElementById('coverAppunto');
     const titolo = document.getElementById('titoloAppunto').value.trim();
     const materia = document.getElementById('materiaAppunto').value;
 
@@ -122,14 +123,32 @@ async function pubblicaAppunto() {
 
     try {
         const file = fileIn.files[0];
-        
-        const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        let coverUrl = null;
+
+        // Se l'utente ha inserito una copertina, carichiamola
+        if (coverIn.files[0]) {
+            btn.textContent = "⏳ Caricamento Preview...";
+            const coverFile = coverIn.files[0];
+            const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverFile.name)}`, {
+                method: 'POST',
+                body: coverFile,
+            });
+            if (resCover.ok) {
+                const coverBlob = await resCover.json();
+                coverUrl = coverBlob.url;
+            }
+        }
+
+        // Caricamento del file principale
+        btn.textContent = "⏳ Caricamento Appunto...";
+        const resBlob = await fetch(`/api/upload?filename=appunto_${encodeURIComponent(file.name)}`, {
             method: 'POST',
             body: file,
         });
         if (!resBlob.ok) throw new Error("Errore Blob");
         const blob = await resBlob.json();
 
+        btn.textContent = "⏳ Salvataggio nel Database...";
         const resDb = await fetch('/api/appunti', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -137,7 +156,8 @@ async function pubblicaAppunto() {
                 utente_id: utenteId,
                 titolo: titolo,
                 materia: materia,
-                file_url: blob.url
+                file_url: blob.url,
+                cover_url: coverUrl
             })
         });
         if (!resDb.ok) throw new Error("Errore salvataggio DB");
@@ -156,6 +176,7 @@ async function pubblicaAppunto() {
         alert("✅ Appunto pubblicato con successo!");
         document.getElementById('titoloAppunto').value = '';
         fileIn.value = '';
+        coverIn.value = '';
         if (typeof caricaMieiAppunti === 'function') caricaMieiAppunti();
     }
 }

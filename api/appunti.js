@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     // 2. CREAZIONE NUOVO APPUNTO (POST)
     // ==========================================
     if (req.method === 'POST') {
-        const { utente_id, titolo, materia, file_url } = req.body;
+        const { utente_id, titolo, materia, file_url, cover_url } = req.body;
         
         if (!utente_id || !titolo || !file_url) {
             return res.status(400).json({ error: "Dati mancanti" });
@@ -50,8 +50,8 @@ export default async function handler(req, res) {
 
         try {
             await pool.query(
-                'INSERT INTO appunti (utente_id, titolo, materia, file_url, data_caricamento) VALUES ($1, $2, $3, $4, NOW())',
-                [utente_id, titolo, materia, file_url]
+                'INSERT INTO appunti (utente_id, titolo, materia, file_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, NOW())',
+                [utente_id, titolo, materia, file_url, cover_url || null]
             );
             return res.status(201).json({ success: true });
         } catch (err) {
