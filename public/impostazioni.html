@@ -437,10 +437,9 @@
 
     /* ── CARICAMENTO DATI ACCOUNT ── */
     async function caricaDatiAccount() {
-        const utenteId = getCookieSafe('utente_id');
+        const usernameLoggato = getCookieSafe('username');
         
-        // Se non sei loggato, disabilita i campi e metti un placeholder
-        if (!utenteId) {
+        if (!usernameLoggato) {
             document.getElementById('setNick').disabled = true;
             document.getElementById('setNick').placeholder = 'Effettua il login';
             document.getElementById('setEmail').disabled = true;
@@ -451,12 +450,14 @@
         }
 
         try {
-            const res = await fetch(`/api/utente?id=${utenteId}`);
+            const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
             if (res.ok) {
                 const user = await res.json();
                 document.getElementById('setNick').value = user.username || '';
                 document.getElementById('setEmail').value = user.email || '';
                 document.getElementById('setScuola').value = user.scuola || '';
+            } else {
+                console.error("Utente non trovato nel DB");
             }
         } catch (err) {
             console.error("Errore nel caricamento dei dati utente:", err);
@@ -504,17 +505,18 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-    /* ── NAVBAR AUTH ── */
+    function annulla() { salva('Modifiche annullate'); }
+
+    /* ── NAVBAR AUTH E AVVIO ── */
     function aggiornaNavbar() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
-        const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
+        const loggato = getCookieSafe('username') !== null;
         if (loggato) {
             btnLogin.style.display = 'none';
         }
     }
 
-    // Al caricamento della pagina, aggiorna la navbar e compila i campi utente
     document.addEventListener("DOMContentLoaded", () => {
         aggiornaNavbar();
         caricaDatiAccount();
