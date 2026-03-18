@@ -54,7 +54,6 @@
         .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
         .nav__links a.active { color: var(--accent); }
         
-        /* ── BOTTONI NAVBAR EXTRA ── */
         .nav__login {
             background: var(--accent);
             color: #0a0a0a;
@@ -63,7 +62,7 @@
             text-decoration: none;
             font-weight: 800;
             font-size: 0.9rem;
-            margin-left: auto; /* Lo spinge tutto a destra */
+            margin-left: auto;
             transition: transform 0.2s;
         }
         .nav__login:hover { transform: scale(1.05); }
@@ -97,7 +96,6 @@
             margin-bottom: 40px; text-align: center; font-weight: 500;
         }
 
-        /* Barra di ricerca */
         .search-box {
             width: 100%; max-width: 560px;
             position: relative; margin-bottom: 36px;
@@ -125,7 +123,6 @@
         }
         .search-box__btn:hover { transform: translateY(-50%) scale(1.08); box-shadow: 0 4px 14px rgba(240,192,64,0.35); }
 
-        /* Risultati */
         .results-container { width: 100%; max-width: 560px; }
 
         .results-label {
@@ -134,7 +131,6 @@
             color: var(--muted); margin-bottom: 12px; padding-left: 2px;
         }
 
-        /* Card utente nei risultati */
         .user-result {
             display: flex; align-items: center; gap: 14px;
             padding: 14px 16px;
@@ -169,7 +165,6 @@
         }
         .user-result:hover .user-result__arrow { transform: translateX(4px); color: var(--accent); }
 
-        /* Hint / no match */
         .search-hint {
             text-align: center; padding: 32px 20px;
             color: var(--muted); font-size: 0.88rem; line-height: 1.6;
@@ -231,7 +226,6 @@
 
         .main { max-width: 800px; margin: 0 auto; padding: 28px 32px 80px; }
 
-        /* Stats */
         .stats-row {
             display: grid; grid-template-columns: repeat(2, 1fr);
             gap: 12px; margin-bottom: 28px;
@@ -250,16 +244,15 @@
             text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
         }
 
-        /* Griglia appunti */
         .notes-grid { columns: 3; column-gap: 14px; }
         .note-card {
             break-inside: avoid; margin-bottom: 14px;
             background: var(--surface); border: 1.5px solid var(--border);
             border-radius: 14px; overflow: hidden;
             transition: transform .25s, box-shadow .25s, border-color .25s;
+            display: block; text-decoration: none; color: var(--text);
         }
-        .note-card.clickable { cursor: pointer; }
-        .note-card.clickable:hover {
+        .note-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 14px 40px rgba(0,0,0,0.4);
             border-color: var(--border2);
@@ -282,7 +275,6 @@
         }
         .note-card__meta { font-size: 0.68rem; color: var(--muted); margin-top: 6px; }
 
-        /* Empty / not found */
         .empty { padding: 60px 20px; text-align: center; color: var(--muted); }
         .empty__icon { font-size: 3rem; margin-bottom: 14px; opacity: .4; }
         .empty p { font-size: 0.9rem; line-height: 1.6; }
@@ -304,7 +296,6 @@
         }
         .not-found__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(240,192,64,.3); }
 
-        /* Loading / spinner */
         .loading {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; min-height: calc(100vh - var(--nav-h));
@@ -317,7 +308,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Toast */
         .toast {
             position: fixed; bottom: 24px; right: 24px;
             background: var(--accent); color: #0a0a0a;
@@ -328,14 +318,12 @@
         }
         .toast.show { opacity: 1; transform: translateY(0); }
 
-        /* Titolo sezione */
         .section-title {
             font-family: 'Fraunces', serif;
             font-size: 1.2rem; font-weight: 700; margin-bottom: 16px;
             color: var(--text);
         }
 
-        /* Responsive */
         @media (max-width: 700px) {
             .nav__links { display: none; }
             .profile-header { flex-direction: column; align-items: flex-start; padding: 0 16px; gap: 14px; }
@@ -363,7 +351,6 @@
     </ul>
     
     <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
-    
     <div class="nav__back" id="navBack" onclick="window.location.href='utenti.html'">← Cerca ancora</div>
 </nav>
 
@@ -374,27 +361,30 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    // SPOSTATO IN ALTO: Le funzioni di autenticazione vengono lette subito
-    // Controlla se l'utente è loggato leggendo il cookie "username"
+    // 1. ── FUNZIONI DI AUTENTICAZIONE E NAVBAR ──
+    function getCookieSafe(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
     function isLoggato() {
-        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
+        return getCookieSafe('username') !== null;
     }
 
     function aggiornaNavbar() {
-        // Seleziona tramite ID invece che classe
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
 
         if (isLoggato()) {
-            // Nasconde il tasto "Accedi"
             btnLogin.style.display = 'none';
         } else {
-            // Mostra il tasto "Accedi"
             btnLogin.style.display = '';
         }
     }
 
-
+    // 2. ── DATI E VARIABILI ──
     const coloriMateria = {
         "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
         "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
@@ -407,20 +397,16 @@
         "Informatica":"💻","Arte":"🎨","Biologia":"🧬","Geometria":"📐"
     };
 
-    const username = new URLSearchParams(window.location.search).get('user') || '';
+    const usernameUrl = new URLSearchParams(window.location.search).get('user') || '';
 
-    // Genera iniziali (es. "Yedda B" → "YB")
     function iniziali(nome, cognome) {
         return ((nome||'').charAt(0) + (cognome||'').charAt(0)).toUpperCase() || '?';
     }
 
-    /* ══════════════════════════════════════
-       MODALITÀ A — CERCA UTENTI (no ?user=)
-    ══════════════════════════════════════ */
+    // 3. ── MODALITÀ A: CERCA UTENTI ──
     function mostraRicerca() {
         document.title = 'Utenti — Appunti';
         
-        // Nascondi tasto indietro e ripristina la logica della navbar (Accedi)
         document.getElementById('navBack').style.display = 'none';
         aggiornaNavbar();
 
@@ -429,14 +415,7 @@
                 <div class="search-page__title">Cerca utenti</div>
                 <div class="search-page__sub">Digita il nome o lo username di un utente registrato</div>
                 <div class="search-box">
-                    <input
-                        class="search-box__input"
-                        id="userInput"
-                        type="text"
-                        placeholder="Es. yedda, Sara, marco_r…"
-                        autocomplete="off"
-                        oninput="onInput(this.value)"
-                    >
+                    <input class="search-box__input" id="userInput" type="text" placeholder="Es. yedda, Sara, marco_r…" autocomplete="off" oninput="onInput(this.value)">
                     <button class="search-box__btn" onclick="eseguiRicerca(document.getElementById('userInput').value)">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.5">
                             <circle cx="11" cy="11" r="8"/>
@@ -460,14 +439,10 @@
         const q = val.trim();
         if (q.length === 0) {
             document.getElementById('risultati').innerHTML = `
-                <div class="search-hint">
-                    <div class="search-hint__icon">👥</div>
-                    Inizia a scrivere per trovare un utente
-                </div>`;
+                <div class="search-hint"><div class="search-hint__icon">👥</div>Inizia a scrivere per trovare un utente</div>`;
             return;
         }
         if (q.length < 2) return;
-        // Spinner subito
         document.getElementById('risultati').innerHTML =
             `<div style="text-align:center;padding:24px"><div class="spinner" style="margin:0 auto;width:28px;height:28px"></div></div>`;
         timer = setTimeout(() => eseguiRicerca(q), 300);
@@ -490,18 +465,12 @@
         if (!box) return;
 
         if (utenti.length === 0) {
-            box.innerHTML = `
-                <div class="no-match">
-                    <div class="no-match__icon">🔍</div>
-                    Nessun utente trovato per "<strong>${q}</strong>"
-                </div>`;
+            box.innerHTML = `<div class="no-match"><div class="no-match__icon">🔍</div>Nessun utente trovato per "<strong>${q}</strong>"</div>`;
             return;
         }
 
         const cards = utenti.map(u => {
-            const foto = u.foto_profilo_url
-                ? `<img src="${u.foto_profilo_url}" alt="${u.nome}">`
-                : iniziali(u.nome, u.cognome);
+            const foto = u.foto_profilo_url ? `<img src="${u.foto_profilo_url}" alt="${u.nome}">` : `<span style="color:var(--accent); font-family: 'Fraunces', serif;">${iniziali(u.nome, u.cognome)}</span>`;
             return `
                 <a class="user-result" href="utenti.html?user=${encodeURIComponent(u.username)}">
                     <div class="user-result__photo">${foto}</div>
@@ -513,56 +482,45 @@
                 </a>`;
         }).join('');
 
-        box.innerHTML = `
-            <div class="results-label">${utenti.length} risultat${utenti.length === 1 ? 'o' : 'i'}</div>
-            ${cards}`;
+        box.innerHTML = `<div class="results-label">${utenti.length} risultat${utenti.length === 1 ? 'o' : 'i'}</div>${cards}`;
     }
 
-    /* ══════════════════════════════════════
-       MODALITÀ B — PROFILO UTENTE (?user=)
-    ══════════════════════════════════════ */
-    let utente = null;
+    // 4. ── MODALITÀ B: PROFILO UTENTE ──
+    let utenteDati = null;
 
     async function caricaProfilo() {
-        // Mostra freccia indietro, nascondi pulsante di login per far spazio
         document.getElementById('navBack').style.display = 'flex';
         const btnLogin = document.getElementById('navLoginBtn');
         if(btnLogin) btnLogin.style.display = 'none';
 
         try {
-            const res = await fetch(`/api/utente?username=${encodeURIComponent(username)}`);
-            if (res.status === 404) { mostraNotFound(username); return; }
-            if (!res.ok) throw new Error();
+            const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`);
+            if (res.status === 404) { mostraNotFound(usernameUrl); return; }
+            if (!res.ok) throw new Error("Errore nel recupero dell'utente");
 
-            utente = await res.json();
-            document.title = `${utente.nome} ${utente.cognome} — Appunti`;
-            renderProfilo(utente);
+            utenteDati = await res.json();
+            document.title = `${utenteDati.nome} ${utenteDati.cognome} — Appunti`;
+            renderProfilo(utenteDati);
 
-            // Carica appunti dell'utente
-            const resA = await fetch(`/api/appunti?username=${encodeURIComponent(username)}`);
+            const resA = await fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`);
             const appunti = resA.ok ? await resA.json() : [];
             renderAppunti(appunti);
 
-        } catch {
-            mostraNotFound(username);
+        } catch (err) {
+            console.error("Errore caricaProfilo:", err);
+            mostraNotFound(usernameUrl);
         }
     }
 
     function renderProfilo(u) {
-        const foto = u.foto_profilo_url
-            ? `<img src="${u.foto_profilo_url}" alt="${u.nome}">`
-            : iniziali(u.nome, u.cognome);
-
-        const dataIscrizione = u.created_at
-            ? new Date(u.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' })
-            : '—';
+        const foto = u.foto_profilo_url ? `<img src="${u.foto_profilo_url}" alt="${u.nome}">` : `<span style="color:var(--accent); font-family: 'Fraunces', serif;">${iniziali(u.nome, u.cognome)}</span>`;
+        const dataIscrizione = u.created_at ? new Date(u.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' }) : '—';
 
         document.getElementById('pageContent').innerHTML = `
             <div class="cover">
                 <div class="cover__pattern"></div>
                 <div class="cover__grad"></div>
             </div>
-
             <div class="profile-header">
                 <div class="profile-avatar">${foto}</div>
                 <div class="profile-info">
@@ -574,7 +532,6 @@
                     <button class="btn-share" onclick="condividi()">↗ Condividi</button>
                 </div>
             </div>
-
             <div class="main">
                 <div class="stats-row" style="margin-top:24px">
                     <div class="stat-card">
@@ -586,7 +543,6 @@
                         <div class="stat-card__l">📅 Anno iscrizione</div>
                     </div>
                 </div>
-
                 <div class="section-title">Appunti pubblicati</div>
                 <div id="gridAppunti">
                     <div class="empty"><div class="spinner" style="margin:0 auto"></div></div>
@@ -601,31 +557,26 @@
         if (cont) cont.textContent = appunti.length;
 
         if (appunti.length === 0) {
-            grid.innerHTML = `
-                <div class="empty">
-                    <div class="empty__icon">📭</div>
-                    <p>Questo utente non ha ancora pubblicato appunti.</p>
-                </div>`;
+            grid.innerHTML = `<div class="empty"><div class="empty__icon">📭</div><p>Questo utente non ha ancora pubblicato appunti.</p></div>`;
             return;
         }
 
         const cards = appunti.map(a => {
             const c    = coloriMateria[a.materia] || '#888';
             const icon = iconeMateria[a.materia]  || '📄';
-            // Il div clickable permette l'apertura ma NESSUN tasto "elimina"
-            const clickable = a.file_url ? `class="note-card clickable" onclick="window.open('${a.file_url}','_blank')"` : `class="note-card"`;
+            
             return `
-                <div ${clickable}>
+                <a href="${a.file_url}" target="_blank" class="note-card">
                     <div class="note-card__thumb">
-                        <div class="note-card__thumb-bg" style="background:radial-gradient(circle at 50% 40%,${c},transparent 72%)"></div>
+                        <div class="note-card__thumb-bg" style="background:${a.cover_url ? `url('${a.cover_url}') center/cover no-repeat` : `radial-gradient(circle at 50% 40%,${c},transparent 72%)`}; opacity: ${a.cover_url ? '0.5' : '0.2'};"></div>
                         <div class="note-card__thumb-icon">${icon}</div>
                     </div>
                     <div class="note-card__body">
                         <div class="note-card__chip" style="background:${c}22;color:${c};border:1px solid ${c}44">${a.materia || 'Altro'}</div>
                         <div class="note-card__title">${a.titolo}</div>
-                        <div class="note-card__meta">${a.data || ''}${a.file_url ? ' · 📎 Scarica' : ''}</div>
+                        <div class="note-card__meta">${new Date(a.data_caricamento).toLocaleDateString('it-IT', { day: '2-digit', month: 'short' })} · 📎 Scarica</div>
                     </div>
-                </div>`;
+                </a>`;
         }).join('');
 
         grid.innerHTML = `<div class="notes-grid">${cards}</div>`;
@@ -633,9 +584,7 @@
 
     function mostraNotFound(u) {
         document.title = 'Utente non trovato — Appunti';
-        // Nascondi tasto indietro in alto
         document.getElementById('navBack').style.display = 'none';
-
         document.getElementById('pageContent').innerHTML = `
             <div class="not-found">
                 <div class="not-found__icon">🔍</div>
@@ -648,7 +597,7 @@
     function condividi() {
         const url = window.location.href;
         if (navigator.share) {
-            navigator.share({ title: `Profilo di ${utente?.nome || ''}`, url });
+            navigator.share({ title: `Profilo di ${utenteDati?.nome || ''}`, url });
         } else {
             navigator.clipboard.writeText(url).then(() => toast('🔗 Link copiato!'));
         }
@@ -660,15 +609,16 @@
         setTimeout(() => t.classList.remove('show'), 2600);
     }
 
-    // ── AVVIO ──
-    // Esegui subito al caricamento della pagina per sistemare la navbar
-    aggiornaNavbar();
+    // 5. ── AVVIO INIZIALE DELLA PAGINA ──
+    document.addEventListener("DOMContentLoaded", () => {
+        aggiornaNavbar();
+        if (usernameUrl) {
+            caricaProfilo();
+        } else {
+            mostraRicerca();
+        }
+    });
 
-    if (username) {
-        caricaProfilo();
-    } else {
-        mostraRicerca();
-    }
 </script>
 
 </body>
