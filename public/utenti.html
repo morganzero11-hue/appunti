@@ -53,12 +53,28 @@
         }
         .nav__links a:hover { color: var(--text); background: rgba(255,255,255,0.07); }
         .nav__links a.active { color: var(--accent); }
+        
+        /* ── BOTTONI NAVBAR EXTRA ── */
+        .nav__login {
+            background: var(--accent);
+            color: #0a0a0a;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-left: auto; /* Lo spinge tutto a destra */
+            transition: transform 0.2s;
+        }
+        .nav__login:hover { transform: scale(1.05); }
+
         .nav__back {
             display: none; align-items: center; gap: 7px;
             padding: 7px 14px; border-radius: 10px;
             background: rgba(255,255,255,0.07); border: 1px solid var(--border2);
             color: var(--muted); font-size: 0.84rem; font-weight: 800;
             cursor: pointer; transition: all .2s; white-space: nowrap;
+            margin-left: auto;
         }
         .nav__back:hover { color: var(--text); background: rgba(255,255,255,0.12); }
 
@@ -345,7 +361,10 @@
         <li><a href="utenti.html" class="active">Utenti</a></li>
         <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-    <div class="nav__back" id="navBack" onclick="history.back()">← Indietro</div>
+    
+    <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
+    
+    <div class="nav__back" id="navBack" onclick="window.location.href='utenti.html'">← Cerca ancora</div>
 </nav>
 
 <div id="pageContent">
@@ -379,6 +398,11 @@
     ══════════════════════════════════════ */
     function mostraRicerca() {
         document.title = 'Utenti — Appunti';
+        
+        // Nascondi tasto indietro e ripristina la logica della navbar (Accedi)
+        document.getElementById('navBack').style.display = 'none';
+        aggiornaNavbar();
+
         document.getElementById('pageContent').innerHTML = `
             <div class="search-page">
                 <div class="search-page__title">Cerca utenti</div>
@@ -479,8 +503,10 @@
     let utente = null;
 
     async function caricaProfilo() {
-        // Mostra freccia indietro
+        // Mostra freccia indietro, nascondi pulsante di login per far spazio
         document.getElementById('navBack').style.display = 'flex';
+        const btnLogin = document.getElementById('navLoginBtn');
+        if(btnLogin) btnLogin.style.display = 'none';
 
         try {
             const res = await fetch(`/api/utente?username=${encodeURIComponent(username)}`);
@@ -535,7 +561,7 @@
                         <div class="stat-card__l">📄 Appunti pubblicati</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-card__n">${dataIscrizione.split(' ').pop()}</div>
+                        <div class="stat-card__n">${dataIscrizione === '—' ? '—' : dataIscrizione.split(' ').pop()}</div>
                         <div class="stat-card__l">📅 Anno iscrizione</div>
                     </div>
                 </div>
@@ -565,6 +591,7 @@
         const cards = appunti.map(a => {
             const c    = coloriMateria[a.materia] || '#888';
             const icon = iconeMateria[a.materia]  || '📄';
+            // Il div clickable permette l'apertura ma NESSUN tasto "elimina"
             const clickable = a.file_url ? `class="note-card clickable" onclick="window.open('${a.file_url}','_blank')"` : `class="note-card"`;
             return `
                 <div ${clickable}>
@@ -585,6 +612,9 @@
 
     function mostraNotFound(u) {
         document.title = 'Utente non trovato — Appunti';
+        // Nascondi tasto indietro in alto
+        document.getElementById('navBack').style.display = 'none';
+
         document.getElementById('pageContent').innerHTML = `
             <div class="not-found">
                 <div class="not-found__icon">🔍</div>
@@ -617,7 +647,6 @@
     }
 </script>
 
-<!-- INCOLLA QUESTO SCRIPT PRIMA DI </body> IN OGNI PAGINA HTML -->
 <script>
     // Controlla se l'utente è loggato leggendo il cookie "username"
     function isLoggato() {
@@ -625,7 +654,8 @@
     }
 
     function aggiornaNavbar() {
-        const btnLogin = document.querySelector('.nav__login');
+        // Seleziona tramite ID invece che classe
+        const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
 
         if (isLoggato()) {
@@ -642,5 +672,4 @@
 </script>
 
 </body>
-
 </html>
