@@ -374,6 +374,27 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    // SPOSTATO IN ALTO: Le funzioni di autenticazione vengono lette subito
+    // Controlla se l'utente è loggato leggendo il cookie "username"
+    function isLoggato() {
+        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
+    }
+
+    function aggiornaNavbar() {
+        // Seleziona tramite ID invece che classe
+        const btnLogin = document.getElementById('navLoginBtn');
+        if (!btnLogin) return;
+
+        if (isLoggato()) {
+            // Nasconde il tasto "Accedi"
+            btnLogin.style.display = 'none';
+        } else {
+            // Mostra il tasto "Accedi"
+            btnLogin.style.display = '';
+        }
+    }
+
+
     const coloriMateria = {
         "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6",
         "Chimica":"#a855f7","Storia":"#ec4899","Geografia":"#14b8a6",
@@ -640,35 +661,14 @@
     }
 
     // ── AVVIO ──
+    // Esegui subito al caricamento della pagina per sistemare la navbar
+    aggiornaNavbar();
+
     if (username) {
         caricaProfilo();
     } else {
         mostraRicerca();
     }
-</script>
-
-<script>
-    // Controlla se l'utente è loggato leggendo il cookie "username"
-    function isLoggato() {
-        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
-    }
-
-    function aggiornaNavbar() {
-        // Seleziona tramite ID invece che classe
-        const btnLogin = document.getElementById('navLoginBtn');
-        if (!btnLogin) return;
-
-        if (isLoggato()) {
-            // Nasconde il tasto "Accedi"
-            btnLogin.style.display = 'none';
-        } else {
-            // Mostra il tasto "Accedi"
-            btnLogin.style.display = '';
-        }
-    }
-
-    // Esegui subito al caricamento della pagina
-    aggiornaNavbar();
 </script>
 
 </body>
