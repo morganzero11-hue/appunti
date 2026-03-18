@@ -413,7 +413,7 @@
                     <div class="setting-row__icon" style="background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2)">🚪</div>
                     <div class="setting-row__text">
                         <div class="setting-row__label" style="color:var(--red)">Logout</div>
-                        <div class="setting-row__desc">Verrai disconnesso e reindirizzato alla pagina di login.</div>
+                        <div class="setting-row__desc">Verrai disconnesso e reindirizzato alla pagina principale.</div>
                     </div>
                     <button class="btn btn--danger" onclick="eseguiLogout()">Esci</button>
                 </div>
@@ -449,14 +449,15 @@
         salva('Colore aggiornato!');
     }
 
-    /* ── LOGOUT ── */
+    /* ── LOGOUT MODIFICATO ── */
     async function eseguiLogout() {
         try {
             await fetch('/api/logout', { method: 'POST' });
         } catch {}
         document.cookie = 'utente_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        window.location.href = 'login.html';
+        // Redirige a index.html come richiesto
+        window.location.href = 'index.html';
     }
 
     /* ── TOAST ── */

@@ -13,9 +13,26 @@ function getCookieSafe(name) {
 async function initProfilo() {
     let utenteId = getCookieSafe('utente_id');
     
+    // Se non c'è utente loggato, mostra la modalità ospite e nascondi le sezioni
     if (!utenteId) {
-        console.warn("Nessun utente loggato. Uso ID 1 per i test.");
-        utenteId = "1"; 
+        console.warn("Nessun utente loggato. Modalità ospite attivata.");
+        
+        document.getElementById('valNome').textContent = "Ospite";
+        document.getElementById('valCognome').textContent = "Effettua il login";
+        document.getElementById('valScuola').textContent = "-";
+        
+        // Nascondi la sezione per pubblicare
+        const sezionePubblica = document.getElementById('sezionePubblica');
+        if (sezionePubblica) sezionePubblica.style.display = 'none';
+        
+        // Nascondi la lista dei propri appunti
+        const titoloMieiAppunti = document.getElementById('titoloMieiAppunti');
+        if (titoloMieiAppunti) titoloMieiAppunti.style.display = 'none';
+        
+        const listaMieiAppunti = document.getElementById('listaMieiAppunti');
+        if (listaMieiAppunti) listaMieiAppunti.style.display = 'none';
+        
+        return; // Ferma l'esecuzione qui
     }
 
     try {
@@ -44,6 +61,9 @@ async function initProfilo() {
 
 // 2. UPLOAD AVATAR
 async function uploadAvatar(event) {
+    let utenteId = getCookieSafe('utente_id');
+    if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
+
     const file = event.target.files[0];
     if (!file) return;
 
@@ -61,8 +81,6 @@ async function uploadAvatar(event) {
         });
         if (!resBlob.ok) throw new Error("Errore Blob");
         const blob = await resBlob.json();
-
-        let utenteId = getCookieSafe('utente_id') || '1';
 
         const resDb = await fetch('/api/aggiorna-profilo', {
             method: 'POST',
@@ -86,10 +104,12 @@ async function uploadAvatar(event) {
 
 // 3. PUBBLICAZIONE APPUNTO
 async function pubblicaAppunto() {
+    let utenteId = getCookieSafe('utente_id');
+    if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
+
     const fileIn = document.getElementById('fileAppunto');
     const titolo = document.getElementById('titoloAppunto').value.trim();
     const materia = document.getElementById('materiaAppunto').value;
-    let utenteId = getCookieSafe('utente_id') || '1';
 
     if (!titolo) return alert("Inserisci un titolo!");
     if (!fileIn.files[0]) return alert("Seleziona un file PDF o Immagine!");
@@ -140,11 +160,16 @@ async function pubblicaAppunto() {
     }
 }
 
-// 4. CARICA I MIEI APPUNTI (Aggiornato per mostrare il bottone Elimina)
+// 4. CARICA I MIEI APPUNTI
 async function caricaMieiAppunti() {
-    let utenteId = getCookieSafe('utente_id') || '1';
+    let utenteId = getCookieSafe('utente_id');
     const container = document.getElementById('listaMieiAppunti');
     if (!container) return;
+
+    if (!utenteId) {
+        container.innerHTML = "<p style='color: var(--muted);'>Effettua il login per vedere i tuoi appunti.</p>";
+        return;
+    }
 
     try {
         const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
@@ -172,8 +197,11 @@ async function caricaMieiAppunti() {
     }
 }
 
-// 5. ELIMINA APPUNTO (Nuova funzione)
+// 5. ELIMINA APPUNTO
 async function eliminaAppunto(appuntoId) {
+    let utenteId = getCookieSafe('utente_id');
+    if (!utenteId) return alert("Devi essere loggato per eliminare un appunto.");
+
     if (!confirm("Sei sicuro di voler eliminare questo appunto? L'azione è irreversibile.")) {
         return;
     }

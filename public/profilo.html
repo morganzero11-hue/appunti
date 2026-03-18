@@ -65,7 +65,7 @@
         .note-card p { font-size: 0.85rem; color: var(--muted); }
         .note-link { color: var(--accent); text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 8px 16px; background: rgba(200,240,96,0.1); border-radius: 8px; }
         
-        /* 🔴 AGGIUNTO: CSS per il bottone elimina */
+        /* CSS per il bottone elimina */
         .btn-delete { background: rgba(255, 77, 109, 0.15); color: #ff4d6d; text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; margin-left: 10px; }
         .btn-delete:hover { background: rgba(255, 77, 109, 0.3); }
         .note-actions { display: flex; align-items: center; }
@@ -118,7 +118,7 @@
         </div>
     </div>
 
-    <div class="profile-card">
+    <div class="profile-card" id="sezionePubblica">
         <span class="section-label">Pubblica un nuovo appunto</span>
         
         <div class="form-group">
@@ -144,9 +144,9 @@
         <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Pubblica su Esplora</button>
     </div>
 
-    <span class="section-label" style="border:none; margin-bottom: 15px;">I miei appunti caricati</span>
+    <span class="section-label" id="titoloMieiAppunti" style="border:none; margin-bottom: 15px;">I miei appunti caricati</span>
     <div id="listaMieiAppunti" class="notes-grid">
-        </div>
+    </div>
 
 </div>
 
