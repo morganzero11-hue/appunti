@@ -36,20 +36,14 @@
             padding: 0 20px;
         }
 
-        .avatar-wrapper {
-            position: relative;
-            margin-bottom: 16px;
-        }
+        .avatar-wrapper { position: relative; margin-bottom: 16px; }
 
         .avatar-preview {
             width: 120px; height: 120px;
-            background: var(--surface2);
-            border-radius: 50%;
+            background: var(--surface2); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            border: 3px solid var(--accent);
-            overflow: hidden; cursor: pointer;
-            transition: transform .2s, box-shadow .2s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 3px solid var(--accent); overflow: hidden; cursor: pointer;
+            transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .avatar-preview:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(200,240,96,0.3); }
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
@@ -76,16 +70,13 @@
 
         /* ─── TABS ─── */
         .tabs-container {
-            max-width: 800px; margin: 0 auto;
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-around;
-            padding: 0 20px; margin-bottom: 30px;
+            max-width: 800px; margin: 0 auto; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px;
         }
         .tab-btn {
             background: none; border: none; color: var(--muted);
             font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800;
-            padding: 16px 0; cursor: pointer; position: relative;
-            transition: color .2s;
+            padding: 16px 0; cursor: pointer; position: relative; transition: color .2s;
         }
         .tab-btn:hover { color: var(--text); }
         .tab-btn.active { color: var(--text); }
@@ -105,8 +96,7 @@
         .note-card {
             background: var(--surface); border: 1.5px solid var(--border);
             border-radius: var(--radius); overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: transform .2s, border-color .2s;
+            display: flex; flex-direction: column; transition: transform .2s, border-color .2s;
         }
         .note-card:hover { transform: translateY(-4px); border-color: var(--border2); }
         .note-thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
@@ -188,8 +178,7 @@
 </div>
 
 <div id="tab-miei-appunti" class="tab-content active">
-    <div id="listaMieiAppunti" class="notes-grid">
-        </div>
+    <div id="listaMieiAppunti" class="notes-grid"></div>
 </div>
 
 <div id="tab-salvati" class="tab-content">
@@ -239,11 +228,8 @@
     </div>
 </div>
 
-
-<script src="js/profilo.js"></script>
-
 <script>
-    // Helper corretto per i cookie in tutto il file
+    // Helper corretto per i cookie
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -268,7 +254,7 @@
         if (loggato) { btnLogin.style.display = 'none'; }
     });
 
-    // Aggiorna l'header personalizzato con i veri dati dal DB
+    // Aggiorna l'header personalizzato
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
         
@@ -286,11 +272,9 @@
             if (res.ok) {
                 const user = await res.json();
                 
-                // Mostra il Nome Reale (o lo username se il nome manca)
                 document.getElementById('valNome').textContent = user.nome ? (user.nome + ' ' + (user.cognome || '')) : usernameLoggato;
                 document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
                 
-                // Aggiorna l'avatar
                 if (user.foto_profilo_url) {
                     const img = document.getElementById('avatarImg');
                     img.src = user.foto_profilo_url;
@@ -302,6 +286,123 @@
             }
         } catch (e) {
             console.error("Errore nel recuperare i dati dell'utente:", e);
+        }
+    }
+
+    // UPLOAD FOTO PROFILO
+    async function uploadAvatar(event) {
+        let utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
+
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const ph = document.getElementById('avatarPh');
+        const img = document.getElementById('avatarImg');
+        
+        ph.textContent = '⏳';
+        ph.style.display = 'block';
+        img.style.display = 'none';
+
+        try {
+            const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+                method: 'POST',
+                body: file,
+            });
+            if (!resBlob.ok) throw new Error("Errore Blob");
+            const blob = await resBlob.json();
+
+            const resDb = await fetch('/api/aggiorna-profilo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: utenteId, foto_profilo_url: blob.url })
+            });
+            if (!resDb.ok) throw new Error("Errore DB");
+
+            img.src = blob.url;
+            img.style.display = 'block';
+            ph.style.display = 'none';
+            alert("✅ Foto profilo aggiornata!");
+            
+        } catch (error) {
+            console.error("Errore upload avatar:", error);
+            alert("❌ Impossibile caricare la foto.");
+            ph.textContent = '?';
+        }
+    }
+
+    // PUBBLICAZIONE APPUNTO (Con cover e file)
+    async function pubblicaAppunto() {
+        let utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
+
+        const fileIn = document.getElementById('fileAppunto');
+        const coverIn = document.getElementById('coverAppunto');
+        const titolo = document.getElementById('titoloAppunto').value.trim();
+        const materia = document.getElementById('materiaAppunto').value;
+
+        if (!titolo) return alert("Inserisci un titolo!");
+        if (!fileIn.files[0]) return alert("Seleziona il file dei tuoi appunti!");
+
+        const btn = document.getElementById('btnPubblica');
+        btn.textContent = "⏳ Caricamento in corso...";
+        btn.disabled = true;
+
+        let success = false;
+
+        try {
+            const file = fileIn.files[0];
+            let coverUrl = null;
+
+            if (coverIn.files[0]) {
+                btn.textContent = "⏳ Caricamento Copertina...";
+                const coverFile = coverIn.files[0];
+                const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverFile.name)}`, {
+                    method: 'POST',
+                    body: coverFile,
+                });
+                if (resCover.ok) {
+                    const coverBlob = await resCover.json();
+                    coverUrl = coverBlob.url;
+                }
+            }
+
+            btn.textContent = "⏳ Caricamento Appunto...";
+            const resBlob = await fetch(`/api/upload?filename=appunto_${encodeURIComponent(file.name)}`, {
+                method: 'POST',
+                body: file,
+            });
+            if (!resBlob.ok) throw new Error("Errore caricamento file principale");
+            const blob = await resBlob.json();
+
+            btn.textContent = "⏳ Salvataggio...";
+            const resDb = await fetch('/api/appunti', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    utente_id: utenteId,
+                    titolo: titolo,
+                    materia: materia,
+                    file_url: blob.url,
+                    cover_url: coverUrl 
+                })
+            });
+            if (!resDb.ok) throw new Error("Errore salvataggio DB");
+
+            success = true;
+
+        } catch (err) {
+            console.error("Errore pubblicazione:", err);
+            alert("❌ C'è stato un problema durante il caricamento.");
+        } finally {
+            btn.textContent = "🚀 Condividi con tutti";
+            btn.disabled = false;
+        }
+
+        if (success) {
+            alert("✅ Appunto pubblicato con successo!");
+            // Ricarica la pagina per resettare form e aggiornare i dati
+            window.location.reload();
         }
     }
 
@@ -330,7 +431,6 @@
             }
 
             container.innerHTML = appunti.map(a => {
-                // Scegliamo se mostrare l'immagine vera o l'icona generica
                 const coverHTML = a.cover_url 
                     ? `<img src="${a.cover_url}" alt="Cover Appunto">`
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
@@ -356,7 +456,45 @@
         }
     }
 
-    // Lanciamo le funzioni corrette al caricamento della pagina
+    // ELIMINA APPUNTO
+    async function eliminaAppunto(appuntoId) {
+        let utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return alert("Devi essere loggato per eliminare un appunto.");
+
+        if (!confirm("Sei sicuro di voler eliminare questo appunto? L'azione è irreversibile.")) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Errore durante l'eliminazione");
+            }
+
+            // Rimuove l'elemento dalla pagina senza doverla ricaricare
+            const notaCard = document.getElementById(`nota-${appuntoId}`);
+            if (notaCard) {
+                notaCard.remove();
+            }
+            
+            // Ricalcola il numero di appunti e gestisce se rimani con 0
+            const container = document.getElementById('listaMieiAppunti');
+            if (container.children.length === 0) {
+                caricaMieiAppunti(); 
+            } else {
+                 let cont = parseInt(document.getElementById('statAppunti').textContent);
+                 if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
+            }
+
+        } catch (err) {
+            console.error("Errore eliminazione:", err);
+            alert("❌ Non è stato possibile eliminare l'appunto.");
+        }
+    }
+
+    // Avvio
     document.addEventListener('DOMContentLoaded', () => {
         aggiornaHeaderProfilo();
         caricaMieiAppunti();
