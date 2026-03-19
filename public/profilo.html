@@ -4,80 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilo Utente — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f0f; --surface: #181818; --surface2: #222222;
+            --bg: #0a0a0a; --surface: #111111; --surface2: #181818;
             --text: #f2f0ec; --muted: rgba(242,240,236,0.45);
             --accent: #c8f060; --accent2: #ff4d6d; --nav-h: 62px;
-            --radius: 20px;
+            --radius: 16px;
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+        body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; min-height: 100vh; }
         
-        /* ─── NUOVA NAVBAR ─── */
-        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: #1c1c24; display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; margin-right: 30px; }
-        .topnav__logo { position: relative; width: 26px; height: 26px; }
-        .topnav__logo span { position: absolute; width: 14px; height: 14px; border-radius: 3px; }
-        .topnav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
-        .topnav__logo span:nth-child(2) { background: #ff4d6d; top: 6px; left: 6px; z-index: 2; }
-        .topnav__logo span:nth-child(3) { background: #60b8f0; top: 12px; left: 12px; z-index: 1; }
+        /* ─── NAVBAR ─── */
+        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); text-decoration: none; margin-right: 30px; }
         .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; margin: 0; padding: 0; }
-        .topnav__links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: all .2s; font-family: 'Cabinet Grotesk', 'DM Sans', sans-serif; }
-        .topnav__links a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .topnav__links a.active { background: #2c2c38; color: #fbbf24; }
-        .topnav__login { background: #f43f5e; color: #fff; padding: 8px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.95rem; font-family: 'Cabinet Grotesk', 'DM Sans', sans-serif; transition: opacity .2s; }
-        .topnav__login:hover { opacity: 0.8; }
+        .topnav__links a { color: var(--muted); text-decoration: none; font-size: 0.95rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; transition: all .2s; }
+        .topnav__links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .topnav__links a.active { color: var(--accent); }
+        .topnav__login { background: var(--accent); color: #0a0a0a; padding: 8px 24px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 0.95rem; transition: transform .2s; margin-left: auto; }
+        .topnav__login:hover { transform: scale(1.05); }
         @media (max-width: 768px) { .topnav__links { display: none; } }
 
-        /* Contenitore Profilo */
-        .profile-wrapper { margin-top: calc(var(--nav-h) + 40px); max-width: 600px; margin-left: auto; margin-right: auto; padding: 0 20px; }
-        .profile-card { background: var(--surface); border-radius: var(--radius); padding: 40px; border: 1px solid rgba(255,255,255,0.07); margin-bottom: 30px; }
-        .section-label { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.5rem; margin-bottom: 24px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: block; }
-        
-        /* Avatar */
-        .avatar-upload { text-align: center; margin-bottom: 35px; }
-        .avatar-preview { width: 120px; height: 120px; background: var(--surface2); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--muted); overflow: hidden; cursor: pointer; transition: border-color .2s; }
-        .avatar-preview:hover { border-color: var(--accent); }
-        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-preview span { font-size: 2rem; }
-        
-        /* Info Testuali */
-        .info-group { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
-        .info-label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;}
-        .info-value { font-size: 1.2rem; font-weight: 700; color: #fff; }
+        /* ─── PROFILO HEADER (Stile TikTok) ─── */
+        .profile-header {
+            margin-top: calc(var(--nav-h) + 40px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
 
-        /* Form Input */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--muted); }
-        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--surface2); color: #fff; font-family: 'DM Sans', sans-serif; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+        .avatar-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .avatar-preview {
+            width: 120px; height: 120px;
+            background: var(--surface2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid var(--accent); /* Bordo colorato evidente */
+            overflow: hidden; cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .avatar-preview:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(200,240,96,0.3); }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-preview span { font-size: 2.5rem; font-family: 'Fraunces', serif; color: var(--accent); }
         
-        .btn-save { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: transform 0.2s; font-size: 1rem; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.2); }
-        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Piccola icona "+" per far capire che si può cambiare foto */
+        .avatar-edit-icon {
+            position: absolute; bottom: 0; right: 0;
+            background: var(--accent); color: #000;
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 900; border: 2px solid var(--bg);
+            pointer-events: none;
+        }
+
+        .profile-name { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; }
+        .profile-username { font-size: 1rem; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+        .profile-school { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.7); background: var(--surface2); padding: 4px 12px; border-radius: 12px; display: inline-block; margin-bottom: 20px;}
+
+        /* Statistiche (Like ricevuti) */
+        .profile-stats {
+            display: flex; gap: 40px; margin-bottom: 30px;
+        }
+        .stat-item { display: flex; flex-direction: column; align-items: center; }
+        .stat-num { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; }
+        .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+
+        /* ─── TABS (I 3 bottoni per cambiare sezione) ─── */
+        .tabs-container {
+            max-width: 800px; margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-around;
+            padding: 0 20px; margin-bottom: 30px;
+        }
+        .tab-btn {
+            background: none; border: none; color: var(--muted);
+            font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800;
+            padding: 16px 0; cursor: pointer; position: relative;
+            transition: color .2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--text); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+            height: 3px; background: var(--accent); border-radius: 3px 3px 0 0;
+        }
+
+        /* ─── CONTENUTO DELLE SEZIONI ─── */
+        .tab-content { display: none; max-width: 800px; margin: 0 auto; padding: 0 20px; animation: fadeIn .3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Griglia Appunti */
-        .notes-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .note-card { background: var(--surface2); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .note-card h3 { font-size: 1.1rem; margin-bottom: 5px; color: #fff; }
-        .note-card p { font-size: 0.85rem; color: var(--muted); }
-        .note-link { color: var(--accent); text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 8px 16px; background: rgba(200,240,96,0.1); border-radius: 8px; }
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
         
-        /* CSS per il bottone elimina */
-        .btn-delete { background: rgba(255, 77, 109, 0.15); color: #ff4d6d; text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; margin-left: 10px; }
+        .note-card {
+            background: var(--surface); border: 1.5px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: transform .2s, border-color .2s;
+        }
+        .note-card:hover { transform: translateY(-4px); border-color: var(--border2); }
+        .note-thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative;}
+        .note-thumb-bg { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(circle at 50% 50%, var(--accent), transparent 70%); }
+        .note-info { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+        .note-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+        .note-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+        .note-actions { display: flex; gap: 8px; margin-top: auto; }
+        .btn-small { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; text-decoration: none; cursor: pointer; border: none; }
+        .btn-open { background: rgba(200,240,96,0.15); color: var(--accent); }
+        .btn-open:hover { background: rgba(200,240,96,0.25); }
+        .btn-delete { background: rgba(255, 77, 109, 0.15); color: #ff4d6d; }
         .btn-delete:hover { background: rgba(255, 77, 109, 0.3); }
-        .note-actions { display: flex; align-items: center; }
+
+        /* Form Pubblicazione (nel 3° Tab) */
+        .form-card { background: var(--surface); padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input[type="text"], .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+        .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; }
+        .file-input-wrapper:hover { border-color: var(--accent); }
+        .file-input-wrapper input[type="file"] { display: none; }
+        
+        .btn-save { width: 100%; background: var(--accent); color: #0a0a0a; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-family: 'Fraunces', serif; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.25); }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Placeholder Sezioni Vuote */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+        .empty-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-text { font-size: 1rem; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <nav class="topnav">
-    <a href="index.html" class="topnav__brand">
-        <div class="topnav__logo"><span></span><span></span><span></span></div>
-        Appunti
-    </a>
+    <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
         <li><a href="esplora.html">Esplora</a></li>
@@ -88,45 +158,57 @@
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
-<div class="profile-wrapper">
-    
-    <div class="profile-card">
-        <span class="section-label">Il tuo Profilo</span>
-
-        <div class="avatar-upload">
-            <div class="avatar-preview" onclick="document.getElementById('fileIn').click()" title="Clicca per cambiare foto">
-                <img id="avatarImg" style="display:none;">
-                <span id="avatarPh">📸</span>
-            </div>
-            <input type="file" id="fileIn" hidden onchange="uploadAvatar(event)" accept="image/*">
-            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Clicca sulla foto per cambiarla</div>
+<div class="profile-header">
+    <div class="avatar-wrapper">
+        <div class="avatar-preview" onclick="document.getElementById('fileIn').click()" title="Cambia foto profilo">
+            <img id="avatarImg" style="display:none;">
+            <span id="avatarPh">?</span>
         </div>
-
-        <div class="info-group">
-            <span class="info-label">NOME</span>
-            <div class="info-value" id="valNome">Caricamento...</div>
-        </div>
-        
-        <div class="info-group">
-            <span class="info-label">COGNOME</span>
-            <div class="info-value" id="valCognome">Caricamento...</div>
-        </div>
-
-        <div class="info-group">
-            <span class="info-label">SCUOLA/UNIVERSITÀ</span>
-            <div class="info-value" id="valScuola">Caricamento...</div>
-        </div>
+        <div class="avatar-edit-icon">+</div>
+        <input type="file" id="fileIn" hidden onchange="uploadAvatar(event)" accept="image/*">
     </div>
 
-    <div class="profile-card" id="sezionePubblica">
-        <span class="section-label">Pubblica un nuovo appunto</span>
-        
+    <div class="profile-name" id="valNome">Caricamento...</div>
+    <div class="profile-username">@<span id="valUsername">utente</span></div>
+    <div class="profile-school" id="valScuola">Scuola non impostata</div>
+
+    <div class="profile-stats">
+        <div class="stat-item">
+            <span class="stat-num" id="statAppunti">0</span>
+            <span class="stat-label">Appunti</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">124</span> <span class="stat-label">Mi Piace</span>
+        </div>
+    </div>
+</div>
+
+<div class="tabs-container">
+    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">Mis Appunti</button>
+    <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
+    <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica</button>
+</div>
+
+<div id="tab-miei-appunti" class="tab-content active">
+    <div id="listaMieiAppunti" class="notes-grid">
+        </div>
+</div>
+
+<div id="tab-salvati" class="tab-content">
+    <div class="empty-state">
+        <div class="empty-icon">🔒</div>
+        <div class="empty-text">Gli appunti a cui metti mi piace appariranno qui.<br>Presto disponibile!</div>
+    </div>
+</div>
+
+<div id="tab-pubblica" class="tab-content">
+    <div class="form-card" id="sezionePubblica">
         <div class="form-group">
-            <label>TITOLO</label>
-            <input type="text" id="titoloAppunto" placeholder="Es: Formule di Trigonometria">
+            <label>Titolo Appunto</label>
+            <input type="text" id="titoloAppunto" placeholder="Es: Formule di Trigonometria (Max voto!)">
         </div>
         <div class="form-group">
-            <label>MATERIA</label>
+            <label>Materia</label>
             <select id="materiaAppunto">
                 <option>Matematica</option>
                 <option>Fisica</option>
@@ -140,32 +222,147 @@
         </div>
 
         <div class="form-group">
-            <label>FOTO PREVIEW (Opzionale)</label>
-            <input type="file" id="coverAppunto" accept="image/*">
+            <label>Copertina (Opzionale, rende la card più bella)</label>
+            <div class="file-input-wrapper" onclick="document.getElementById('coverAppunto').click()">
+                📸 Clicca per selezionare l'immagine di copertina
+                <input type="file" id="coverAppunto" accept="image/*" onchange="this.parentElement.innerHTML = '✅ Copertina selezionata: ' + this.files[0].name + this.outerHTML">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>FILE (PDF o Immagine)</label>
-            <input type="file" id="fileAppunto" accept=".pdf,image/*">
+            <label>Documento (PDF o Immagine)</label>
+            <div class="file-input-wrapper" onclick="document.getElementById('fileAppunto').click()">
+                📄 Clicca per selezionare il file dei tuoi appunti
+                <input type="file" id="fileAppunto" accept=".pdf,image/*" onchange="this.parentElement.innerHTML = '✅ File selezionato: ' + this.files[0].name + this.outerHTML">
+            </div>
         </div>
-        <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Pubblica su Esplora</button>
-    </div>
 
-    <span class="section-label" id="titoloMieiAppunti" style="border:none; margin-bottom: 15px;">I miei appunti caricati</span>
-    <div id="listaMieiAppunti" class="notes-grid">
+        <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Condividi con tutti</button>
     </div>
-
 </div>
+
 
 <script src="js/profilo.js"></script>
 
 <script>
+    // Gestione visuale dei Tabs
+    function cambiaTab(tabId, btnElement) {
+        // Rimuove 'active' da tutti i tab e bottoni
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Aggiunge 'active' a quello selezionato
+        document.getElementById(tabId).classList.add('active');
+        btnElement.classList.add('active');
+    }
+
+    // Gestione Login Navbar
     document.addEventListener("DOMContentLoaded", function() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
         const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
         if (loggato) { btnLogin.style.display = 'none'; }
     });
+
+    // Siccome abbiamo cambiato gli ID nel design, sovrascriviamo leggermente la funzione di caricamento 
+    // per far apparire i dati nel posto giusto dell'header
+    const oldInitProfilo = typeof initProfilo === 'function' ? initProfilo : null;
+    
+    // Helper veloce per i cookie in pagina
+    function getCookieHere(name) {
+        let parts = document.cookie.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    // Aggiorna l'header personalizzato
+    async function aggiornaHeaderProfilo() {
+        let usernameLoggato = getCookieHere('username');
+        if(!usernameLoggato) {
+            document.getElementById('valNome').textContent = "Ospite";
+            document.getElementById('valUsername').textContent = "effettua_login";
+            document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
+            return;
+        }
+
+        document.getElementById('valUsername').textContent = usernameLoggato;
+
+        try {
+            const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById('valNome').textContent = user.nome + ' ' + (user.cognome || '');
+                document.getElementById('valScuola').textContent = user.scuola || 'Nessuna scuola impostata';
+                if(user.nome) {
+                    document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
+                }
+                
+                if (user.foto_profilo_url) {
+                    const img = document.getElementById('avatarImg');
+                    img.src = user.foto_profilo_url;
+                    img.style.display = 'block';
+                    document.getElementById('avatarPh').style.display = 'none';
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Sovrascriviamo la renderizzazione delle card dei Miei Appunti per adattarla al nuovo design
+    async function caricaMieiAppunti() {
+        let utenteId = getCookieHere('utente_id');
+        const container = document.getElementById('listaMieiAppunti');
+        
+        if (!utenteId) {
+            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi appunti.</div></div>";
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
+            const appunti = await res.json();
+
+            // Aggiorna il contatore in alto
+            document.getElementById('statAppunti').textContent = appunti.length;
+
+            if (appunti.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato nulla.</div></div>";
+                return;
+            }
+
+            container.innerHTML = appunti.map(a => {
+                // Generiamo un colore base per la preview se non c'è cover
+                const coverHTML = a.cover_url 
+                    ? `<img src="${a.cover_url}" style="width:100%; height:100%; object-fit:cover;">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
+                return `
+                <div class="note-card" id="nota-${a.id}">
+                    <div class="note-thumb">
+                        ${coverHTML}
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">${a.titolo}</div>
+                        <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
+                        <div class="note-actions">
+                            <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                            <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Lanciamo le funzioni aggiornate al caricamento
+    document.addEventListener('DOMContentLoaded', () => {
+        aggiornaHeaderProfilo();
+        caricaMieiAppunti();
+    });
+
 </script>
 
 </body>
