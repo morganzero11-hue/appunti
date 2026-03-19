@@ -8,17 +8,33 @@ const pool = new Pool({
 export default async function handler(req, res) {
     
     // ==========================================
-    // 1. RECUPERA GLI APPUNTI SALVATI (GET)
+    // 1. RICHIESTE GET (Lettura)
     // ==========================================
     if (req.method === 'GET') {
-        const { utente_id } = req.query;
+        
+        // CASO A: Contare i like RICEVUTI dagli appunti di un utente
+        if (req.query.autore_id) {
+            try {
+                const query = `
+                    SELECT COUNT(l.id) as total_likes 
+                    FROM likes l 
+                    JOIN appunti a ON l.appunto_id = a.id 
+                    WHERE a.utente_id = $1
+                `;
+                const result = await pool.query(query, [req.query.autore_id]);
+                return res.status(200).json({ total: parseInt(result.rows[0].total_likes) || 0 });
+            } catch (err) {
+                return res.status(500).json({ error: err.message });
+            }
+        }
 
+        // CASO B: Recuperare la lista degli appunti SALVATI dall'utente
+        const { utente_id } = req.query;
         if (!utente_id) {
             return res.status(400).json({ error: "Manca l'ID dell'utente" });
         }
 
         try {
-            // Peschiamo tutti gli appunti unendoli alla tabella likes per capire quali ha salvato l'utente
             const query = `
                 SELECT a.*, u.username, u.nome, u.cognome, u.foto_profilo_url 
                 FROM appunti a
@@ -30,7 +46,6 @@ export default async function handler(req, res) {
             const result = await pool.query(query, [utente_id]);
             return res.status(200).json(result.rows);
         } catch (err) {
-            console.error("Errore recupero likes:", err);
             return res.status(500).json({ error: err.message });
         }
     }
@@ -46,33 +61,22 @@ export default async function handler(req, res) {
         }
 
         try {
-            // Controlliamo se il like esiste già
             const checkQuery = await pool.query(
                 'SELECT id FROM likes WHERE utente_id = $1 AND appunto_id = $2',
                 [utente_id, appunto_id]
             );
 
             if (checkQuery.rows.length > 0) {
-                // Se c'è già, l'utente sta cliccando per TOGLIERLO (Unlike)
-                await pool.query(
-                    'DELETE FROM likes WHERE utente_id = $1 AND appunto_id = $2',
-                    [utente_id, appunto_id]
-                );
+                await pool.query('DELETE FROM likes WHERE utente_id = $1 AND appunto_id = $2', [utente_id, appunto_id]);
                 return res.status(200).json({ success: true, action: 'unliked' });
             } else {
-                // Se non c'è, lo AGGIUNGIAMO (Like)
-                await pool.query(
-                    'INSERT INTO likes (utente_id, appunto_id) VALUES ($1, $2)',
-                    [utente_id, appunto_id]
-                );
+                await pool.query('INSERT INTO likes (utente_id, appunto_id) VALUES ($1, $2)', [utente_id, appunto_id]);
                 return res.status(200).json({ success: true, action: 'liked' });
             }
         } catch (err) {
-            console.error("Errore salvataggio like:", err);
             return res.status(500).json({ error: err.message });
         }
     }
 
-    // Se si usa un metodo non supportato (es. PUT)
     return res.status(405).json({ error: "Metodo non consentito" });
 }
