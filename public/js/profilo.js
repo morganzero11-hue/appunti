@@ -32,6 +32,7 @@ window.cambiaTab = function(tabId, btnElement) {
 // ── CARICAMENTO DATI PROFILO HEADER ──
 async function aggiornaHeaderProfilo() {
     let usernameLoggato = getCookieSafe('username');
+    let utenteId = getCookieSafe('utente_id');
     
     if(!usernameLoggato) {
         document.getElementById('valNome').textContent = "Ospite";
@@ -47,7 +48,12 @@ async function aggiornaHeaderProfilo() {
         if (res.ok) {
             const user = await res.json();
             
-            document.getElementById('valNome').textContent = user.nome ? (user.nome + ' ' + (user.cognome || '')) : usernameLoggato;
+            // FIX NOME E COGNOME: Gestisce correttamente gli spazi per evitare duplicati
+            let nomeCompleto = [];
+            if (user.nome && user.nome.trim() !== '') nomeCompleto.push(user.nome.trim());
+            if (user.cognome && user.cognome.trim() !== '') nomeCompleto.push(user.cognome.trim());
+            
+            document.getElementById('valNome').textContent = nomeCompleto.length > 0 ? nomeCompleto.join(' ') : usernameLoggato;
             document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
             
             if (user.foto_profilo_url) {
@@ -59,6 +65,17 @@ async function aggiornaHeaderProfilo() {
                 document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
             }
         }
+
+        // AGGIUNTA: Recupera il numero di LIKES RICEVUTI dal database
+        if (utenteId) {
+            const resLikes = await fetch(`/api/likes?autore_id=${utenteId}`);
+            if (resLikes.ok) {
+                const dataLikes = await resLikes.json();
+                const contatore = document.getElementById('statLikesRicevuti');
+                if(contatore) contatore.textContent = dataLikes.total;
+            }
+        }
+
     } catch (e) {
         console.error("Errore nel recuperare i dati dell'utente:", e);
     }
@@ -229,6 +246,54 @@ async function caricaMieiAppunti() {
     }
 }
 
+// ── CARICAMENTO LISTA APPUNTI SALVATI (MI PIACE) ──
+async function caricaAppuntiSalvati() {
+    let utenteId = getCookieSafe('utente_id');
+    const container = document.getElementById('listaAppuntiSalvati');
+    
+    if (!utenteId) {
+        if(container) container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/likes?utente_id=${utenteId}`);
+        if (!res.ok) throw new Error("Errore chiamata API likes");
+        
+        const appunti = await res.json();
+
+        if (appunti.length === 0) {
+            if(container) container.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Non hai ancora salvato nessun appunto.</div></div>";
+            return;
+        }
+
+        if(container) {
+            container.innerHTML = appunti.map(a => {
+                const coverHTML = a.cover_url 
+                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
+                const autore = a.username ? `@${a.username}` : 'Anonimo';
+
+                return `
+                <div class="note-card">
+                    <div class="note-thumb">${coverHTML}</div>
+                    <div class="note-info">
+                        <div class="note-title">${a.titolo}</div>
+                        <div class="note-meta">${a.materia} • di ${autore}</div>
+                        <div class="note-actions">
+                            <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+    } catch (err) {
+        console.error("Errore caricamento appunti salvati:", err);
+        if(container) container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+    }
+}
+
 // ── ELIMINA APPUNTO ──
 window.eliminaAppunto = async function(appuntoId) {
     let utenteId = getCookieSafe('utente_id');
@@ -276,4 +341,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     aggiornaHeaderProfilo();
     caricaMieiAppunti();
+    caricaAppuntiSalvati(); // Richiama gli appunti salvati all'avvio
 });
