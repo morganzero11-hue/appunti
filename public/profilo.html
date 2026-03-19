@@ -80,6 +80,7 @@
         .form-group input[type="text"], .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
         
+        /* IL FIX DELL'UPLOAD E' QUI! NON MODIFICARE QUESTE RIGHE */
         .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; position: relative; }
         .file-input-wrapper:hover { border-color: var(--accent); }
         .file-input-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -242,7 +243,6 @@
             if (res.ok) {
                 const user = await res.json();
                 
-                // FIX NOME E COGNOME: Gestisce correttamente gli spazi per evitare duplicati
                 let nomeCompleto = [];
                 if (user.nome && user.nome.trim() !== '') nomeCompleto.push(user.nome.trim());
                 if (user.cognome && user.cognome.trim() !== '') nomeCompleto.push(user.cognome.trim());
@@ -260,7 +260,6 @@
                 }
             }
 
-            // Recupera il numero di LIKES RICEVUTI dal database
             if (utenteId) {
                 const resLikes = await fetch(`/api/likes?autore_id=${utenteId}`);
                 if (resLikes.ok) {
