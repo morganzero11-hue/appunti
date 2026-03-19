@@ -9,7 +9,6 @@
 </head>
 <body>
 
-    <!-- TOP NAVBAR -->
     <nav class="topnav">
         <div class="topnav__brand">📚 Appunti</div>
         <ul class="topnav__links">
@@ -28,7 +27,6 @@
         </div>
     </nav>
 
-    <!-- HERO BANNER CON SLIDER MATERIE -->
     <header class="hero">
         <div class="hero__overlay"></div>
         <div class="hero__content">
@@ -49,7 +47,6 @@
                 <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
                 <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
                 <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
-                <!-- duplicati per loop infinito -->
                 <div class="subject-card" style="--c:#f97316"><span class="subject-card__icon">∑</span><span>Matematica</span></div>
                 <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
                 <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
@@ -64,7 +61,6 @@
         </div>
     </header>
 
-    <!-- RISULTATI RICERCA -->
     <div class="search-overlay" id="searchOverlay" style="display:none">
         <div class="search-overlay__inner">
             <div class="search-overlay__header">
@@ -83,10 +79,9 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
         <section class="section-label">
-            <span>Ultimi appunti pubblicati</span>
+            <span id="homeSectionTitle">Ultimi appunti pubblicati</span>
         </section>
         <div class="notes-grid" id="homeNotesGrid">
             <div class="notes-empty">Caricamento in corso…</div>
@@ -105,7 +100,7 @@
             "Biologia":"#059669","Geometria":"#7c3aed"
         };
 
-        // ── CARICA ULTIMI APPUNTI DAL DATABASE ──
+        // ── CARICA ULTIMI APPUNTI DAL DATABASE (STATO INIZIALE) ──
         async function caricaUltimiAppunti() {
             const grid = document.getElementById('homeNotesGrid');
             try {
@@ -156,7 +151,52 @@
                 </div>`;
         }
 
-        // ── CERCA UTENTI + APPUNTI DAL DATABASE ──
+        // ── FILTRA APPUNTI QUANDO CLICCHI SULLA MATERIA NELLO SLIDER ──
+        async function filtraPerMateria(materia) {
+            const grid = document.getElementById('homeNotesGrid');
+            const titleSpan = document.getElementById('homeSectionTitle');
+            
+            // Aggiorna il titolo aggiungendo il tastino "Rimuovi filtro"
+            titleSpan.innerHTML = `Appunti di ${materia} <button onclick="resetFiltroMateria()" style="margin-left: 12px; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; border: 1px solid currentColor; background: transparent; cursor: pointer; color: inherit; vertical-align: middle;">✕ Rimuovi filtro</button>`;
+            
+            grid.innerHTML = '<div class="notes-empty">Caricamento in corso…</div>';
+            
+            // Fa scorrere la pagina giù fino alla griglia
+            document.getElementById('mainContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            try {
+                // Utilizziamo l'API di ricerca esistente per filtrare
+                const res = await fetch(`/api/cerca-appunti?q=${encodeURIComponent(materia)}`);
+                const data = await res.json();
+                
+                // Assicuriamoci che la materia corrisponda esattamente per evitare falsi positivi
+                const appuntiMateria = data.filter(n => n.materia.toLowerCase() === materia.toLowerCase());
+
+                if (!appuntiMateria || appuntiMateria.length === 0) {
+                    grid.innerHTML = `<div class="notes-empty">Nessun appunto trovato per ${materia}.</div>`;
+                    return;
+                }
+                grid.innerHTML = appuntiMateria.map(n => cardAppunto(n)).join('');
+            } catch {
+                grid.innerHTML = '<div class="notes-empty">Errore nel caricamento degli appunti filtrati.</div>';
+            }
+        }
+
+        // Ripristina la visualizzazione iniziale
+        function resetFiltroMateria() {
+            document.getElementById('homeSectionTitle').textContent = 'Ultimi appunti pubblicati';
+            caricaUltimiAppunti(); // Ricarica gli ultimi appunti misti
+        }
+
+        // Gestione del click sulle card delle materie
+        document.querySelectorAll('.subject-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const materia = card.querySelector('span:last-child').textContent;
+                filtraPerMateria(materia); // Chiama la nuova funzione!
+            });
+        });
+
+        // ── CERCA UTENTI + APPUNTI DAL DATABASE (Tramite Barra di Ricerca) ──
         async function cerca() {
             const q = document.getElementById('searchInput').value.trim();
             if (!q) return;
@@ -210,13 +250,6 @@
             if (e.key === 'Enter') cerca();
         });
 
-        document.querySelectorAll('.subject-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.getElementById('searchInput').value = card.querySelector('span:last-child').textContent;
-                cerca();
-            });
-        });
-
         // Slider drag + loop
         const slider = document.querySelector('.subjects-slider');
         const track  = document.getElementById('subjectsTrack');
@@ -240,28 +273,24 @@
 
         caricaUltimiAppunti();
     </script>
-    <!-- INCOLLA QUESTO SCRIPT PRIMA DI </body> IN OGNI PAGINA HTML -->
-<script>
-    // Controlla se l'utente è loggato leggendo il cookie "username"
-    function isLoggato() {
-        return document.cookie.split(';').some(c => c.trim().startsWith('username='));
-    }
 
-    function aggiornaNavbar() {
-        const btnLogin = document.querySelector('.nav__login');
-        if (!btnLogin) return;
-
-        if (isLoggato()) {
-            // Nasconde il tasto "Accedi"
-            btnLogin.style.display = 'none';
-        } else {
-            // Mostra il tasto "Accedi"
-            btnLogin.style.display = '';
+    <script>
+        function isLoggato() {
+            return document.cookie.split(';').some(c => c.trim().startsWith('username='));
         }
-    }
 
-    // Esegui subito al caricamento della pagina
-    aggiornaNavbar();
-</script>
+        function aggiornaNavbar() {
+            const btnLogin = document.querySelector('.nav__login');
+            if (!btnLogin) return;
+
+            if (isLoggato()) {
+                btnLogin.style.display = 'none';
+            } else {
+                btnLogin.style.display = '';
+            }
+        }
+
+        aggiornaNavbar();
+    </script>
 </body>
 </html>
