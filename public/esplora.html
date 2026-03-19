@@ -47,25 +47,64 @@
         .feed { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; }
         .feed::-webkit-scrollbar { display: none; }
 
+        /* ── FILTER BAR (Stile Glassmorphism) ── */
+        .filter-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 20px 16px;
+            background: linear-gradient(to bottom, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            z-index: 100;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-chip {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .filter-chip:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        .filter-chip.active {
+            background: var(--accent);
+            color: #0f0f0f;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(200, 240, 96, 0.3);
+        }
+
         /* ── CARD ── */
         .card { height: 100vh; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 20px; }
         .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(30px) brightness(0.3); transform: scale(1.1); }
-        .card__media-container { position: relative; z-index: 1; height: 100%; max-height: 900px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
-        .card__no-media { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 20px; width: 100%; height: 100%; }
-        .card__no-media-icon { font-size: 4rem; margin-bottom: 10px; opacity: 0.5; }
         .card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); z-index: 2; pointer-events: auto; }
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .card__author { font-size: 1rem; font-weight: 800; color: #fff; }
         .card__school { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
-        .card__subject { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; margin-bottom: 10px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .card__subject { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; margin-bottom: 10px; border: 1px solid; }
         .card__title { font-family: 'Fraunces', serif; font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 900; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 14px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .card__btn { padding: 10px 20px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: transform .2s, box-shadow .2s; text-decoration: none; background: var(--accent); color: #0f0f0f; width: 100%; justify-content: center; }
         .card__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
 
         /* Right Sidebar */
-        .card__sidebar { position: absolute; right: max(20px, calc((100% - (900px * 9/16)) / 2 - 80px)); bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 24px; z-index: 2; pointer-events: auto; }
-        .sidebar-avatar { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s; border: 2px solid #fff; background: var(--surface); }
+        .card__sidebar { position: absolute; right: 20px; bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 24px; z-index: 2; pointer-events: auto; }
+        .sidebar-avatar { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s; }
         .sidebar-avatar:hover { transform: scale(1.1); }
 
         /* Bottoni Laterali */
@@ -74,12 +113,8 @@
         
         .side-btn__icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: background .2s, border-color .2s; }
         .side-btn:hover .side-btn__icon { background: rgba(255,255,255,0.2); }
-        
-        /* Stile quando il like è attivo */
-        .side-btn.liked { color: #ff4d6d; }
-        .side-btn.liked .side-btn__icon { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); color: #ff4d6d; }
-        
         .side-btn__count { font-size: 0.8rem; font-weight: 800; }
+        
         .card + .card { border-top: 1px solid var(--border); }
 
         /* scroll hint */
@@ -109,8 +144,7 @@
         .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0f0f0f; padding: 10px 20px; border-radius: 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 9999; }
         .toast.show { opacity: 1; transform: translateY(0); }
         
-        @media (max-width: 1024px) { .card__sidebar { right: 20px; } }
-        @media (max-width: 768px) { .feed-wrapper { margin-left: 0; } .card { padding: 0; } .card__media-container { width: 100%; border-radius: 0; max-height: none; } .card__sidebar { right: 12px; bottom: 80px; } }
+        @media (max-width: 768px) { .feed-wrapper { margin-left: 0; } .card { padding: 0; } .card__sidebar { right: 12px; bottom: 80px; } }
     </style>
 </head>
 <body>
@@ -131,6 +165,18 @@
 </nav>
 
 <div class="feed-wrapper">
+    <div class="filter-bar" id="filterBar">
+        <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">Tutte</button>
+        <button class="filter-chip" onclick="applicaFiltro('Matematica', this)">Matematica</button>
+        <button class="filter-chip" onclick="applicaFiltro('Fisica', this)">Fisica</button>
+        <button class="filter-chip" onclick="applicaFiltro('Scienze', this)">Scienze</button>
+        <button class="filter-chip" onclick="applicaFiltro('Storia', this)">Storia</button>
+        <button class="filter-chip" onclick="applicaFiltro('Italiano', this)">Italiano</button>
+        <button class="filter-chip" onclick="applicaFiltro('Inglese', this)">Inglese</button>
+        <button class="filter-chip" onclick="applicaFiltro('Informatica', this)">Informatica</button>
+        <button class="filter-chip" onclick="applicaFiltro('Altro', this)">Altro</button>
+    </div>
+
     <div class="feed" id="feed"></div>
     <div class="scroll-hint" id="scrollHint">
         <span style="font-size:1.2rem">↓</span>
@@ -205,6 +251,29 @@
         }
     }
 
+    /* ── APPLICA FILTRO MATERIA ── */
+    function applicaFiltro(materiaSelezionata, btnElement) {
+        const chips = document.querySelectorAll('.filter-chip');
+        chips.forEach(chip => chip.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        let appuntiFiltrati = [];
+        if (materiaSelezionata === 'Tutte') {
+            appuntiFiltrati = tuttiAppunti;
+        } else {
+            appuntiFiltrati = tuttiAppunti.filter(a => 
+                a.materia && a.materia.toLowerCase() === materiaSelezionata.toLowerCase()
+            );
+        }
+
+        renderFeed(appuntiFiltrati);
+
+        const feedContainer = document.getElementById('feed');
+        if (feedContainer) {
+            feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
     /* ── FORMATTA DATA ── */
     function formatData(dateStr) {
         if (!dateStr) return 'Recente';
@@ -218,57 +287,17 @@
         return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
     }
 
-    /* ── SALVA O TOGLI IL MI PIACE ── */
-    async function toggleLike(appuntoId, btnElement) {
-        let utenteId = getCookieSafe('utente_id');
-        
-        if (!utenteId) {
-            toast('⚠️ Devi fare il login per salvare gli appunti!');
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/likes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    utente_id: utenteId,
-                    appunto_id: appuntoId
-                })
-            });
-
-            if (!res.ok) throw new Error('Errore nel salvataggio del like');
-
-            const data = await res.json();
-
-            if (data.action === 'liked') {
-                btnElement.classList.add('liked');
-                btnElement.querySelector('.side-btn__icon').textContent = '❤️';
-                toast('❤️ Salvato nei tuoi Mi Piace!');
-            } else {
-                btnElement.classList.remove('liked');
-                btnElement.querySelector('.side-btn__icon').textContent = '🤍';
-                toast('💔 Rimosso dai Mi Piace');
-            }
-
-        } catch (err) {
-            console.error(err);
-            toast('❌ Errore di connessione. Riprova.');
-        }
-    }
-
-
-    /* ── RENDER FEED ── */
+    /* ── RENDER FEED (Stile TikTok) ── */
     function renderFeed(lista) {
         const feed = document.getElementById('feed');
         feed.innerHTML = '';
 
         if (!lista || lista.length === 0) {
             feed.innerHTML = `
-                <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
+                <div style="height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
                     <div style="font-size:3rem">📭</div>
-                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto ancora</div>
-                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Sii il primo a condividere qualcosa con la community!</div>
+                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto trovato</div>
+                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Condividi tu qualcosa per questa materia!</div>
                     <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica un file</button>
                 </div>`;
             return;
@@ -289,52 +318,39 @@
             const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
             const data_str = formatData(a.data_caricamento);
 
-            const fotoProfiloHTML = a.foto_profilo_url 
-                ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
+            const fotoHTML = a.foto_profilo_url 
+                ? `<img src="${a.foto_profilo_url}" alt="Foto Profilo" style="width: 100%; height: 100%; object-fit: cover;">`
                 : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
-
-            const copertinaHTML = a.cover_url
-                ? `<img src="${a.cover_url}" class="card__media-img" alt="Anteprima">`
-                : `<div class="card__no-media"><div class="card__no-media-icon">📄</div><div>Nessuna anteprima</div></div>`;
-
-            const bgSfumato = a.cover_url
-                ? `background: url('${a.cover_url}') center/cover no-repeat;`
-                : `background: radial-gradient(ellipse at center, ${mc}55 0%, #0a0a0a 100%);`;
 
             const card = document.createElement('div');
             card.className = 'card';
             
             card.innerHTML = `
-                <div class="card__bg" style="${bgSfumato}"></div>
+                <div class="card__bg" style="background: radial-gradient(ellipse at center, ${mc}33 0%, transparent 70%);"></div>
                 
-                <div class="card__media-container" style="border: 1px solid ${mc}44;">
-                    ${copertinaHTML}
-                    
-                    <div class="card__content">
-                        <div class="card__meta">
-                            <div>
-                                <div class="card__author">@${username}</div>
-                                <div class="card__school">${data_str}</div>
-                            </div>
-                        </div>
-                        <div class="card__subject" style="color:${mc}; border-color:${mc}55;">${a.materia || 'Generale'}</div>
-                        <div class="card__title">${a.titolo || 'Senza titolo'}</div>
-                        <div class="card__actions">
-                            ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn">📥 Apri PDF/Img</a>` : ''}
+                <div class="card__content">
+                    <div class="card__meta">
+                        <div>
+                            <div class="card__author">@${username}</div>
+                            <div class="card__school">${data_str}</div>
                         </div>
                     </div>
+                    <div class="card__subject" style="background:${mc}18;color:${mc};border-color:${mc}44">${a.materia || 'Generale'}</div>
+                    <div class="card__title">${a.titolo || 'Senza titolo'}</div>
+                    <div class="card__actions">
+                        ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn card__btn--accent">📥 Apri Appunto</a>` : ''}
+                    </div>
                 </div>
-
+                
                 <div class="card__sidebar">
-                    <a href="utenti.html?user=${encodeURIComponent(username)}" class="sidebar-avatar" style="background:${ac}22; border-color: ${ac};">
-                        ${fotoProfiloHTML}
+                    <a href="utenti.html?user=${encodeURIComponent(username)}" class="sidebar-avatar" style="background:${ac}22; border: 2px solid #fff;">
+                        ${fotoHTML}
                     </a>
 
-                    <button class="side-btn" onclick="toggleLike(${a.id}, this)">
+                    <button class="side-btn" onclick="toast('🤍 Mi piace aggiunto!')">
                         <div class="side-btn__icon">🤍</div>
                         <span class="side-btn__count">Like</span>
                     </button>
-                    
                     <button class="side-btn" onclick="navigator.clipboard.writeText('${a.file_url}'); toast('🔗 Link copiato!')">
                         <div class="side-btn__icon">🔗</div>
                         <span class="side-btn__count">Copia</span>
@@ -349,14 +365,14 @@
         const feed = document.getElementById('feed');
         if (!feed) return;
         feed.innerHTML = `
-            <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
+            <div style="height:calc(100vh - 62px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
                 <div style="font-size:3rem">⚠️</div>
                 <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Errore Server</div>
                 <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Impossibile caricare dal database.</div>
             </div>`;
     }
 
-    /* ── EVENT LISTENERS ── */
+    /* ── EVENT LISTENERS (Scroll e Navigazione tastiera) ── */
     const feedEl = document.getElementById('feed');
     feedEl.addEventListener('scroll', () => {
         if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
@@ -369,6 +385,7 @@
         if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
     });
 
+    /* ── LOGICA MODAL UPLOAD ── */
     function apriModal()  { document.getElementById('modal').classList.add('open'); }
     function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
     document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) chiudiModal(); });
