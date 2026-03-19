@@ -1,66 +1,71 @@
-// Funzione d'emergenza per i cookie se auth.js non è caricato
+// ── HELPER COOKIE ──
 function getCookieSafe(name) {
-    try {
-        if (typeof getCookie === 'function') return getCookie(name);
-        let value = `; ${document.cookie}`;
-        let parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    } catch (e) {}
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
     return null;
 }
 
-// 1. CARICAMENTO DATI PROFILO
-async function initProfilo() {
-    let utenteId = getCookieSafe('utente_id');
-    
-    // Se non c'è utente loggato, mostra la modalità ospite e nascondi le sezioni
-    if (!utenteId) {
-        console.warn("Nessun utente loggato. Modalità ospite attivata.");
-        
-        document.getElementById('valNome').textContent = "Ospite";
-        document.getElementById('valCognome').textContent = "Effettua il login";
-        document.getElementById('valScuola').textContent = "-";
-        
-        // Nascondi la sezione per pubblicare
-        const sezionePubblica = document.getElementById('sezionePubblica');
-        if (sezionePubblica) sezionePubblica.style.display = 'none';
-        
-        // Nascondi la lista dei propri appunti
-        const titoloMieiAppunti = document.getElementById('titoloMieiAppunti');
-        if (titoloMieiAppunti) titoloMieiAppunti.style.display = 'none';
-        
-        const listaMieiAppunti = document.getElementById('listaMieiAppunti');
-        if (listaMieiAppunti) listaMieiAppunti.style.display = 'none';
-        
-        return; // Ferma l'esecuzione qui
-    }
-
-    try {
-        const res = await fetch(`/api/utente?id=${utenteId}`);
-        if (!res.ok) throw new Error("Utente non trovato");
-        
-        const user = await res.json();
-
-        document.getElementById('valNome').textContent = user.nome || 'Non impostato';
-        document.getElementById('valCognome').textContent = user.cognome || 'Non impostato';
-        document.getElementById('valScuola').textContent = user.scuola || 'Non inserita';
-        
-        if (user.foto_profilo_url) {
-            const img = document.getElementById('avatarImg');
-            img.src = user.foto_profilo_url;
-            img.style.display = 'block';
-            document.getElementById('avatarPh').style.display = 'none';
-        }
-    } catch (err) {
-        console.error("Errore recupero profilo:", err);
-        document.getElementById('valNome').textContent = "Ospite";
-        document.getElementById('valCognome').textContent = "";
-        document.getElementById('valScuola').textContent = "Effettua il login";
+// ── AGGIORNA TESTO QUANDO SI SELEZIONA UN FILE ──
+function aggiornaTestoFile(inputId, labelId) {
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+    if (input.files && input.files.length > 0) {
+        label.innerHTML = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
+        label.style.color = "var(--accent)";
+    } else {
+        if(inputId === 'coverAppunto') label.innerHTML = "📸 Clicca per selezionare l'immagine di copertina";
+        if(inputId === 'fileAppunto') label.innerHTML = "📄 Clicca per selezionare il file dei tuoi appunti";
+        label.style.color = "var(--text)";
     }
 }
 
-// 2. UPLOAD AVATAR
-async function uploadAvatar(event) {
+// ── GESTIONE TABS ──
+window.cambiaTab = function(tabId, btnElement) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    btnElement.classList.add('active');
+}
+
+// ── CARICAMENTO DATI PROFILO HEADER ──
+async function aggiornaHeaderProfilo() {
+    let usernameLoggato = getCookieSafe('username');
+    
+    if(!usernameLoggato) {
+        document.getElementById('valNome').textContent = "Ospite";
+        document.getElementById('valUsername').textContent = "effettua_login";
+        document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
+        return;
+    }
+
+    document.getElementById('valUsername').textContent = usernameLoggato;
+
+    try {
+        const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
+        if (res.ok) {
+            const user = await res.json();
+            
+            document.getElementById('valNome').textContent = user.nome ? (user.nome + ' ' + (user.cognome || '')) : usernameLoggato;
+            document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
+            
+            if (user.foto_profilo_url) {
+                const img = document.getElementById('avatarImg');
+                img.src = user.foto_profilo_url;
+                img.style.display = 'block';
+                document.getElementById('avatarPh').style.display = 'none';
+            } else if (user.nome) {
+                document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
+            }
+        }
+    } catch (e) {
+        console.error("Errore nel recuperare i dati dell'utente:", e);
+    }
+}
+
+// ── UPLOAD FOTO PROFILO ──
+window.uploadAvatar = async function(event) {
     let utenteId = getCookieSafe('utente_id');
     if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
 
@@ -92,18 +97,17 @@ async function uploadAvatar(event) {
         img.src = blob.url;
         img.style.display = 'block';
         ph.style.display = 'none';
-        ph.textContent = '📸'; 
         alert("✅ Foto profilo aggiornata!");
         
     } catch (error) {
         console.error("Errore upload avatar:", error);
         alert("❌ Impossibile caricare la foto.");
-        ph.textContent = '📸';
+        ph.textContent = '?';
     }
 }
 
-// 3. PUBBLICAZIONE APPUNTO CON PREVIEW
-async function pubblicaAppunto() {
+// ── PUBBLICAZIONE NUOVO APPUNTO ──
+window.pubblicaAppunto = async function() {
     let utenteId = getCookieSafe('utente_id');
     if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
 
@@ -113,7 +117,7 @@ async function pubblicaAppunto() {
     const materia = document.getElementById('materiaAppunto').value;
 
     if (!titolo) return alert("Inserisci un titolo!");
-    if (!fileIn.files[0]) return alert("Seleziona un file PDF o Immagine!");
+    if (!fileIn.files || fileIn.files.length === 0) return alert("Seleziona il file dei tuoi appunti!");
 
     const btn = document.getElementById('btnPubblica');
     btn.textContent = "⏳ Caricamento in corso...";
@@ -125,9 +129,8 @@ async function pubblicaAppunto() {
         const file = fileIn.files[0];
         let coverUrl = null;
 
-        // Se l'utente ha inserito una copertina, carichiamola
-        if (coverIn.files[0]) {
-            btn.textContent = "⏳ Caricamento Preview...";
+        if (coverIn.files && coverIn.files.length > 0) {
+            btn.textContent = "⏳ Caricamento Copertina...";
             const coverFile = coverIn.files[0];
             const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverFile.name)}`, {
                 method: 'POST',
@@ -139,16 +142,15 @@ async function pubblicaAppunto() {
             }
         }
 
-        // Caricamento del file principale
-        btn.textContent = "⏳ Caricamento Appunto...";
+        btn.textContent = "⏳ Caricamento Documento...";
         const resBlob = await fetch(`/api/upload?filename=appunto_${encodeURIComponent(file.name)}`, {
             method: 'POST',
             body: file,
         });
-        if (!resBlob.ok) throw new Error("Errore Blob");
+        if (!resBlob.ok) throw new Error("Errore caricamento file principale");
         const blob = await resBlob.json();
 
-        btn.textContent = "⏳ Salvataggio nel Database...";
+        btn.textContent = "⏳ Salvataggio...";
         const resDb = await fetch('/api/appunti', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -157,7 +159,7 @@ async function pubblicaAppunto() {
                 titolo: titolo,
                 materia: materia,
                 file_url: blob.url,
-                cover_url: coverUrl
+                cover_url: coverUrl 
             })
         });
         if (!resDb.ok) throw new Error("Errore salvataggio DB");
@@ -168,58 +170,67 @@ async function pubblicaAppunto() {
         console.error("Errore pubblicazione:", err);
         alert("❌ C'è stato un problema durante il caricamento.");
     } finally {
-        btn.textContent = "🚀 Pubblica su Esplora";
+        btn.textContent = "🚀 Condividi con tutti";
         btn.disabled = false;
     }
 
     if (success) {
         alert("✅ Appunto pubblicato con successo!");
-        document.getElementById('titoloAppunto').value = '';
-        fileIn.value = '';
-        coverIn.value = '';
-        if (typeof caricaMieiAppunti === 'function') caricaMieiAppunti();
+        window.location.reload();
     }
 }
 
-// 4. CARICA I MIEI APPUNTI
+// ── CARICAMENTO LISTA APPUNTI PUBBLICATI ──
 async function caricaMieiAppunti() {
     let utenteId = getCookieSafe('utente_id');
     const container = document.getElementById('listaMieiAppunti');
-    if (!container) return;
-
+    
     if (!utenteId) {
-        container.innerHTML = "<p style='color: var(--muted);'>Effettua il login per vedere i tuoi appunti.</p>";
+        container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi appunti.</div></div>";
         return;
     }
 
     try {
         const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
+        if (!res.ok) throw new Error("Errore chiamata API appunti");
+        
         const appunti = await res.json();
 
+        document.getElementById('statAppunti').textContent = appunti.length;
+
         if (appunti.length === 0) {
-            container.innerHTML = "<p style='color: var(--muted);'>Non hai ancora caricato nulla.</p>";
+            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato nulla.</div></div>";
             return;
         }
 
-        container.innerHTML = appunti.map(a => `
+        container.innerHTML = appunti.map(a => {
+            const coverHTML = a.cover_url 
+                ? `<img src="${a.cover_url}" alt="Cover Appunto">`
+                : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
+            return `
             <div class="note-card" id="nota-${a.id}">
-                <div>
-                    <h3>${a.titolo}</h3>
-                    <p>${a.materia} • ${new Date(a.data_caricamento || Date.now()).toLocaleDateString()}</p>
+                <div class="note-thumb">
+                    ${coverHTML}
                 </div>
-                <div class="note-actions">
-                    <a href="${a.file_url}" target="_blank" class="note-link">Apri File</a>
-                    <button class="btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
+                <div class="note-info">
+                    <div class="note-title">${a.titolo}</div>
+                    <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
+                    <div class="note-actions">
+                        <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                        <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
+                    </div>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     } catch (err) {
         console.error("Errore caricamento tuoi appunti:", err);
+        container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
     }
 }
 
-// 5. ELIMINA APPUNTO
-async function eliminaAppunto(appuntoId) {
+// ── ELIMINA APPUNTO ──
+window.eliminaAppunto = async function(appuntoId) {
     let utenteId = getCookieSafe('utente_id');
     if (!utenteId) return alert("Devi essere loggato per eliminare un appunto.");
 
@@ -228,16 +239,13 @@ async function eliminaAppunto(appuntoId) {
     }
 
     try {
-        const res = await fetch(`/api/appunti?id=${appuntoId}`, {
-            method: 'DELETE'
-        });
+        const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
 
         if (!res.ok) {
             const data = await res.json();
             throw new Error(data.error || "Errore durante l'eliminazione");
         }
 
-        // Rimuove l'elemento dalla pagina senza doverla ricaricare
         const notaCard = document.getElementById(`nota-${appuntoId}`);
         if (notaCard) {
             notaCard.remove();
@@ -245,7 +253,10 @@ async function eliminaAppunto(appuntoId) {
         
         const container = document.getElementById('listaMieiAppunti');
         if (container.children.length === 0) {
-            caricaMieiAppunti(); // Ricarica per mostrare il messaggio "Non hai ancora caricato nulla"
+            caricaMieiAppunti(); 
+        } else {
+             let cont = parseInt(document.getElementById('statAppunti').textContent);
+             if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
         }
 
     } catch (err) {
@@ -254,8 +265,15 @@ async function eliminaAppunto(appuntoId) {
     }
 }
 
-// AVVIO
+// ── AVVIO ──
 document.addEventListener('DOMContentLoaded', () => {
-    initProfilo();
+    // Gestione visualizzazione bottone Login
+    const btnLogin = document.getElementById('navLoginBtn');
+    if (btnLogin) {
+        const loggato = getCookieSafe('username') !== null;
+        if (loggato) btnLogin.style.display = 'none';
+    }
+
+    aggiornaHeaderProfilo();
     caricaMieiAppunti();
 });
