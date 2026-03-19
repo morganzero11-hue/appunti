@@ -26,7 +26,7 @@
         .topnav__login:hover { transform: scale(1.05); }
         @media (max-width: 768px) { .topnav__links { display: none; } }
 
-        /* ─── PROFILO HEADER (Stile TikTok) ─── */
+        /* ─── PROFILO HEADER ─── */
         .profile-header {
             margin-top: calc(var(--nav-h) + 40px);
             display: flex;
@@ -46,7 +46,7 @@
             background: var(--surface2);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            border: 3px solid var(--accent); /* Bordo colorato evidente */
+            border: 3px solid var(--accent);
             overflow: hidden; cursor: pointer;
             transition: transform .2s, box-shadow .2s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -55,7 +55,6 @@
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
         .avatar-preview span { font-size: 2.5rem; font-family: 'Fraunces', serif; color: var(--accent); }
         
-        /* Piccola icona "+" per far capire che si può cambiare foto */
         .avatar-edit-icon {
             position: absolute; bottom: 0; right: 0;
             background: var(--accent); color: #000;
@@ -69,15 +68,13 @@
         .profile-username { font-size: 1rem; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
         .profile-school { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.7); background: var(--surface2); padding: 4px 12px; border-radius: 12px; display: inline-block; margin-bottom: 20px;}
 
-        /* Statistiche (Like ricevuti) */
-        .profile-stats {
-            display: flex; gap: 40px; margin-bottom: 30px;
-        }
+        /* Statistiche */
+        .profile-stats { display: flex; gap: 40px; margin-bottom: 30px; }
         .stat-item { display: flex; flex-direction: column; align-items: center; }
         .stat-num { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; }
         .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
 
-        /* ─── TABS (I 3 bottoni per cambiare sezione) ─── */
+        /* ─── TABS ─── */
         .tabs-container {
             max-width: 800px; margin: 0 auto;
             border-bottom: 1px solid var(--border);
@@ -112,7 +109,8 @@
             transition: transform .2s, border-color .2s;
         }
         .note-card:hover { transform: translateY(-4px); border-color: var(--border2); }
-        .note-thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative;}
+        .note-thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .note-thumb img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
         .note-thumb-bg { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(circle at 50% 50%, var(--accent), transparent 70%); }
         .note-info { padding: 16px; flex: 1; display: flex; flex-direction: column; }
         .note-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
@@ -124,7 +122,7 @@
         .btn-delete { background: rgba(255, 77, 109, 0.15); color: #ff4d6d; }
         .btn-delete:hover { background: rgba(255, 77, 109, 0.3); }
 
-        /* Form Pubblicazione (nel 3° Tab) */
+        /* Form Pubblicazione */
         .form-card { background: var(--surface); padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -178,13 +176,13 @@
             <span class="stat-label">Appunti</span>
         </div>
         <div class="stat-item">
-            <span class="stat-num">124</span> <span class="stat-label">Mi Piace</span>
+            <span class="stat-num">0</span> <span class="stat-label">Mi Piace</span>
         </div>
     </div>
 </div>
 
 <div class="tabs-container">
-    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">Mis Appunti</button>
+    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Appunti</button>
     <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica</button>
 </div>
@@ -245,13 +243,19 @@
 <script src="js/profilo.js"></script>
 
 <script>
+    // Helper corretto per i cookie in tutto il file
+    function getCookieSafe(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
     // Gestione visuale dei Tabs
     function cambiaTab(tabId, btnElement) {
-        // Rimuove 'active' da tutti i tab e bottoni
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         
-        // Aggiunge 'active' a quello selezionato
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
     }
@@ -260,24 +264,14 @@
     document.addEventListener("DOMContentLoaded", function() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
-        const loggato = document.cookie.split(';').some(c => c.trim().startsWith('username='));
+        const loggato = getCookieSafe('username') !== null;
         if (loggato) { btnLogin.style.display = 'none'; }
     });
 
-    // Siccome abbiamo cambiato gli ID nel design, sovrascriviamo leggermente la funzione di caricamento 
-    // per far apparire i dati nel posto giusto dell'header
-    const oldInitProfilo = typeof initProfilo === 'function' ? initProfilo : null;
-    
-    // Helper veloce per i cookie in pagina
-    function getCookieHere(name) {
-        let parts = document.cookie.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
-    // Aggiorna l'header personalizzato
+    // Aggiorna l'header personalizzato con i veri dati dal DB
     async function aggiornaHeaderProfilo() {
-        let usernameLoggato = getCookieHere('username');
+        let usernameLoggato = getCookieSafe('username');
+        
         if(!usernameLoggato) {
             document.getElementById('valNome').textContent = "Ospite";
             document.getElementById('valUsername').textContent = "effettua_login";
@@ -291,27 +285,29 @@
             const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
             if (res.ok) {
                 const user = await res.json();
-                document.getElementById('valNome').textContent = user.nome + ' ' + (user.cognome || '');
-                document.getElementById('valScuola').textContent = user.scuola || 'Nessuna scuola impostata';
-                if(user.nome) {
-                    document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
-                }
                 
+                // Mostra il Nome Reale (o lo username se il nome manca)
+                document.getElementById('valNome').textContent = user.nome ? (user.nome + ' ' + (user.cognome || '')) : usernameLoggato;
+                document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
+                
+                // Aggiorna l'avatar
                 if (user.foto_profilo_url) {
                     const img = document.getElementById('avatarImg');
                     img.src = user.foto_profilo_url;
                     img.style.display = 'block';
                     document.getElementById('avatarPh').style.display = 'none';
+                } else if (user.nome) {
+                    document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
                 }
             }
         } catch (e) {
-            console.error(e);
+            console.error("Errore nel recuperare i dati dell'utente:", e);
         }
     }
 
-    // Sovrascriviamo la renderizzazione delle card dei Miei Appunti per adattarla al nuovo design
+    // Carica gli appunti nel tab "I Miei Appunti"
     async function caricaMieiAppunti() {
-        let utenteId = getCookieHere('utente_id');
+        let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
         
         if (!utenteId) {
@@ -321,6 +317,8 @@
 
         try {
             const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error("Errore chiamata API appunti");
+            
             const appunti = await res.json();
 
             // Aggiorna il contatore in alto
@@ -332,9 +330,9 @@
             }
 
             container.innerHTML = appunti.map(a => {
-                // Generiamo un colore base per la preview se non c'è cover
+                // Scegliamo se mostrare l'immagine vera o l'icona generica
                 const coverHTML = a.cover_url 
-                    ? `<img src="${a.cover_url}" style="width:100%; height:100%; object-fit:cover;">`
+                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
 
                 return `
@@ -353,11 +351,12 @@
                 </div>
             `}).join('');
         } catch (err) {
-            console.error(err);
+            console.error("Errore caricamento tuoi appunti:", err);
+            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
         }
     }
 
-    // Lanciamo le funzioni aggiornate al caricamento
+    // Lanciamo le funzioni corrette al caricamento della pagina
     document.addEventListener('DOMContentLoaded', () => {
         aggiornaHeaderProfilo();
         caricaMieiAppunti();
