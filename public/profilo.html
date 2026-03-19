@@ -191,10 +191,7 @@
 </div>
 
 <div id="tab-salvati" class="tab-content">
-    <div class="empty-state">
-        <div class="empty-icon">🔒</div>
-        <div class="empty-text">Gli appunti a cui metti mi piace appariranno qui.<br>Presto disponibile!</div>
-    </div>
+    <div id="listaAppuntiSalvati" class="notes-grid"></div>
 </div>
 
 <div id="tab-pubblica" class="tab-content">
@@ -474,6 +471,59 @@
         }
     }
 
+    // ── CARICAMENTO LISTA APPUNTI SALVATI (MI PIACE) ──
+    async function caricaAppuntiSalvati() {
+        let utenteId = getCookieSafe('utente_id');
+        const container = document.getElementById('listaAppuntiSalvati');
+        // Peschiamo il secondo numero delle statistiche (quello dei Mi Piace)
+        const contatoreLikes = document.querySelectorAll('.stat-num')[1]; 
+        
+        if (!utenteId) {
+            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/likes?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error("Errore chiamata API likes");
+            
+            const appunti = await res.json();
+            
+            // Aggiorna il numero "0" in alto con i veri Mi Piace!
+            if (contatoreLikes) contatoreLikes.textContent = appunti.length;
+
+            if (appunti.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Non hai ancora salvato nessun appunto.</div></div>";
+                return;
+            }
+
+            container.innerHTML = appunti.map(a => {
+                const coverHTML = a.cover_url 
+                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
+                const autore = a.username ? `@${a.username}` : 'Anonimo';
+
+                return `
+                <div class="note-card">
+                    <div class="note-thumb">
+                        ${coverHTML}
+                    </div>
+                    <div class="note-info">
+                        <div class="note-title">${a.titolo}</div>
+                        <div class="note-meta">${a.materia} • di ${autore}</div>
+                        <div class="note-actions">
+                            <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                            </div>
+                    </div>
+                </div>
+            `}).join('');
+        } catch (err) {
+            console.error("Errore caricamento appunti salvati:", err);
+            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+        }
+    }
+
     // ── ELIMINA APPUNTO ──
     async function eliminaAppunto(appuntoId) {
         let utenteId = getCookieSafe('utente_id');
@@ -505,10 +555,11 @@
         }
     }
 
-    // ── AVVIO ──
+   // ── AVVIO ──
     document.addEventListener('DOMContentLoaded', () => {
         aggiornaHeaderProfilo();
         caricaMieiAppunti();
+        caricaAppuntiSalvati();
     });
 </script>
 
