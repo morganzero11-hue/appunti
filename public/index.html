@@ -4,8 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appunti — Condividi il Sapere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Playfair+Display:wght@700;900&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Modifiche rapide per le card in Home (Stile coerente col resto) */
+        .note-card {
+            background: var(--surface); border: 1.5px solid var(--border);
+            border-radius: var(--radius, 16px); overflow: hidden;
+            display: flex; flex-direction: column; transition: transform .2s, border-color .2s;
+            cursor: pointer; text-decoration: none; color: inherit;
+        }
+        .note-card:hover { transform: translateY(-4px); border-color: var(--border2); }
+        .note-thumb { height: 140px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .note-thumb img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
+        .note-thumb-bg { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(circle at 50% 50%, var(--c, var(--accent)), transparent 70%); }
+        .note-info { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+        .note-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+        .note-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+        .note-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; font-size: 0.85rem; font-weight: 700; }
+        .note-author { color: var(--accent); }
+        .note-likes { display: flex; align-items: center; gap: 4px; color: #ff4d6d; }
+        
+        .section-label { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .section-label h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin: 0; }
+    </style>
 </head>
 <body>
 
@@ -51,12 +73,6 @@
                 <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
                 <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
                 <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
-                <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
-                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
-                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
-                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
-                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
-                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
             </div>
         </div>
     </header>
@@ -80,15 +96,24 @@
     </div>
 
     <main class="main-content" id="mainContent">
+        
         <section class="section-label">
-            <span id="homeSectionTitle">Ultimi appunti pubblicati</span>
+            <h2 id="homeSectionTitle">Ultimi appunti pubblicati</h2>
         </section>
         <div class="notes-grid" id="homeNotesGrid">
             <div class="notes-empty">Caricamento in corso…</div>
         </div>
+
+        <section class="section-label">
+            <h2>Appunti più amati ❤️</h2>
+        </section>
+        <div class="notes-grid" id="topNotesGrid">
+            <div class="notes-empty">Caricamento in corso…</div>
+        </div>
+
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" style="margin-top: 80px;">
         <p>© 2026 <strong>Appunti</strong> — Tutti i diritti riservati</p>
     </footer>
 
@@ -100,110 +125,113 @@
             "Biologia":"#059669","Geometria":"#7c3aed"
         };
 
-        // ── CARICA ULTIMI APPUNTI DAL DATABASE (STATO INIZIALE) ──
+        // ── CREAZIONE GRAFICA DELLA CARD ──
+        function creaCardHTML(a) {
+            const c = coloriMateria[a.materia] || '#888';
+            const username = a.username || a.utente_id || 'Anonimo';
+            
+            const coverHTML = a.cover_url 
+                ? `<img src="${a.cover_url}" alt="Cover">`
+                : `<div class="note-thumb-bg" style="--c:${c}"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
+            // Mostriamo i like (anche se l'API base non li ha ancora, prepariamo lo spazio. 
+            // Mostriamo 0 di default, se l'API ce li darà, mostrerà il numero vero).
+            const likesCount = a.likes_count || 0;
+
+            return `
+            <a href="utenti.html?user=${encodeURIComponent(username)}" class="note-card" style="text-decoration:none;">
+                <div class="note-thumb">
+                    ${coverHTML}
+                </div>
+                <div class="note-info">
+                    <div class="note-title">${a.titolo}</div>
+                    <div class="note-meta">${a.materia}</div>
+                    <div class="note-footer">
+                        <span class="note-author">@${username}</span>
+                        <span class="note-likes">❤️ ${likesCount}</span>
+                    </div>
+                </div>
+            </a>`;
+        }
+
+        // ── CARICA I 9 APPUNTI PIU' RECENTI ──
         async function caricaUltimiAppunti() {
             const grid = document.getElementById('homeNotesGrid');
             try {
-                const res  = await fetch('/api/appunti?limit=6');
+                // Modifica qui: chiediamo al server di darci gli ultimi 9!
+                const res = await fetch('/api/appunti?limit=9'); 
                 const data = await res.json();
                 if (!data || data.length === 0) {
                     grid.innerHTML = '<div class="notes-empty">Nessun appunto pubblicato ancora.</div>';
                     return;
                 }
-                grid.innerHTML = data.map(n => cardAppunto(n)).join('');
+                grid.innerHTML = data.map(n => creaCardHTML(n)).join('');
             } catch {
                 grid.innerHTML = '<div class="notes-empty">Impossibile caricare gli appunti.</div>';
             }
         }
 
-        function cardAppunto(n) {
-            const c = coloriMateria[n.materia] || '#888';
-            return `
-                <article class="note-card" onclick="window.location.href='utenti.html?user=${n.username}'">
-                    <div class="note-card__tag" style="--c:${c}">${n.materia}</div>
-                    <h3>${n.titolo}</h3>
-                    <p>${n.descrizione || ''}</p>
-                    <div class="note-card__footer">
-                        <span class="note-card__author">👤 ${n.autore}</span>
-                        <span class="note-card__date">${n.data}</span>
-                    </div>
-                </article>`;
+        // ── CARICA I 6 APPUNTI CON PIU' LIKE ──
+        async function caricaAppuntiPiuAmati() {
+            const grid = document.getElementById('topNotesGrid');
+            try {
+                // Facciamo una chiamata speciale all'API likes per la classifica
+                const res = await fetch('/api/likes?top=6'); 
+                
+                if (!res.ok) throw new Error("API non pronta per la top list");
+                const data = await res.json();
+                
+                if (!data || data.length === 0) {
+                    grid.innerHTML = '<div class="notes-empty">Ancora nessun Mi Piace nella community!</div>';
+                    return;
+                }
+                grid.innerHTML = data.map(n => creaCardHTML(n)).join('');
+            } catch (err) {
+                // Se l'API top non esiste ancora, mostriamo un messaggio di fallback
+                grid.innerHTML = '<div class="notes-empty" style="opacity:0.5">Classifica in aggiornamento...</div>';
+            }
         }
 
-        function cardUtente(u) {
-            const tags = (u.materie || [])
-                .map(m => `<span class="user-card__tag" style="--c:${coloriMateria[m]||'#888'}">${m}</span>`)
-                .join('');
-            return `
-                <div class="user-card" onclick="window.location.href='utenti.html?user=${u.username}'">
-                    <div class="user-card__avatar">${u.avatar || '👤'}</div>
-                    <div class="user-card__body">
-                        <div class="user-card__name">${u.nome} ${u.cognome}</div>
-                        <div class="user-card__username">@${u.username}</div>
-                        <div class="user-card__bio">${u.bio || ''}</div>
-                        <div class="user-card__tags">${tags}</div>
-                    </div>
-                    <div class="user-card__stats">
-                        <div class="user-card__stat"><strong>${u.appunti_pubblicati || 0}</strong><span>appunti</span></div>
-                        <div class="user-card__stat"><strong>${u.views || 0}</strong><span>views</span></div>
-                    </div>
-                    <div class="user-card__arrow">→</div>
-                </div>`;
-        }
 
        // ── FILTRA APPUNTI QUANDO CLICCHI SULLA MATERIA NELLO SLIDER ──
         async function filtraPerMateria(materia) {
             const grid = document.getElementById('homeNotesGrid');
             const titleSpan = document.getElementById('homeSectionTitle');
             
-            // Aggiorna il titolo aggiungendo il tastino "Rimuovi filtro"
             titleSpan.innerHTML = `Appunti di ${materia} <button onclick="resetFiltroMateria()" style="margin-left: 12px; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; border: 1px solid currentColor; background: transparent; cursor: pointer; color: inherit; vertical-align: middle;">✕ Rimuovi filtro</button>`;
-            
             grid.innerHTML = '<div class="notes-empty">Caricamento in corso…</div>';
-            
-            // Fa scorrere la pagina giù fino alla griglia
             document.getElementById('mainContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             try {
-                // CHIAMIAMO L'API GENERALE INVECE DI QUELLA MANCANTE
                 const res = await fetch('/api/appunti');
-                
                 if (!res.ok) throw new Error('Errore dal server');
-                
                 const data = await res.json();
                 
-                // Filtriamo gli appunti qui nel browser
                 const appuntiMateria = data.filter(n => n.materia && n.materia.toLowerCase() === materia.toLowerCase());
 
                 if (appuntiMateria.length === 0) {
                     grid.innerHTML = `<div class="notes-empty">Nessun appunto trovato per la materia: ${materia}.</div>`;
                     return;
                 }
-                
-                // Mostra le card filtrate
-                grid.innerHTML = appuntiMateria.map(n => cardAppunto(n)).join('');
-                
+                grid.innerHTML = appuntiMateria.map(n => creaCardHTML(n)).join('');
             } catch (errore) {
-                console.error("Errore durante il filtro:", errore);
                 grid.innerHTML = '<div class="notes-empty">Errore nel caricamento degli appunti filtrati.</div>';
             }
         }
 
-        // Ripristina la visualizzazione iniziale
         function resetFiltroMateria() {
             document.getElementById('homeSectionTitle').textContent = 'Ultimi appunti pubblicati';
-            caricaUltimiAppunti(); // Ricarica gli ultimi appunti misti
+            caricaUltimiAppunti(); 
         }
 
-        // Gestione del click sulle card delle materie
         document.querySelectorAll('.subject-card').forEach(card => {
             card.addEventListener('click', () => {
                 const materia = card.querySelector('span:last-child').textContent;
-                filtraPerMateria(materia); // Chiama la nuova funzione!
+                filtraPerMateria(materia);
             });
         });
 
-        // ── CERCA UTENTI + APPUNTI DAL DATABASE (Tramite Barra di Ricerca) ──
+        // ── CERCA UTENTI E APPUNTI ──
         async function cerca() {
             const q = document.getElementById('searchInput').value.trim();
             if (!q) return;
@@ -223,14 +251,21 @@
 
         function mostraRisultati(q, utenti, appunti) {
             const totale = utenti.length + appunti.length;
-
-            document.getElementById('searchTitle').textContent =
-                totale > 0 ? `${totale} risultati per "${q}"` : `Nessun risultato per "${q}"`;
+            document.getElementById('searchTitle').textContent = totale > 0 ? `${totale} risultati per "${q}"` : `Nessun risultato per "${q}"`;
 
             const usersSection = document.getElementById('searchUsersSection');
             if (utenti.length > 0) {
                 usersSection.style.display = 'block';
-                document.getElementById('searchUsersGrid').innerHTML = utenti.map(cardUtente).join('');
+                // Design base per l'utente nella ricerca
+                document.getElementById('searchUsersGrid').innerHTML = utenti.map(u => `
+                    <div style="background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:12px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.location.href='utenti.html?user=${u.username}'">
+                        <div style="width:40px; height:40px; border-radius:50%; background:var(--accent); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.nome.charAt(0).toUpperCase()}</div>
+                        <div>
+                            <div style="font-weight:bold;">${u.nome} ${u.cognome||''}</div>
+                            <div style="font-size:0.8rem; color:var(--accent);">@${u.username}</div>
+                        </div>
+                    </div>
+                `).join('');
             } else {
                 usersSection.style.display = 'none';
             }
@@ -238,7 +273,7 @@
             const notesSection = document.getElementById('searchNotesSection');
             if (appunti.length > 0) {
                 notesSection.style.display = 'block';
-                document.getElementById('searchNotesGrid').innerHTML = appunti.map(cardAppunto).join('');
+                document.getElementById('searchNotesGrid').innerHTML = appunti.map(a => creaCardHTML(a)).join('');
             } else {
                 notesSection.style.display = 'none';
             }
@@ -257,7 +292,7 @@
             if (e.key === 'Enter') cerca();
         });
 
-        // Slider drag + loop
+        // ── SLIDER ──
         const slider = document.querySelector('.subjects-slider');
         const track  = document.getElementById('subjectsTrack');
         let isDragging = false, startX, scrollStart;
@@ -278,26 +313,27 @@
             else if (slider.scrollLeft <= 0) slider.scrollLeft += half;
         });
 
-        caricaUltimiAppunti();
-    </script>
-
-    <script>
-        function isLoggato() {
-            return document.cookie.split(';').some(c => c.trim().startsWith('username='));
-        }
+        // ── LOGIN E AVVIO ──
+        function isLoggato() { return document.cookie.split(';').some(c => c.trim().startsWith('username=')); }
 
         function aggiornaNavbar() {
             const btnLogin = document.querySelector('.nav__login');
-            if (!btnLogin) return;
-
-            if (isLoggato()) {
-                btnLogin.style.display = 'none';
-            } else {
-                btnLogin.style.display = '';
+            if (btnLogin) {
+                btnLogin.style.display = isLoggato() ? 'none' : '';
             }
         }
 
-        aggiornaNavbar();
+        document.addEventListener('DOMContentLoaded', () => {
+            aggiornaNavbar();
+            caricaUltimiAppunti();
+            caricaAppuntiPiuAmati();
+            
+            // Auto-aggiornamento ogni ora (3600000 millisecondi)
+            setInterval(() => {
+                caricaUltimiAppunti();
+                caricaAppuntiPiuAmati();
+            }, 3600000);
+        });
     </script>
 </body>
 </html>
