@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Esplora — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -17,35 +17,15 @@
             --text:    #f2f0ec;
             --muted:   rgba(242,240,236,0.45);
             --accent:  #c8f060;
-            --sidebar-w: 240px; /* Larghezza fissa della barra laterale */
+            --sidebar-w: 240px;
         }
 
         html, body { height: 100%; overflow: hidden; background: var(--bg); }
+        body { font-family: 'Cabinet Grotesk', sans-serif; color: var(--text); display: flex; }
 
-        body {
-            font-family: 'Cabinet Grotesk', sans-serif;
-            color: var(--text);
-            display: flex; /* Flexbox per affiancare Sidebar e Feed */
-        }
-
-        /* ─── SIDEBAR NAV (A sinistra) ─── */
-        .sidenav {
-            position: fixed;
-            top: 0; left: 0; bottom: 0;
-            width: var(--sidebar-w);
-            background: #1c1c24;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            padding: 32px 20px;
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-        }
-        .sidenav__brand {
-            display: flex; align-items: center; gap: 12px;
-            font-family: 'Fraunces', 'Playfair Display', serif;
-            font-size: 1.5rem; font-weight: 900; color: #fff;
-            text-decoration: none; margin-bottom: 40px; padding: 0 12px;
-        }
+        /* ─── SIDEBAR NAV ─── */
+        .sidenav { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: #1c1c24; border-right: 1px solid rgba(255,255,255,0.05); padding: 32px 20px; display: flex; flex-direction: column; z-index: 1000; }
+        .sidenav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; margin-bottom: 40px; padding: 0 12px; }
         .sidenav__logo { position: relative; width: 26px; height: 26px; }
         .sidenav__logo span { position: absolute; width: 14px; height: 14px; border-radius: 3px; }
         .sidenav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
@@ -53,175 +33,57 @@
         .sidenav__logo span:nth-child(3) { background: #60b8f0; top: 12px; left: 12px; z-index: 1; }
         
         .sidenav__links { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; flex: 1; }
-        .sidenav__links a {
-            color: rgba(255,255,255,0.65); text-decoration: none;
-            font-size: 1.05rem; font-weight: 600; padding: 12px 16px;
-            border-radius: 12px; transition: all .2s;
-            display: flex; align-items: center; gap: 12px;
-        }
+        .sidenav__links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 1.05rem; font-weight: 600; padding: 12px 16px; border-radius: 12px; transition: all .2s; display: flex; align-items: center; gap: 12px; }
         .sidenav__links a:hover { background: rgba(255,255,255,0.08); color: #fff; }
         .sidenav__links a.active { background: #2c2c38; color: #fbbf24; }
         
-        .sidenav__login {
-            background: #f43f5e; color: #fff; padding: 12px 24px;
-            border-radius: 12px; text-decoration: none;
-            font-weight: 700; font-size: 1rem; text-align: center;
-            transition: opacity .2s; margin-top: auto;
-        }
+        .sidenav__login { background: #f43f5e; color: #fff; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1rem; text-align: center; transition: opacity .2s; margin-top: auto; }
         .sidenav__login:hover { opacity: 0.8; }
 
-        @media (max-width: 768px) {
-            .sidenav { display: none; } /* Su mobile nascondiamo la nav per ora, servirebbe una bottom bar */
-            body { display: block; }
-        }
+        @media (max-width: 768px) { .sidenav { display: none; } body { display: block; } }
 
         /* ── FEED CONTAINER ── */
-        .feed-wrapper {
-            margin-left: var(--sidebar-w); /* Lascia spazio alla sidebar */
-            flex: 1;
-            height: 100vh;
-            position: relative;
-        }
-        
-        .feed {
-            height: 100%;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
+        .feed-wrapper { margin-left: var(--sidebar-w); flex: 1; height: 100vh; position: relative; }
+        .feed { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; }
         .feed::-webkit-scrollbar { display: none; }
 
-        /* ── CARD (Tiktok Style) ── */
-        .card {
-            height: 100vh;
-            scroll-snap-align: start;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding: 20px; /* Spazio per non far toccare i bordi allo schermo */
-        }
-
-        /* Sfondo Sfumato */
-        .card__bg { 
-            position: absolute; inset: 0; pointer-events: none; z-index: 0; 
-            filter: blur(30px) brightness(0.3); /* Più scuro per far risaltare il centro */
-            transform: scale(1.1);
-        }
-
-        /* Il "Telefono" Centrale */
-        .card__media-container {
-            position: relative;
-            z-index: 1;
-            height: 100%; max-height: 900px;
-            aspect-ratio: 9 / 16; /* Proporzioni telefono */
-            background: var(--surface);
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card__media-img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-
-        .card__no-media {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--muted); text-align: center; padding: 20px; width: 100%; height: 100%;
-        }
+        /* ── CARD ── */
+        .card { height: 100vh; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 20px; }
+        .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(30px) brightness(0.3); transform: scale(1.1); }
+        .card__media-container { position: relative; z-index: 1; height: 100%; max-height: 900px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
+        .card__no-media { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 20px; width: 100%; height: 100%; }
         .card__no-media-icon { font-size: 4rem; margin-bottom: 10px; opacity: 0.5; }
-
-        /* Info e Testi (Dentro il telefono, in basso) */
-        .card__content {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 40px 20px 20px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-            z-index: 2; pointer-events: auto;
-        }
-
+        .card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); z-index: 2; pointer-events: auto; }
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .card__author { font-size: 1rem; font-weight: 800; color: #fff; }
         .card__school { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
-
-        .card__subject {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 4px 12px; border-radius: 20px;
-            font-size: 0.72rem; font-weight: 800;
-            margin-bottom: 10px; background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .card__title {
-            font-family: 'Fraunces', serif;
-            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
-            font-weight: 900; line-height: 1.2;
-            letter-spacing: -0.5px; margin-bottom: 14px;
-            color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .card__btn {
-            padding: 10px 20px; border-radius: 12px;
-            font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.9rem; font-weight: 800;
-            cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px;
-            transition: transform .2s, box-shadow .2s; text-decoration: none;
-            background: var(--accent); color: #0f0f0f; width: 100%; justify-content: center;
-        }
+        .card__subject { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; margin-bottom: 10px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+        .card__title { font-family: 'Fraunces', serif; font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 900; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 14px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .card__btn { padding: 10px 20px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: transform .2s, box-shadow .2s; text-decoration: none; background: var(--accent); color: #0f0f0f; width: 100%; justify-content: center; }
         .card__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
 
-        /* Right Sidebar (Bottoni FUORI dal telefono) */
-        .card__sidebar {
-            position: absolute;
-            right: max(20px, calc((100% - (900px * 9/16)) / 2 - 80px)); /* Si posiziona fuori dal contenitore centrale */
-            bottom: 60px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-end;
-            gap: 24px; z-index: 2; pointer-events: auto;
-        }
-        
-        .sidebar-avatar {
-            width: 54px; height: 54px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; font-weight: 800; flex-shrink: 0;
-            overflow: hidden; text-decoration: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s;
-            border: 2px solid #fff; background: var(--surface);
-        }
+        /* Right Sidebar */
+        .card__sidebar { position: absolute; right: max(20px, calc((100% - (900px * 9/16)) / 2 - 80px)); bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 24px; z-index: 2; pointer-events: auto; }
+        .sidebar-avatar { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s; border: 2px solid #fff; background: var(--surface); }
         .sidebar-avatar:hover { transform: scale(1.1); }
 
-        .side-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            cursor: pointer; border: none; background: none;
-            color: rgba(255,255,255,0.8); transition: color .2s, transform .2s;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
+        /* Bottoni Laterali */
+        .side-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; border: none; background: none; color: rgba(255,255,255,0.8); transition: color .2s, transform .2s; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .side-btn:hover { color: #fff; transform: scale(1.08); }
-        .side-btn.liked { color: #ff4d6d; }
-        .side-btn__icon {
-            width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; transition: background .2s, border-color .2s;
-        }
+        
+        .side-btn__icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: background .2s, border-color .2s; }
         .side-btn:hover .side-btn__icon { background: rgba(255,255,255,0.2); }
-        .side-btn.liked .side-btn__icon  { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); }
+        
+        /* Stile quando il like è attivo */
+        .side-btn.liked { color: #ff4d6d; }
+        .side-btn.liked .side-btn__icon { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); color: #ff4d6d; }
+        
         .side-btn__count { font-size: 0.8rem; font-weight: 800; }
-
         .card + .card { border-top: 1px solid var(--border); }
 
         /* scroll hint */
-        .scroll-hint {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: var(--muted); font-size: 0.72rem; font-weight: 700;
-            pointer-events: none; z-index: 50; animation: bounce 2s ease-in-out infinite;
-            opacity: 1; transition: opacity .4s;
-        }
+        .scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); font-size: 0.72rem; font-weight: 700; pointer-events: none; z-index: 50; animation: bounce 2s ease-in-out infinite; opacity: 1; transition: opacity .4s; }
         .scroll-hint.hidden { opacity: 0; }
         @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6px); } }
 
@@ -247,15 +109,8 @@
         .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0f0f0f; padding: 10px 20px; border-radius: 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 9999; }
         .toast.show { opacity: 1; transform: translateY(0); }
         
-        @media (max-width: 1024px) {
-             .card__sidebar { right: 20px; }
-        }
-        @media (max-width: 768px) {
-            .feed-wrapper { margin-left: 0; }
-            .card { padding: 0; }
-            .card__media-container { width: 100%; border-radius: 0; max-height: none; }
-            .card__sidebar { right: 12px; bottom: 80px; }
-        }
+        @media (max-width: 1024px) { .card__sidebar { right: 20px; } }
+        @media (max-width: 768px) { .feed-wrapper { margin-left: 0; } .card { padding: 0; } .card__media-container { width: 100%; border-radius: 0; max-height: none; } .card__sidebar { right: 12px; bottom: 80px; } }
     </style>
 </head>
 <body>
@@ -277,7 +132,6 @@
 
 <div class="feed-wrapper">
     <div class="feed" id="feed"></div>
-
     <div class="scroll-hint" id="scrollHint">
         <span style="font-size:1.2rem">↓</span>
         Scorri per scoprire
@@ -364,7 +218,47 @@
         return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
     }
 
-    /* ── RENDER FEED (Stile "TikTok Desktop") ── */
+    /* ── SALVA O TOGLI IL MI PIACE ── */
+    async function toggleLike(appuntoId, btnElement) {
+        let utenteId = getCookieSafe('utente_id');
+        
+        if (!utenteId) {
+            toast('⚠️ Devi fare il login per salvare gli appunti!');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/likes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    utente_id: utenteId,
+                    appunto_id: appuntoId
+                })
+            });
+
+            if (!res.ok) throw new Error('Errore nel salvataggio del like');
+
+            const data = await res.json();
+
+            if (data.action === 'liked') {
+                btnElement.classList.add('liked');
+                btnElement.querySelector('.side-btn__icon').textContent = '❤️';
+                toast('❤️ Salvato nei tuoi Mi Piace!');
+            } else {
+                btnElement.classList.remove('liked');
+                btnElement.querySelector('.side-btn__icon').textContent = '🤍';
+                toast('💔 Rimosso dai Mi Piace');
+            }
+
+        } catch (err) {
+            console.error(err);
+            toast('❌ Errore di connessione. Riprova.');
+        }
+    }
+
+
+    /* ── RENDER FEED ── */
     function renderFeed(lista) {
         const feed = document.getElementById('feed');
         feed.innerHTML = '';
@@ -399,15 +293,10 @@
                 ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
                 : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
 
-            // Immagine centrale o placeholder
             const copertinaHTML = a.cover_url
                 ? `<img src="${a.cover_url}" class="card__media-img" alt="Anteprima">`
-                : `<div class="card__no-media">
-                     <div class="card__no-media-icon">📄</div>
-                     <div>Nessuna anteprima disponibile</div>
-                   </div>`;
+                : `<div class="card__no-media"><div class="card__no-media-icon">📄</div><div>Nessuna anteprima</div></div>`;
 
-            // Sfondo sfocato a tutto schermo
             const bgSfumato = a.cover_url
                 ? `background: url('${a.cover_url}') center/cover no-repeat;`
                 : `background: radial-gradient(ellipse at center, ${mc}55 0%, #0a0a0a 100%);`;
@@ -441,10 +330,11 @@
                         ${fotoProfiloHTML}
                     </a>
 
-                    <button class="side-btn" onclick="toast('🤍 Mi piace aggiunto!')">
+                    <button class="side-btn" onclick="toggleLike(${a.id}, this)">
                         <div class="side-btn__icon">🤍</div>
                         <span class="side-btn__count">Like</span>
                     </button>
+                    
                     <button class="side-btn" onclick="navigator.clipboard.writeText('${a.file_url}'); toast('🔗 Link copiato!')">
                         <div class="side-btn__icon">🔗</div>
                         <span class="side-btn__count">Copia</span>
@@ -466,28 +356,23 @@
             </div>`;
     }
 
-    /* ── SCROLL HINT ── */
+    /* ── EVENT LISTENERS ── */
     const feedEl = document.getElementById('feed');
     feedEl.addEventListener('scroll', () => {
         if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
         else document.getElementById('scrollHint').classList.remove('hidden');
     }, { passive: true });
 
-    /* ── KEYBOARD SCROLL ── */
     document.addEventListener('keydown', e => {
         const h = window.innerHeight;
         if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
         if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
     });
 
-    /* ── MODAL ── */
     function apriModal()  { document.getElementById('modal').classList.add('open'); }
     function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
-    document.getElementById('modal').addEventListener('click', e => {
-        if (e.target === document.getElementById('modal')) chiudiModal();
-    });
+    document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) chiudiModal(); });
 
-    /* ── VERO CARICAMENTO CON API ── */
     async function pubblicaAppunto() {
         const titolo = document.getElementById('mTitolo').value.trim();
         const materia = document.getElementById('mMateria').value;
@@ -496,15 +381,8 @@
         
         const utenteId = getCookieSafe('utente_id');
 
-        if (!utenteId) {
-            toast('⚠️ Devi effettuare il login per pubblicare!');
-            return;
-        }
-
-        if (!titolo || !fileInput) { 
-            toast('⚠️ Inserisci il titolo e seleziona un file!'); 
-            return; 
-        }
+        if (!utenteId) return toast('⚠️ Devi effettuare il login per pubblicare!');
+        if (!titolo || !fileInput) return toast('⚠️ Inserisci il titolo e seleziona un file!'); 
 
         toast('⏳ Caricamento in corso... attendi.');
         
@@ -514,11 +392,9 @@
 
         try {
             let coverUrl = null;
-
             if (coverInput) {
                 const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverInput.name)}`, {
-                    method: 'POST',
-                    body: coverInput
+                    method: 'POST', body: coverInput
                 });
                 if (resCover.ok) {
                     const coverBlob = await resCover.json();
@@ -527,22 +403,15 @@
             }
 
             const blobRes = await fetch(`/api/upload?filename=${encodeURIComponent(fileInput.name)}`, {
-                method: 'POST',
-                body: fileInput
+                method: 'POST', body: fileInput
             });
-            if (!blobRes.ok) throw new Error('Errore durante il caricamento del file su Blob');
+            if (!blobRes.ok) throw new Error('Errore durante il caricamento del file');
             const blobData = await blobRes.json();
 
             const dbRes = await fetch('/api/appunti', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    utente_id: utenteId, 
-                    titolo: titolo,
-                    materia: materia,
-                    file_url: blobData.url,
-                    cover_url: coverUrl
-                })
+                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, materia: materia, file_url: blobData.url, cover_url: coverUrl })
             });
             if (!dbRes.ok) throw new Error('Errore salvataggio nel Database');
 
@@ -554,7 +423,6 @@
             document.getElementById('mCover').value = '';
             
             initEsplora();
-
         } catch (error) {
             console.error(error);
             toast('❌ Errore: Riprova più tardi.');
@@ -570,12 +438,10 @@
         setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    /* ── AUTH E AVVIO ── */
     function aggiornaNavbar() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
-        const loggato = getCookieSafe('username') !== null;
-        if (loggato) { btnLogin.style.display = 'none'; }
+        if (getCookieSafe('username') !== null) btnLogin.style.display = 'none';
     }
 
     document.addEventListener("DOMContentLoaded", function() {
