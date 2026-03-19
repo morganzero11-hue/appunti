@@ -118,9 +118,18 @@
         .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
         .form-group input[type="text"], .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-        .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; }
+        
+        /* Modifica per far funzionare l'upload a colpo sicuro */
+        .file-input-wrapper { 
+            background: var(--surface2); border: 2px dashed var(--border2); 
+            border-radius: 12px; padding: 20px; text-align: center; 
+            cursor: pointer; transition: border-color .2s; position: relative; 
+        }
         .file-input-wrapper:hover { border-color: var(--accent); }
-        .file-input-wrapper input[type="file"] { display: none; }
+        .file-input-wrapper input[type="file"] { 
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; 
+        }
+        .file-label-text { font-size: 0.95rem; font-weight: 600; pointer-events: none; }
         
         .btn-save { width: 100%; background: var(--accent); color: #0a0a0a; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-family: 'Fraunces', serif; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.25); }
@@ -210,17 +219,17 @@
 
         <div class="form-group">
             <label>Copertina (Opzionale, rende la card più bella)</label>
-            <div class="file-input-wrapper" onclick="document.getElementById('coverAppunto').click()">
-                📸 Clicca per selezionare l'immagine di copertina
-                <input type="file" id="coverAppunto" accept="image/*" onchange="this.parentElement.innerHTML = '✅ Copertina selezionata: ' + this.files[0].name + this.outerHTML">
+            <div class="file-input-wrapper">
+                <span class="file-label-text" id="coverLabelText">📸 Clicca per selezionare l'immagine di copertina</span>
+                <input type="file" id="coverAppunto" accept="image/*" onchange="aggiornaTestoFile('coverAppunto', 'coverLabelText')">
             </div>
         </div>
 
         <div class="form-group">
             <label>Documento (PDF o Immagine)</label>
-            <div class="file-input-wrapper" onclick="document.getElementById('fileAppunto').click()">
-                📄 Clicca per selezionare il file dei tuoi appunti
-                <input type="file" id="fileAppunto" accept=".pdf,image/*" onchange="this.parentElement.innerHTML = '✅ File selezionato: ' + this.files[0].name + this.outerHTML">
+            <div class="file-input-wrapper">
+                <span class="file-label-text" id="fileLabelText">📄 Clicca per selezionare il file dei tuoi appunti</span>
+                <input type="file" id="fileAppunto" accept=".pdf,image/*" onchange="aggiornaTestoFile('fileAppunto', 'fileLabelText')">
             </div>
         </div>
 
@@ -229,7 +238,7 @@
 </div>
 
 <script>
-    // Helper corretto per i cookie
+    // ── HELPER COOKIE E TESTO ──
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -237,7 +246,20 @@
         return null;
     }
 
-    // Gestione visuale dei Tabs
+    function aggiornaTestoFile(inputId, labelId) {
+        const input = document.getElementById(inputId);
+        const label = document.getElementById(labelId);
+        if (input.files && input.files.length > 0) {
+            label.innerHTML = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
+            label.style.color = "var(--accent)";
+        } else {
+            if(inputId === 'coverAppunto') label.innerHTML = "📸 Clicca per selezionare l'immagine di copertina";
+            if(inputId === 'fileAppunto') label.innerHTML = "📄 Clicca per selezionare il file dei tuoi appunti";
+            label.style.color = "var(--text)";
+        }
+    }
+
+    // ── GESTIONE TABS E NAVBAR ──
     function cambiaTab(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -246,7 +268,6 @@
         btnElement.classList.add('active');
     }
 
-    // Gestione Login Navbar
     document.addEventListener("DOMContentLoaded", function() {
         const btnLogin = document.getElementById('navLoginBtn');
         if (!btnLogin) return;
@@ -254,7 +275,7 @@
         if (loggato) { btnLogin.style.display = 'none'; }
     });
 
-    // Aggiorna l'header personalizzato
+    // ── CARICAMENTO PROFILO ──
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
         
@@ -289,7 +310,7 @@
         }
     }
 
-    // UPLOAD FOTO PROFILO
+    // ── UPLOAD FOTO PROFILO ──
     async function uploadAvatar(event) {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
@@ -331,7 +352,7 @@
         }
     }
 
-    // PUBBLICAZIONE APPUNTO (Con cover e file)
+    // ── PUBBLICAZIONE APPUNTO ──
     async function pubblicaAppunto() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
@@ -342,7 +363,7 @@
         const materia = document.getElementById('materiaAppunto').value;
 
         if (!titolo) return alert("Inserisci un titolo!");
-        if (!fileIn.files[0]) return alert("Seleziona il file dei tuoi appunti!");
+        if (!fileIn.files || fileIn.files.length === 0) return alert("Seleziona il file dei tuoi appunti!");
 
         const btn = document.getElementById('btnPubblica');
         btn.textContent = "⏳ Caricamento in corso...";
@@ -354,7 +375,7 @@
             const file = fileIn.files[0];
             let coverUrl = null;
 
-            if (coverIn.files[0]) {
+            if (coverIn.files && coverIn.files.length > 0) {
                 btn.textContent = "⏳ Caricamento Copertina...";
                 const coverFile = coverIn.files[0];
                 const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverFile.name)}`, {
@@ -367,7 +388,7 @@
                 }
             }
 
-            btn.textContent = "⏳ Caricamento Appunto...";
+            btn.textContent = "⏳ Caricamento Documento...";
             const resBlob = await fetch(`/api/upload?filename=appunto_${encodeURIComponent(file.name)}`, {
                 method: 'POST',
                 body: file,
@@ -401,12 +422,11 @@
 
         if (success) {
             alert("✅ Appunto pubblicato con successo!");
-            // Ricarica la pagina per resettare form e aggiornare i dati
             window.location.reload();
         }
     }
 
-    // Carica gli appunti nel tab "I Miei Appunti"
+    // ── CARICAMENTO LISTA APPUNTI PUBBLICATI ──
     async function caricaMieiAppunti() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
@@ -421,8 +441,6 @@
             if (!res.ok) throw new Error("Errore chiamata API appunti");
             
             const appunti = await res.json();
-
-            // Aggiorna il contatore in alto
             document.getElementById('statAppunti').textContent = appunti.length;
 
             if (appunti.length === 0) {
@@ -456,7 +474,7 @@
         }
     }
 
-    // ELIMINA APPUNTO
+    // ── ELIMINA APPUNTO ──
     async function eliminaAppunto(appuntoId) {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi essere loggato per eliminare un appunto.");
@@ -468,18 +486,11 @@
         try {
             const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
 
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error || "Errore durante l'eliminazione");
-            }
+            if (!res.ok) throw new Error("Errore durante l'eliminazione");
 
-            // Rimuove l'elemento dalla pagina senza doverla ricaricare
             const notaCard = document.getElementById(`nota-${appuntoId}`);
-            if (notaCard) {
-                notaCard.remove();
-            }
+            if (notaCard) notaCard.remove();
             
-            // Ricalcola il numero di appunti e gestisce se rimani con 0
             const container = document.getElementById('listaMieiAppunti');
             if (container.children.length === 0) {
                 caricaMieiAppunti(); 
@@ -494,12 +505,11 @@
         }
     }
 
-    // Avvio
+    // ── AVVIO ──
     document.addEventListener('DOMContentLoaded', () => {
         aggiornaHeaderProfilo();
         caricaMieiAppunti();
     });
-
 </script>
 
 </body>
