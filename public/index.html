@@ -151,7 +151,7 @@
                 </div>`;
         }
 
-        // ── FILTRA APPUNTI QUANDO CLICCHI SULLA MATERIA NELLO SLIDER ──
+       // ── FILTRA APPUNTI QUANDO CLICCHI SULLA MATERIA NELLO SLIDER ──
         async function filtraPerMateria(materia) {
             const grid = document.getElementById('homeNotesGrid');
             const titleSpan = document.getElementById('homeSectionTitle');
@@ -165,19 +165,26 @@
             document.getElementById('mainContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             try {
-                // Utilizziamo l'API di ricerca esistente per filtrare
-                const res = await fetch(`/api/cerca-appunti?q=${encodeURIComponent(materia)}`);
+                // CHIAMIAMO L'API GENERALE INVECE DI QUELLA MANCANTE
+                const res = await fetch('/api/appunti');
+                
+                if (!res.ok) throw new Error('Errore dal server');
+                
                 const data = await res.json();
                 
-                // Assicuriamoci che la materia corrisponda esattamente per evitare falsi positivi
-                const appuntiMateria = data.filter(n => n.materia.toLowerCase() === materia.toLowerCase());
+                // Filtriamo gli appunti qui nel browser
+                const appuntiMateria = data.filter(n => n.materia && n.materia.toLowerCase() === materia.toLowerCase());
 
-                if (!appuntiMateria || appuntiMateria.length === 0) {
-                    grid.innerHTML = `<div class="notes-empty">Nessun appunto trovato per ${materia}.</div>`;
+                if (appuntiMateria.length === 0) {
+                    grid.innerHTML = `<div class="notes-empty">Nessun appunto trovato per la materia: ${materia}.</div>`;
                     return;
                 }
+                
+                // Mostra le card filtrate
                 grid.innerHTML = appuntiMateria.map(n => cardAppunto(n)).join('');
-            } catch {
+                
+            } catch (errore) {
+                console.error("Errore durante il filtro:", errore);
                 grid.innerHTML = '<div class="notes-empty">Errore nel caricamento degli appunti filtrati.</div>';
             }
         }
