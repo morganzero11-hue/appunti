@@ -48,6 +48,35 @@
         
         .section-label { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 80px; margin-bottom: 30px; padding-bottom: 12px; }
         .section-label h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin: 0; color: #0a0a0a;}
+
+        /* ── CSS AGGIUNTIVO PER LO SLIDER AUTOMATICO ── */
+        .subjects-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: auto; /* IMPORTANTE: 'auto' invece di smooth per lo scroll continuo via JS */
+            -ms-overflow-style: none; /* Nasconde scrollbar su IE e Edge */
+            scrollbar-width: none; /* Nasconde scrollbar su Firefox */
+            cursor: grab;
+        }
+        .subjects-slider::-webkit-scrollbar {
+            display: none; /* Nasconde scrollbar su Chrome, Safari */
+        }
+        .subjects-slider.dragging {
+            cursor: grabbing;
+        }
+        .subjects-track {
+            display: flex;
+            gap: 16px;
+            padding: 0 20px;
+        }
+        .subject-card {
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .subject-card:hover {
+            transform: translateY(-4px);
+        }
     </style>
 </head>
 <body>
@@ -90,10 +119,17 @@
                 <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
                 <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
                 <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
+                
                 <div class="subject-card" style="--c:#f97316"><span class="subject-card__icon">∑</span><span>Matematica</span></div>
                 <div class="subject-card" style="--c:#22c55e"><span class="subject-card__icon">🔬</span><span>Scienze</span></div>
                 <div class="subject-card" style="--c:#3b82f6"><span class="subject-card__icon">⚛️</span><span>Fisica</span></div>
                 <div class="subject-card" style="--c:#a855f7"><span class="subject-card__icon">🧪</span><span>Chimica</span></div>
+                <div class="subject-card" style="--c:#ec4899"><span class="subject-card__icon">📖</span><span>Storia</span></div>
+                <div class="subject-card" style="--c:#14b8a6"><span class="subject-card__icon">🌍</span><span>Geografia</span></div>
+                <div class="subject-card" style="--c:#f59e0b"><span class="subject-card__icon">✏️</span><span>Italiano</span></div>
+                <div class="subject-card" style="--c:#6366f1"><span class="subject-card__icon">🗣️</span><span>Inglese</span></div>
+                <div class="subject-card" style="--c:#ef4444"><span class="subject-card__icon">💻</span><span>Informatica</span></div>
+                <div class="subject-card" style="--c:#0ea5e9"><span class="subject-card__icon">🎨</span><span>Arte</span></div>
             </div>
         </div>
     </header>
@@ -146,7 +182,7 @@
             "Biologia":"#059669","Geometria":"#7c3aed"
         };
 
-        // ── CREAZIONE GRAFICA DELLA CARD (Con aggiunta Podio/Rank) ──
+        // ── CREAZIONE GRAFICA DELLA CARD ──
         function creaCardHTML(a, rank = null) {
             const c = coloriMateria[a.materia] || '#888';
             const username = a.username || a.utente_id || 'Anonimo';
@@ -155,7 +191,6 @@
                 ? `<img src="${a.cover_url}" alt="Cover">`
                 : `<div class="note-thumb-bg" style="--c:${c}"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
 
-            // Creazione del Badge per la classifica
             let badgeHTML = '';
             if (rank !== null) {
                 let badgeClass = 'badge-rank';
@@ -187,7 +222,7 @@
             </a>`;
         }
 
-        // ── CARICA I 9 APPUNTI PIU' RECENTI ──
+        // ── CARICAMENTO DATI ──
         async function caricaUltimiAppunti() {
             const grid = document.getElementById('homeNotesGrid');
             try {
@@ -197,13 +232,12 @@
                     grid.innerHTML = '<div class="notes-empty">Nessun appunto pubblicato ancora.</div>';
                     return;
                 }
-                grid.innerHTML = data.map(n => creaCardHTML(n, null)).join(''); // Qui passiamo null, nessuna medaglia!
+                grid.innerHTML = data.map(n => creaCardHTML(n, null)).join('');
             } catch {
                 grid.innerHTML = '<div class="notes-empty">Impossibile caricare gli appunti.</div>';
             }
         }
 
-        // ── CARICA I 6 APPUNTI CON PIU' LIKE (CON MEDAGLIE) ──
         async function caricaAppuntiPiuAmati() {
             const grid = document.getElementById('topNotesGrid');
             try {
@@ -216,7 +250,6 @@
                     return;
                 }
                 
-                // Il magico "+ 1" calcola la posizione (1, 2, 3...)
                 grid.innerHTML = data.map((n, index) => creaCardHTML(n, index + 1)).join('');
                 
             } catch (err) {
@@ -224,7 +257,7 @@
             }
         }
 
-       // ── FILTRA APPUNTI QUANDO CLICCHI SULLA MATERIA NELLO SLIDER ──
+        // ── FILTRO MATERIA E RICERCA ──
         async function filtraPerMateria(materia) {
             const grid = document.getElementById('homeNotesGrid');
             const titleSpan = document.getElementById('homeSectionTitle');
@@ -261,7 +294,6 @@
             });
         });
 
-        // ── CERCA UTENTI E APPUNTI ──
         async function cerca() {
             const q = document.getElementById('searchInput').value.trim();
             if (!q) return;
@@ -321,13 +353,40 @@
             if (e.key === 'Enter') cerca();
         });
 
-        // ── SLIDER ──
+        // ── NUOVO SLIDER INTELLIGENTE (Autoscroll + Hover Pausa + Mouse/Trackpad Scroll) ──
         const slider = document.querySelector('.subjects-slider');
         const track  = document.getElementById('subjectsTrack');
+        
         let isDragging = false, startX, scrollStart;
+        let isHovered = false;
 
+        // 1. Scorrimento automatico fluido
+        function autoScroll() {
+            if (!isHovered && !isDragging) {
+                slider.scrollLeft += 1; // Velocità autoscroll (puoi alzarlo per farlo andare più veloce)
+            }
+            requestAnimationFrame(autoScroll);
+        }
+        requestAnimationFrame(autoScroll); // Avvia l'autoscroll
+
+        // 2. Metti in pausa quando il mouse passa sopra lo slider
+        slider.addEventListener('mouseenter', () => isHovered = true);
+        slider.addEventListener('mouseleave', () => isHovered = false);
+
+        // 3. Permetti lo scroll orizzontale usando la normale rotellina del mouse o il trackpad "come su Esplora"
+        slider.addEventListener('wheel', (e) => {
+            // Se si usa una rotellina verticale classica, trasformiamo l'input in scroll orizzontale
+            if (e.deltaY !== 0 && e.deltaX === 0) {
+                e.preventDefault(); 
+                slider.scrollLeft += e.deltaY;
+            }
+        });
+
+        // 4. Trascinamento manuale "Grab" a mano (click e trascina)
         slider.addEventListener('mousedown', e => {
-            isDragging = true; startX = e.pageX - slider.offsetLeft; scrollStart = slider.scrollLeft;
+            isDragging = true; 
+            startX = e.pageX - slider.offsetLeft; 
+            scrollStart = slider.scrollLeft;
             slider.classList.add('dragging');
         });
         window.addEventListener('mousemove', e => {
@@ -335,8 +394,15 @@
             e.preventDefault();
             slider.scrollLeft = scrollStart - (e.pageX - slider.offsetLeft - startX);
         });
-        window.addEventListener('mouseup', () => { isDragging = false; slider.classList.remove('dragging'); });
+        window.addEventListener('mouseup', () => { 
+            isDragging = false; 
+            slider.classList.remove('dragging'); 
+        });
+
+        // 5. Effetto Loop Infinito perfetto e fluido
         slider.addEventListener('scroll', () => {
+            // Selezioniamo la metà esatta del track. Il trucco funziona perfettamente 
+            // perché nel HTML abbiamo inserito esattamente 2 blocchi gemelli!
             const half = track.scrollWidth / 2;
             if (slider.scrollLeft >= half) slider.scrollLeft -= half;
             else if (slider.scrollLeft <= 0) slider.scrollLeft += half;
@@ -357,7 +423,6 @@
             caricaUltimiAppunti();
             caricaAppuntiPiuAmati();
             
-            // Auto-aggiornamento ogni ora (3600000 millisecondi)
             setInterval(() => {
                 caricaUltimiAppunti();
                 caricaAppuntiPiuAmati();
