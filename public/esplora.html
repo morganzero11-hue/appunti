@@ -47,8 +47,8 @@
         .feed { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; }
         .feed::-webkit-scrollbar { display: none; }
 
-        /* ── FILTER BAR (Stile Glassmorphism) ── */
-        .filter-bar {
+        /* ── TOP BAR (Filtri + Ricerca Glassmorphism) ── */
+        .top-bar {
             position: absolute;
             top: 0;
             left: 0;
@@ -56,12 +56,21 @@
             padding: 24px 20px 16px;
             background: linear-gradient(to bottom, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
             display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+            pointer-events: none; /* Permette di cliccare attraverso il gradiente dove vuoto */
+        }
+        
+        .filter-bar {
+            display: flex;
             gap: 12px;
             overflow-x: auto;
-            z-index: 100;
             scroll-behavior: smooth;
             -ms-overflow-style: none;
             scrollbar-width: none;
+            flex: 1;
+            pointer-events: auto; /* Riattiva i click sui bottoni */
         }
         .filter-bar::-webkit-scrollbar { display: none; }
         
@@ -91,7 +100,40 @@
             box-shadow: 0 4px 15px rgba(200, 240, 96, 0.3);
         }
 
-        /* ── CARD (Ripristinato stile originale) ── */
+        /* ── SEARCH BOX ── */
+        .search-container {
+            pointer-events: auto;
+            flex-shrink: 0;
+        }
+        .search-input {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 16px 8px 36px;
+            outline: none;
+            width: 200px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='rgba(255,255,255,0.6)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 12px center;
+        }
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+            width: 240px;
+        }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        /* ── CARD (Stile 9:16) ── */
         .card { height: 100vh; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 20px; }
         .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(30px) brightness(0.3); transform: scale(1.1); }
         .card__media-container { position: relative; z-index: 1; height: 100%; max-height: 900px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -108,7 +150,7 @@
         .card__btn { padding: 10px 20px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.9rem; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: transform .2s, box-shadow .2s; text-decoration: none; background: var(--accent); color: #0f0f0f; width: 100%; justify-content: center; }
         .card__btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.28); }
 
-        /* Right Sidebar (Ripristinata posizione fuori dalla card media) */
+        /* Right Sidebar */
         .card__sidebar { position: absolute; right: max(20px, calc((100% - (900px * 9/16)) / 2 - 80px)); bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 24px; z-index: 2; pointer-events: auto; }
         .sidebar-avatar { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s; border: 2px solid #fff; background: var(--surface); }
         .sidebar-avatar:hover { transform: scale(1.1); }
@@ -152,8 +194,17 @@
         .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0f0f0f; padding: 10px 20px; border-radius: 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 9999; }
         .toast.show { opacity: 1; transform: translateY(0); }
         
+        /* Media Queries per dispositivi mobili */
         @media (max-width: 1024px) { .card__sidebar { right: 20px; } }
-        @media (max-width: 768px) { .feed-wrapper { margin-left: 0; } .card { padding: 0; } .card__media-container { width: 100%; border-radius: 0; max-height: none; } .card__sidebar { right: 12px; bottom: 80px; } }
+        @media (max-width: 768px) { 
+            .feed-wrapper { margin-left: 0; } 
+            .card { padding: 0; } 
+            .card__media-container { width: 100%; border-radius: 0; max-height: none; } 
+            .card__sidebar { right: 12px; bottom: 80px; } 
+            .top-bar { flex-direction: column-reverse; align-items: stretch; padding: 16px 12px; gap: 12px; }
+            .search-input { width: 100%; }
+            .search-input:focus { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -174,16 +225,22 @@
 </nav>
 
 <div class="feed-wrapper">
-    <div class="filter-bar" id="filterBar">
-        <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">Tutte</button>
-        <button class="filter-chip" onclick="applicaFiltro('Matematica', this)">Matematica</button>
-        <button class="filter-chip" onclick="applicaFiltro('Fisica', this)">Fisica</button>
-        <button class="filter-chip" onclick="applicaFiltro('Scienze', this)">Scienze</button>
-        <button class="filter-chip" onclick="applicaFiltro('Storia', this)">Storia</button>
-        <button class="filter-chip" onclick="applicaFiltro('Italiano', this)">Italiano</button>
-        <button class="filter-chip" onclick="applicaFiltro('Inglese', this)">Inglese</button>
-        <button class="filter-chip" onclick="applicaFiltro('Informatica', this)">Informatica</button>
-        <button class="filter-chip" onclick="applicaFiltro('Altro', this)">Altro</button>
+    <div class="top-bar">
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">Tutte</button>
+            <button class="filter-chip" onclick="applicaFiltro('Matematica', this)">Matematica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Fisica', this)">Fisica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Scienze', this)">Scienze</button>
+            <button class="filter-chip" onclick="applicaFiltro('Storia', this)">Storia</button>
+            <button class="filter-chip" onclick="applicaFiltro('Italiano', this)">Italiano</button>
+            <button class="filter-chip" onclick="applicaFiltro('Inglese', this)">Inglese</button>
+            <button class="filter-chip" onclick="applicaFiltro('Informatica', this)">Informatica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Altro', this)">Altro</button>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Cerca nel titolo..." oninput="onSearchInput(event)">
+        </div>
     </div>
 
     <div class="feed" id="feed"></div>
@@ -247,36 +304,62 @@
 
     let tuttiAppunti = [];
 
+    /* ── STATO DEI FILTRI E RICERCA ── */
+    let activeMateria = 'Tutte';
+    let searchQuery = '';
+
     /* ── INIT: Recupera dal server ── */
     async function initEsplora() {
         try {
             const res = await fetch('/api/appunti');
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             tuttiAppunti = await res.json();
-            renderFeed(tuttiAppunti);
+            applicaFiltriCombinati(); // Inizializza con i filtri e la ricerca attivi
         } catch (err) {
             console.error('Errore recupero appunti:', err);
             mostraErrore();
         }
     }
 
-    /* ── APPLICA FILTRO MATERIA ── */
+    /* ── GESTIONE BOTTONI MATERIA ── */
     function applicaFiltro(materiaSelezionata, btnElement) {
-        const chips = document.querySelectorAll('.filter-chip');
-        chips.forEach(chip => chip.classList.remove('active'));
-        btnElement.classList.add('active');
+        if (btnElement) {
+            const chips = document.querySelectorAll('.filter-chip');
+            chips.forEach(chip => chip.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+        activeMateria = materiaSelezionata;
+        applicaFiltriCombinati();
+    }
 
-        let appuntiFiltrati = [];
-        if (materiaSelezionata === 'Tutte') {
-            appuntiFiltrati = tuttiAppunti;
-        } else {
-            appuntiFiltrati = tuttiAppunti.filter(a => 
-                a.materia && a.materia.toLowerCase() === materiaSelezionata.toLowerCase()
+    /* ── GESTIONE INPUT DI RICERCA ── */
+    function onSearchInput(event) {
+        searchQuery = event.target.value.toLowerCase();
+        applicaFiltriCombinati();
+    }
+
+    /* ── APPLICA ENTRAMBI I FILTRI CONTEMPORANEAMENTE ── */
+    function applicaFiltriCombinati() {
+        let appuntiFiltrati = tuttiAppunti;
+
+        // 1. Filtra per Materia (se non è "Tutte")
+        if (activeMateria !== 'Tutte') {
+            appuntiFiltrati = appuntiFiltrati.filter(a => 
+                a.materia && a.materia.toLowerCase() === activeMateria.toLowerCase()
             );
         }
 
+        // 2. Filtra per Ricerca Testuale
+        if (searchQuery.trim() !== '') {
+            appuntiFiltrati = appuntiFiltrati.filter(a => 
+                a.titolo && a.titolo.toLowerCase().includes(searchQuery)
+            );
+        }
+
+        // 3. Mostra i risultati
         renderFeed(appuntiFiltrati);
 
+        // Riporta lo scroll in cima
         const feedContainer = document.getElementById('feed');
         if (feedContainer) {
             feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -343,8 +426,8 @@
             feed.innerHTML = `
                 <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
                     <div style="font-size:3rem">📭</div>
-                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto ancora</div>
-                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Sii il primo a condividere qualcosa con la community!</div>
+                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto trovato</div>
+                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Non ci sono risultati per questa ricerca o materia. Sii il primo a caricare qualcosa!</div>
                     <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica un file</button>
                 </div>`;
             return;
