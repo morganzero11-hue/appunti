@@ -68,13 +68,18 @@
         .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(40px) brightness(0.25); transform: scale(1.1); }
         .card__media-container { position: relative; z-index: 1; height: 100%; max-height: 900px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
-        /* ── NUOVO: SLIDER IMMAGINI MULTIPLE E BADGE AUDIO ── */
+        /* ── SLIDER IMMAGINI ── */
         .card__slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; scrollbar-width: none; }
         .card__slider::-webkit-scrollbar { display: none; }
         .slider__item { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
         .card__media-img { width: 100%; height: 100%; object-fit: cover; }
-        .page-indicator { position: absolute; top: 90px; right: 20px; background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; z-index: 10; }
-        .audio-status { position: absolute; top: 90px; left: 20px; background: var(--accent); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; z-index: 10; display: flex; align-items: center; gap: 5px; }
+        
+        /* ── INDICATORE PAGINE (Spostato a Sinistra) ── */
+        .page-indicator { position: absolute; top: 90px; left: 20px; background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; z-index: 10; backdrop-filter: blur(5px); }
+        
+        /* ── TASTO AUDIO (Aggiunto in Alto a Destra) ── */
+        .card-audio-btn { position: absolute; top: 90px; right: 20px; background: rgba(0,0,0,0.6); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: transform 0.2s, background 0.2s; backdrop-filter: blur(5px); }
+        .card-audio-btn:hover { transform: scale(1.1); background: rgba(0,0,0,0.8); }
 
         .card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, transparent 100%); z-index: 2; pointer-events: auto; }
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -101,10 +106,6 @@
         .scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); font-size: 0.72rem; font-weight: 700; pointer-events: none; z-index: 50; animation: bounce 2s ease-in-out infinite; opacity: 1; transition: opacity .4s; }
         .scroll-hint.hidden { opacity: 0; }
         @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6px); } }
-
-        /* ── NUOVO: PULSANTE MUTE GLOBALE ── */
-        .mute-btn { position: fixed; bottom: 30px; left: 30px; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.2rem; cursor: pointer; z-index: 2000; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .mute-btn.is-muted { background: var(--accent2); color: white; border-color: transparent; }
 
         /* Upload Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -134,7 +135,6 @@
             .card__sidebar { right: 12px; bottom: 80px; } 
             .top-bar { flex-direction: column-reverse; align-items: stretch; padding: 16px 12px; gap: 12px; }
             .search-input { width: 100%; }
-            .mute-btn { bottom: 80px; left: 20px; width: 40px; height: 40px; font-size: 1rem; }
         }
     </style>
 </head>
@@ -238,8 +238,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<button class="mute-btn" id="globalMuteBtn" onclick="toggleMute()">🔊</button>
 
 <script src="/js/esplora.js"></script>
 

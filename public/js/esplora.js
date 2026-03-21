@@ -14,14 +14,15 @@ let searchQuery = '';
 let currentAudio = new Audio();
 let isMuted = false;
 
-window.toggleMute = function() {
+window.toggleMute = function(event) {
+    if (event) event.stopPropagation(); // Evita conflitti con eventuali click sull'immagine
     isMuted = !isMuted;
     currentAudio.muted = isMuted;
-    const btn = document.getElementById('globalMuteBtn');
-    if(btn) {
+    
+    // Aggiorna tutte le icone audio presenti a schermo
+    document.querySelectorAll('.card-audio-btn').forEach(btn => {
         btn.textContent = isMuted ? "🔇" : "🔊";
-        btn.classList.toggle('is-muted', isMuted);
-    }
+    });
 }
 
 /* ── INIT: Recupera dal server ── */
@@ -116,7 +117,7 @@ window.toggleLike = async function(appuntoId, btnElement) {
     }
 }
 
-/* ── RENDER FEED (Stile TikTok con Immagini Multiple e Audio) ── */
+/* ── RENDER FEED ── */
 function renderFeed(lista) {
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
@@ -159,7 +160,7 @@ function renderFeed(lista) {
             ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
             : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
 
-        // Analisi file per slider (più immagini)
+        // Analisi file per slider
         const immagini = a.file_url ? a.file_url.split(',') : [];
         let sliderHTML = `<div class="card__slider">`;
         
@@ -195,7 +196,7 @@ function renderFeed(lista) {
             <div class="card__media-container" style="border: 1px solid ${mc}44;">
                 ${sliderHTML}
                 
-                ${a.audio_url ? `<div class="audio-status">🎙️ Audio Attivo</div>` : ''}
+                ${a.audio_url ? `<button class="card-audio-btn" title="Attiva/Disattiva Audio" onclick="toggleMute(event)">${isMuted ? '🔇' : '🔊'}</button>` : ''}
 
                 <div class="card__content">
                     <div class="card__meta">
@@ -222,7 +223,7 @@ function renderFeed(lista) {
                     <span class="side-btn__count">Like</span>
                 </button>
                 
-                <button class="side-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/esplora.html'); toast('🔗 Link copiato!')">
+                <button class="side-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/esplora.html'); window.toast('🔗 Link copiato!')">
                     <div class="side-btn__icon">🔗</div>
                     <span class="side-btn__count">Copia</span>
                 </button>
