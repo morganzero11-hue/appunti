@@ -117,6 +117,33 @@ window.toggleLike = async function(appuntoId, btnElement) {
     }
 }
 
+/* ── SCARICA TUTTE LE IMMAGINI ── */
+window.scaricaTutteLeImmagini = function(urlsString, titolo) {
+    if (!urlsString) return;
+    const urls = urlsString.split(',');
+    
+    if (urls.length > 1) {
+        window.toast(`⏳ Apertura di ${urls.length} file... (Consenti i popup multipli se richiesto)`);
+    }
+
+    urls.forEach((url, index) => {
+        // Leggero ritardo per non farsi bloccare dal browser
+        setTimeout(() => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            
+            // Puliamo il titolo per il nome del file
+            const nomePulito = (titolo || 'Appunto').replace(/[^a-zA-Z0-9]/g, '_');
+            a.download = `Appunto_${nomePulito}_pag_${index + 1}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }, index * 500); 
+    });
+};
+
 /* ── RENDER FEED ── */
 function renderFeed(lista) {
     const feed = document.getElementById('feed');
@@ -155,6 +182,7 @@ function renderFeed(lista) {
         const iniziale = autore[0].toUpperCase();
         const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
         const data_str = formatData(a.data_caricamento);
+        const titoloSafe = a.titolo ? a.titolo.replace(/'/g, "\\'").replace(/"/g, '&quot;') : 'Appunto';
 
         const fotoProfiloHTML = a.foto_profilo_url 
             ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
@@ -214,7 +242,7 @@ function renderFeed(lista) {
                     <div class="card__subject" style="color:${mc}; border-color:${mc}66;">${icona} ${a.materia || 'Generale'}</div>
                     <div class="card__title">${a.titolo || 'Senza titolo'}</div>
                     <div class="card__actions">
-                        ${immagini.length > 0 ? `<a href="${immagini[0]}" download="Appunti_${a.titolo}" class="card__btn">📥 Scarica Appunti</a>` : ''}
+                        ${immagini.length > 0 ? `<button onclick="scaricaTutteLeImmagini('${a.file_url}', '${titoloSafe}')" class="card__btn">📥 Apri/Scarica Tutto</button>` : ''}
                     </div>
                 </div>
             </div>
