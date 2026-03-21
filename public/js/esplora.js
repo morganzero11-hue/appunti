@@ -117,31 +117,51 @@ window.toggleLike = async function(appuntoId, btnElement) {
     }
 }
 
-/* ── SCARICA TUTTE LE IMMAGINI ── */
-window.scaricaTutteLeImmagini = function(urlsString, titolo) {
+/* ── SCARICA TUTTE LE IMMAGINI (Versione Potenziata Anti-Blocco) ── */
+window.scaricaTutteLeImmagini = async function(urlsString, titolo) {
     if (!urlsString) return;
     const urls = urlsString.split(',');
     
     if (urls.length > 1) {
-        window.toast(`⏳ Apertura di ${urls.length} file... (Consenti i popup multipli se richiesto)`);
+        window.toast(`⏳ Download di ${urls.length} file in corso... attendi.`);
+    } else {
+        window.toast(`⏳ Download in corso...`);
     }
 
-    urls.forEach((url, index) => {
-        // Leggero ritardo per non farsi bloccare dal browser
-        setTimeout(() => {
+    // Usiamo un ciclo for per scaricare i file uno alla volta in background
+    for (let i = 0; i < urls.length; i++) {
+        try {
+            // 1. Scarica il file in memoria (bypassando l'apertura della nuova scheda)
+            const response = await fetch(urls[i]);
+            const blob = await response.blob();
+            
+            // 2. Crea un link locale temporaneo
+            const blobUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.target = '_blank';
+            a.href = blobUrl;
             
-            // Puliamo il titolo per il nome del file
+            // 3. Imposta il nome del file
             const nomePulito = (titolo || 'Appunto').replace(/[^a-zA-Z0-9]/g, '_');
-            a.download = `Appunto_${nomePulito}_pag_${index + 1}`;
+            a.download = `Appunto_${nomePulito}_pag_${i + 1}.png`; 
             
+            // 4. Clicca di nascosto per forzare il download
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-        }, index * 500); 
-    });
+            
+            // Pulizia della memoria
+            window.URL.revokeObjectURL(blobUrl);
+            
+            // 5. Pausa di 600 millisecondi per non far allarmare l'antivirus del browser
+            await new Promise(resolve => setTimeout(resolve, 600));
+        } catch (err) {
+            console.error("Errore nel download della pagina " + (i+1), err);
+        }
+    }
+    
+    if (urls.length > 1) {
+        window.toast(`✅ Download di tutti i file completato!`);
+    }
 };
 
 /* ── RENDER FEED ── */
