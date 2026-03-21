@@ -15,11 +15,11 @@ let currentAudio = new Audio();
 let isMuted = false;
 
 window.toggleMute = function(event) {
-    if (event) event.stopPropagation(); // Evita conflitti con eventuali click sull'immagine
+    if (event) event.stopPropagation(); // Evita conflitti con click sull'immagine
     isMuted = !isMuted;
     currentAudio.muted = isMuted;
     
-    // Aggiorna tutte le icone audio presenti a schermo
+    // Aggiorna tutte le icone audio presenti sulle card a schermo
     document.querySelectorAll('.card-audio-btn').forEach(btn => {
         btn.textContent = isMuted ? "🔇" : "🔊";
     });
@@ -160,9 +160,10 @@ function renderFeed(lista) {
             ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
             : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
 
-        // Analisi file per slider
+        // Analisi file per slider e puntini
         const immagini = a.file_url ? a.file_url.split(',') : [];
-        let sliderHTML = `<div class="card__slider">`;
+        let sliderHTML = `<div class="card__slider" id="slider-${a.id}">`;
+        let dotsHTML = `<div class="slider-dots" id="dots-${a.id}">`;
         
         if (immagini.length > 0) {
             immagini.forEach((img, i) => {
@@ -171,6 +172,8 @@ function renderFeed(lista) {
                         <img src="${img}" class="card__media-img" loading="lazy">
                         <div class="page-indicator">${i + 1} / ${immagini.length}</div>
                     </div>`;
+                // Puntini cliccabili
+                dotsHTML += `<div class="dot ${i === 0 ? 'active' : ''}" onclick="document.getElementById('slider-${a.id}').scrollTo({left: document.getElementById('slider-${a.id}').clientWidth * ${i}, behavior: 'smooth'})"></div>`;
             });
         } else {
             sliderHTML += `
@@ -180,6 +183,7 @@ function renderFeed(lista) {
                 </div>`;
         }
         sliderHTML += `</div>`;
+        dotsHTML += `</div>`;
 
         const bgImg = a.cover_url || (immagini.length > 0 ? immagini[0] : '');
         const bgSfumato = bgImg
@@ -196,6 +200,8 @@ function renderFeed(lista) {
             <div class="card__media-container" style="border: 1px solid ${mc}44;">
                 ${sliderHTML}
                 
+                ${immagini.length > 1 ? dotsHTML : ''}
+
                 ${a.audio_url ? `<button class="card-audio-btn" title="Attiva/Disattiva Audio" onclick="toggleMute(event)">${isMuted ? '🔇' : '🔊'}</button>` : ''}
 
                 <div class="card__content">
@@ -230,6 +236,21 @@ function renderFeed(lista) {
             </div>
         `;
         feed.appendChild(card);
+    });
+
+    // Evento per sincronizzare il puntino illuminato durante lo scorrimento
+    document.querySelectorAll('.card__slider').forEach(slider => {
+        slider.addEventListener('scroll', (e) => {
+            const id = slider.id.replace('slider-', '');
+            const index = Math.round(e.target.scrollLeft / e.target.clientWidth);
+            const dotsContainer = document.getElementById(`dots-${id}`);
+            
+            if (dotsContainer) {
+                Array.from(dotsContainer.querySelectorAll('.dot')).forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+        });
     });
 
     initAudioObserver();
@@ -279,6 +300,7 @@ window.pubblicaAppunto = async function() {
     btn.disabled = true;
 
     try {
+        // Carica file multipli
         let fileUrls = [];
         for (let file of filesIn.files) {
             const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, {
@@ -289,6 +311,7 @@ window.pubblicaAppunto = async function() {
             fileUrls.push(data.url);
         }
 
+        // Carica audio
         let audioUrl = null;
         if (audioIn.files && audioIn.files.length > 0) {
             const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, {
@@ -300,6 +323,7 @@ window.pubblicaAppunto = async function() {
             }
         }
 
+        // Carica copertina
         let coverUrl = fileUrls[0];
         if (coverIn.files && coverIn.files.length > 0) {
             const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}`, {
@@ -311,6 +335,7 @@ window.pubblicaAppunto = async function() {
             }
         }
 
+        // Salva su Database
         const dbRes = await fetch('/api/appunti', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -384,9 +409,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { passive: true });
     }
 
-    document.getElementById('modal').addEventListener('click', e => { 
-        if (e.target === document.getElementById('modal')) chiudiModal(); 
-    });
+    const modalEl = document.getElementById('modal');
+    if(modalEl) {
+        modalEl.addEventListener('click', e => { 
+            if (e.target === modalEl) chiudiModal(); 
+        });
+    }
 });
 
 document.addEventListener('keydown', e => {
