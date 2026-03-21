@@ -47,103 +47,35 @@
         .feed { height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; }
         .feed::-webkit-scrollbar { display: none; }
 
-        /* ── TOP BAR (Filtri + Ricerca Glassmorphism) ── */
+        /* ── TOP BAR (Filtri + Ricerca) ── */
         .top-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 24px 20px 16px;
+            position: absolute; top: 0; left: 0; right: 0; padding: 24px 20px 16px;
             background: linear-gradient(to bottom, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            z-index: 100;
-            pointer-events: none;
+            display: flex; align-items: center; gap: 16px; z-index: 100; pointer-events: none;
         }
-        
-        .filter-bar {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-            flex: 1;
-            pointer-events: auto;
-        }
+        .filter-bar { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; flex: 1; pointer-events: auto; }
         .filter-bar::-webkit-scrollbar { display: none; }
-        
-        .filter-chip {
-            padding: 8px 18px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
-            color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .filter-chip:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-        .filter-chip.active {
-            background: var(--accent);
-            color: #0f0f0f;
-            border-color: var(--accent);
-            box-shadow: 0 4px 15px rgba(200, 240, 96, 0.3);
-        }
+        .filter-chip { padding: 8px 18px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 30px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; }
+        .filter-chip:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+        .filter-chip.active { background: var(--accent); color: #0f0f0f; border-color: var(--accent); box-shadow: 0 4px 15px rgba(200, 240, 96, 0.3); }
 
-        /* ── SEARCH BOX ── */
-        .search-container {
-            pointer-events: auto;
-            flex-shrink: 0;
-        }
-        .search-input {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 8px 16px 8px 36px;
-            outline: none;
-            width: 200px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='rgba(255,255,255,0.6)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 12px center;
-        }
-        .search-input:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--accent);
-            width: 240px;
-        }
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 400;
-        }
+        .search-container { pointer-events: auto; flex-shrink: 0; }
+        .search-input { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 8px 16px 8px 36px; outline: none; width: 200px; transition: all 0.3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='rgba(255,255,255,0.6)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
+        .search-input:focus { background: rgba(255, 255, 255, 0.15); border-color: var(--accent); width: 240px; }
 
         /* ── CARD (Stile 9:16) ── */
         .card { height: 100vh; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 20px; }
         .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(40px) brightness(0.25); transform: scale(1.1); }
         .card__media-container { position: relative; z-index: 1; height: 100%; max-height: 900px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
-        .card__no-media { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; padding: 20px; width: 100%; height: 100%; }
-        .card__no-media-icon { font-size: 4rem; margin-bottom: 10px; opacity: 0.5; }
         
+        /* ── NUOVO: SLIDER IMMAGINI MULTIPLE E BADGE AUDIO ── */
+        .card__slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; scrollbar-width: none; }
+        .card__slider::-webkit-scrollbar { display: none; }
+        .slider__item { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
+        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
+        .page-indicator { position: absolute; top: 90px; right: 20px; background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; z-index: 10; }
+        .audio-status { position: absolute; top: 90px; left: 20px; background: var(--accent); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; z-index: 10; display: flex; align-items: center; gap: 5px; }
+
         .card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, transparent 100%); z-index: 2; pointer-events: auto; }
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .card__author { font-size: 1rem; font-weight: 800; color: #fff; }
@@ -157,25 +89,24 @@
         .card__sidebar { position: absolute; right: max(20px, calc((100% - (900px * 9/16)) / 2 - 80px)); bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 24px; z-index: 2; pointer-events: auto; }
         .sidebar-avatar { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: transform 0.2s; border: 2px solid #fff; background: var(--surface); }
         .sidebar-avatar:hover { transform: scale(1.1); }
-
-        /* Bottoni Laterali */
         .side-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; border: none; background: none; color: rgba(255,255,255,0.8); transition: color .2s, transform .2s; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .side-btn:hover { color: #fff; transform: scale(1.08); }
         .side-btn__icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: background .2s, border-color .2s; }
         .side-btn:hover .side-btn__icon { background: rgba(255,255,255,0.2); }
-        
         .side-btn.liked { color: #ff4d6d; }
         .side-btn.liked .side-btn__icon { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); color: #ff4d6d; }
-        
         .side-btn__count { font-size: 0.8rem; font-weight: 800; }
-        .card + .card { border-top: 1px solid var(--border); }
 
-        /* scroll hint */
+        /* Scroll hint */
         .scroll-hint { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); font-size: 0.72rem; font-weight: 700; pointer-events: none; z-index: 50; animation: bounce 2s ease-in-out infinite; opacity: 1; transition: opacity .4s; }
         .scroll-hint.hidden { opacity: 0; }
         @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6px); } }
 
-        /* upload modal */
+        /* ── NUOVO: PULSANTE MUTE GLOBALE ── */
+        .mute-btn { position: fixed; bottom: 30px; left: 30px; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.2rem; cursor: pointer; z-index: 2000; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .mute-btn.is-muted { background: var(--accent2); color: white; border-color: transparent; }
+
+        /* Upload Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
         .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 32px; width: 520px; max-width: 95vw; animation: modalIn .3s ease; }
@@ -186,18 +117,15 @@
         .modal__label { font-size: 0.78rem; font-weight: 800; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
         .modal__input, .modal__select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 600; padding: 10px 14px; outline: none; transition: border-color .2s; }
         .modal__input:focus, .modal__select:focus { border-color: var(--accent); }
-        .modal__select option { background: #222; }
         .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
         .modal__btn { flex: 1; padding: 11px; border-radius: 11px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; border: none; transition: transform .2s, box-shadow .2s; }
-        .modal__btn:hover { transform: translateY(-1px); }
         .modal__btn--accent { background: var(--accent); color: #0f0f0f; }
         .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 
-        /* toast */
+        /* Toast */
         .toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #0f0f0f; padding: 10px 20px; border-radius: 12px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.88rem; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 9999; }
         .toast.show { opacity: 1; transform: translateY(0); }
-        
-        /* Media Queries per dispositivi mobili */
+
         @media (max-width: 1024px) { .card__sidebar { right: 20px; } }
         @media (max-width: 768px) { 
             .feed-wrapper { margin-left: 0; } 
@@ -206,7 +134,7 @@
             .card__sidebar { right: 12px; bottom: 80px; } 
             .top-bar { flex-direction: column-reverse; align-items: stretch; padding: 16px 12px; gap: 12px; }
             .search-input { width: 100%; }
-            .search-input:focus { width: 100%; }
+            .mute-btn { bottom: 80px; left: 20px; width: 40px; height: 40px; font-size: 1rem; }
         }
     </style>
 </head>
@@ -288,354 +216,32 @@
         </div>
         
         <div class="modal__field">
-            <label class="modal__label">Foto Preview (Opzionale)</label>
+            <label class="modal__label">Foto Preview / Copertina (Opzionale)</label>
             <input class="modal__input" id="mCover" type="file" accept="image/*">
         </div>
 
         <div class="modal__field">
-            <label class="modal__label">Seleziona Documento (PDF/IMG)</label>
-            <input class="modal__input" id="mFile" type="file" accept=".pdf, image/*">
+            <label class="modal__label">Seleziona Documento (PDF o più immagini)</label>
+            <input class="modal__input" id="mFile" type="file" accept=".pdf, image/*" multiple>
+        </div>
+
+        <div class="modal__field">
+            <label class="modal__label">Spiegazione Audio (Opzionale)</label>
+            <input class="modal__input" id="mAudio" type="file" accept="audio/*">
         </div>
 
         <div class="modal__actions">
             <button class="modal__btn modal__btn--ghost" onclick="chiudiModal()">Annulla</button>
-            <button class="modal__btn modal__btn--accent" onclick="pubblicaAppunto()">🚀 Pubblica</button>
+            <button class="modal__btn modal__btn--accent" id="mBtnPubblica" onclick="pubblicaAppunto()">🚀 Pubblica</button>
         </div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-    /* ── HELPER COOKIE ── */
-    function getCookieSafe(name) {
-        let value = `; ${document.cookie}`;
-        let parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
+<button class="mute-btn" id="globalMuteBtn" onclick="toggleMute()">🔊</button>
 
-    let tuttiAppunti = [];
-
-    /* ── STATO DEI FILTRI E RICERCA ── */
-    let activeMateria = 'Tutte';
-    let searchQuery = '';
-
-    /* ── INIT: Recupera dal server ── */
-    async function initEsplora() {
-        try {
-            const res = await fetch('/api/appunti');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            tuttiAppunti = await res.json();
-            applicaFiltriCombinati(); // Inizializza con i filtri e la ricerca attivi
-        } catch (err) {
-            console.error('Errore recupero appunti:', err);
-            mostraErrore();
-        }
-    }
-
-    /* ── GESTIONE BOTTONI MATERIA ── */
-    function applicaFiltro(materiaSelezionata, btnElement) {
-        if (btnElement) {
-            const chips = document.querySelectorAll('.filter-chip');
-            chips.forEach(chip => chip.classList.remove('active'));
-            btnElement.classList.add('active');
-        }
-        activeMateria = materiaSelezionata;
-        applicaFiltriCombinati();
-    }
-
-    /* ── GESTIONE INPUT DI RICERCA ── */
-    function onSearchInput(event) {
-        searchQuery = event.target.value.toLowerCase();
-        applicaFiltriCombinati();
-    }
-
-    /* ── APPLICA ENTRAMBI I FILTRI CONTEMPORANEAMENTE ── */
-    function applicaFiltriCombinati() {
-        let appuntiFiltrati = tuttiAppunti;
-
-        // 1. Filtra per Materia (se non è "Tutte")
-        if (activeMateria !== 'Tutte') {
-            appuntiFiltrati = appuntiFiltrati.filter(a => 
-                a.materia && a.materia.toLowerCase() === activeMateria.toLowerCase()
-            );
-        }
-
-        // 2. Filtra per Ricerca Testuale
-        if (searchQuery.trim() !== '') {
-            appuntiFiltrati = appuntiFiltrati.filter(a => 
-                a.titolo && a.titolo.toLowerCase().includes(searchQuery)
-            );
-        }
-
-        // 3. Mostra i risultati
-        renderFeed(appuntiFiltrati);
-
-        // Riporta lo scroll in cima
-        const feedContainer = document.getElementById('feed');
-        if (feedContainer) {
-            feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }
-
-    /* ── FORMATTA DATA ── */
-    function formatData(dateStr) {
-        if (!dateStr) return 'Recente';
-        const d = new Date(dateStr);
-        if (isNaN(d)) return 'Recente';
-        const diff = Math.floor((new Date() - d) / 1000);
-        if (diff < 60)     return 'adesso';
-        if (diff < 3600)   return `${Math.floor(diff / 60)} min fa`;
-        if (diff < 86400)  return `${Math.floor(diff / 3600)} ore fa`;
-        if (diff < 604800) return `${Math.floor(diff / 86400)} giorni fa`;
-        return d.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
-    }
-
-    /* ── SALVA O TOGLI IL MI PIACE ── */
-    async function toggleLike(appuntoId, btnElement) {
-        let utenteId = getCookieSafe('utente_id');
-        
-        if (!utenteId) {
-            toast('⚠️ Devi fare il login per salvare gli appunti!');
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/likes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    utente_id: utenteId,
-                    appunto_id: appuntoId
-                })
-            });
-
-            if (!res.ok) throw new Error('Errore nel salvataggio del like');
-
-            const data = await res.json();
-
-            if (data.action === 'liked') {
-                btnElement.classList.add('liked');
-                btnElement.querySelector('.side-btn__icon').textContent = '❤️';
-                toast('❤️ Salvato nei tuoi Mi Piace!');
-            } else {
-                btnElement.classList.remove('liked');
-                btnElement.querySelector('.side-btn__icon').textContent = '🤍';
-                toast('💔 Rimosso dai Mi Piace');
-            }
-        } catch (err) {
-            console.error(err);
-            toast('❌ Errore di connessione. Riprova.');
-        }
-    }
-
-    /* ── RENDER FEED (Colori Sincronizzati con la Home) ── */
-    function renderFeed(lista) {
-        const feed = document.getElementById('feed');
-        feed.innerHTML = '';
-
-        if (!lista || lista.length === 0) {
-            feed.innerHTML = `
-                <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
-                    <div style="font-size:3rem">📭</div>
-                    <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Nessun appunto trovato</div>
-                    <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Non ci sono risultati per questa ricerca o materia. Sii il primo a caricare qualcosa!</div>
-                    <button onclick="apriModal()" style="margin-top:8px;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px 24px;font-family:'Cabinet Grotesk',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;">✦ Carica un file</button>
-                </div>`;
-            return;
-        }
-
-        // Colori e icone allineati a index.html
-        const COLORI = {
-            "Matematica":"#f97316", "Scienze":"#22c55e", "Fisica":"#3b82f6",
-            "Chimica":"#a855f7", "Storia":"#ec4899", "Geografia":"#14b8a6",
-            "Italiano":"#f59e0b", "Inglese":"#6366f1", "Informatica":"#ef4444",
-            "Arte":"#0ea5e9", "Biologia":"#059669", "Geometria":"#7c3aed",
-            "Altro":"#888888"
-        };
-        const ICONE = {
-            "Matematica":"∑", "Scienze":"🔬", "Fisica":"⚛️",
-            "Chimica":"🧪", "Storia":"📖", "Geografia":"🌍",
-            "Italiano":"✏️", "Inglese":"🗣️", "Informatica":"💻",
-            "Arte":"🎨", "Biologia":"🧬", "Geometria":"📐",
-            "Altro":"📌"
-        };
-
-        const avatarColori = ['#7c3aed','#ec4899','#3b82f6','#22c55e','#f97316','#0ea5e9','#ef4444'];
-
-        lista.forEach(a => {
-            const mc = COLORI[a.materia] || '#888';
-            const icona = ICONE[a.materia] || '📄';
-            
-            const username = a.username || a.utente_id || 'Anonimo'; 
-            const autore = String(a.nome ? `${a.nome} ${a.cognome || ''}` : username);
-            const iniziale = autore[0].toUpperCase();
-            const ac = avatarColori[autore.charCodeAt(0) % avatarColori.length];
-            const data_str = formatData(a.data_caricamento);
-
-            const fotoProfiloHTML = a.foto_profilo_url 
-                ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
-                : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
-
-            const copertinaHTML = a.cover_url
-                ? `<img src="${a.cover_url}" class="card__media-img" alt="Anteprima">`
-                : `<div class="card__no-media"><div class="card__no-media-icon">${icona}</div><div style="font-weight:700">Anteprima non disponibile</div></div>`;
-
-            // Gradiente molto morbido dello stesso colore della materia
-            const bgSfumato = a.cover_url
-                ? `background: url('${a.cover_url}') center/cover no-repeat;`
-                : `background: radial-gradient(ellipse at center, ${mc}66 0%, #0a0a0a 100%);`;
-
-            const card = document.createElement('div');
-            card.className = 'card';
-            
-            card.innerHTML = `
-                <div class="card__bg" style="${bgSfumato}"></div>
-                
-                <div class="card__media-container" style="border: 1px solid ${mc}44;">
-                    ${copertinaHTML}
-                    
-                    <div class="card__content">
-                        <div class="card__meta">
-                            <div>
-                                <div class="card__author">@${username}</div>
-                                <div class="card__school">${data_str}</div>
-                            </div>
-                        </div>
-                        <div class="card__subject" style="color:${mc}; border-color:${mc}66;">${icona} ${a.materia || 'Generale'}</div>
-                        <div class="card__title">${a.titolo || 'Senza titolo'}</div>
-                        <div class="card__actions">
-                            ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="card__btn">📥 Apri PDF/Img</a>` : ''}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card__sidebar">
-                    <a href="utenti.html?user=${encodeURIComponent(username)}" class="sidebar-avatar" style="background:${ac}22; border-color: ${ac};">
-                        ${fotoProfiloHTML}
-                    </a>
-
-                    <button class="side-btn" onclick="toggleLike(${a.id}, this)">
-                        <div class="side-btn__icon">🤍</div>
-                        <span class="side-btn__count">Like</span>
-                    </button>
-                    
-                    <button class="side-btn" onclick="navigator.clipboard.writeText('${a.file_url}'); toast('🔗 Link copiato!')">
-                        <div class="side-btn__icon">🔗</div>
-                        <span class="side-btn__count">Copia</span>
-                    </button>
-                </div>
-            `;
-            feed.appendChild(card);
-        });
-    }
-
-    function mostraErrore() {
-        const feed = document.getElementById('feed');
-        if (!feed) return;
-        feed.innerHTML = `
-            <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center;padding:32px">
-                <div style="font-size:3rem">⚠️</div>
-                <div style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;color:var(--text)">Errore Server</div>
-                <div style="font-size:0.88rem;max-width:280px;line-height:1.6">Impossibile caricare dal database.</div>
-            </div>`;
-    }
-
-    /* ── EVENT LISTENERS (Scroll e Navigazione tastiera) ── */
-    const feedEl = document.getElementById('feed');
-    feedEl.addEventListener('scroll', () => {
-        if (feedEl.scrollTop > 80) document.getElementById('scrollHint').classList.add('hidden');
-        else document.getElementById('scrollHint').classList.remove('hidden');
-    }, { passive: true });
-
-    document.addEventListener('keydown', e => {
-        const h = window.innerHeight;
-        if (e.key === 'ArrowDown') feedEl.scrollBy({ top: h, behavior: 'smooth' });
-        if (e.key === 'ArrowUp')   feedEl.scrollBy({ top: -h, behavior: 'smooth' });
-    });
-
-    /* ── LOGICA MODAL UPLOAD ── */
-    function apriModal()  { document.getElementById('modal').classList.add('open'); }
-    function chiudiModal(){ document.getElementById('modal').classList.remove('open'); }
-    document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) chiudiModal(); });
-
-    async function pubblicaAppunto() {
-        const titolo = document.getElementById('mTitolo').value.trim();
-        const materia = document.getElementById('mMateria').value;
-        const fileInput = document.getElementById('mFile').files[0];
-        const coverInput = document.getElementById('mCover').files[0];
-        
-        const utenteId = getCookieSafe('utente_id');
-
-        if (!utenteId) return toast('⚠️ Devi effettuare il login per pubblicare!');
-        if (!titolo || !fileInput) return toast('⚠️ Inserisci il titolo e seleziona un file!'); 
-
-        toast('⏳ Caricamento in corso... attendi.');
-        
-        const btn = document.querySelector('.modal__btn--accent');
-        btn.textContent = 'Caricamento...';
-        btn.disabled = true;
-
-        try {
-            let coverUrl = null;
-            if (coverInput) {
-                const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverInput.name)}`, {
-                    method: 'POST', body: coverInput
-                });
-                if (resCover.ok) {
-                    const coverBlob = await resCover.json();
-                    coverUrl = coverBlob.url;
-                }
-            }
-
-            const blobRes = await fetch(`/api/upload?filename=${encodeURIComponent(fileInput.name)}`, {
-                method: 'POST', body: fileInput
-            });
-            if (!blobRes.ok) throw new Error('Errore durante il caricamento del file');
-            const blobData = await blobRes.json();
-
-            const dbRes = await fetch('/api/appunti', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, materia: materia, file_url: blobData.url, cover_url: coverUrl })
-            });
-            if (!dbRes.ok) throw new Error('Errore salvataggio nel Database');
-
-            toast('🚀 Appunto pubblicato con successo!');
-            chiudiModal();
-            
-            document.getElementById('mTitolo').value = '';
-            document.getElementById('mFile').value = '';
-            document.getElementById('mCover').value = '';
-            
-            initEsplora();
-        } catch (error) {
-            console.error(error);
-            toast('❌ Errore: Riprova più tardi.');
-        } finally {
-            btn.textContent = '🚀 Pubblica';
-            btn.disabled = false;
-        }
-    }
-
-    function toast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function aggiornaNavbar() {
-        const btnLogin = document.getElementById('navLoginBtn');
-        if (!btnLogin) return;
-        if (getCookieSafe('username') !== null) btnLogin.style.display = 'none';
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        aggiornaNavbar();
-        initEsplora();
-    });
-</script>
+<script src="/js/esplora.js"></script>
 
 </body>
 </html>

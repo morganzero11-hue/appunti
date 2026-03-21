@@ -80,7 +80,6 @@
         .form-group input[type="text"], .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
         
-        /* IL FIX DELL'UPLOAD E' QUI! NON MODIFICARE QUESTE RIGHE */
         .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; position: relative; }
         .file-input-wrapper:hover { border-color: var(--accent); }
         .file-input-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -179,10 +178,18 @@
         </div>
 
         <div class="form-group">
-            <label>Documento (PDF o Immagine)</label>
+            <label>Immagini Appunti (Seleziona una o più foto)</label>
             <div class="file-input-wrapper">
-                <span class="file-label-text" id="fileLabelText">📄 Clicca per selezionare il file dei tuoi appunti</span>
-                <input type="file" id="fileAppunto" accept=".pdf,image/*" onchange="aggiornaTestoFile('fileAppunto', 'fileLabelText')">
+                <span class="file-label-text" id="fileLabelText">📸 Clicca per selezionare le foto</span>
+                <input type="file" id="fileAppunto" accept="image/*" multiple onchange="aggiornaTestoFile('fileAppunto', 'fileLabelText')">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Spiegazione Audio (Opzionale)</label>
+            <div class="file-input-wrapper">
+                <span class="file-label-text" id="audioLabelText">🎙️ Aggiungi un commento vocale</span>
+                <input type="file" id="audioAppunto" accept="audio/*" onchange="aggiornaTestoFile('audioAppunto', 'audioLabelText')">
             </div>
         </div>
 
@@ -202,11 +209,16 @@
         const input = document.getElementById(inputId);
         const label = document.getElementById(labelId);
         if (input.files && input.files.length > 0) {
-            label.innerHTML = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
+            let labelText = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
+            if (input.files.length > 1) {
+                labelText = `✅ Selezionati: <strong>${input.files.length} file</strong>`;
+            }
+            label.innerHTML = labelText;
             label.style.color = "var(--accent)";
         } else {
             if(inputId === 'coverAppunto') label.innerHTML = "📸 Clicca per selezionare l'immagine di copertina";
-            if(inputId === 'fileAppunto') label.innerHTML = "📄 Clicca per selezionare il file dei tuoi appunti";
+            if(inputId === 'fileAppunto') label.innerHTML = "📸 Clicca per selezionare le foto";
+            if(inputId === 'audioAppunto') label.innerHTML = "🎙️ Aggiungi un commento vocale";
             label.style.color = "var(--text)";
         }
     }
@@ -310,48 +322,61 @@
         }
     }
 
+    // Funzione aggiornata per supportare array di immagini, audio e cover opzionale
     async function pubblicaAppunto() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
 
-        const fileIn = document.getElementById('fileAppunto');
+        const filesIn = document.getElementById('fileAppunto');
         const coverIn = document.getElementById('coverAppunto');
+        const audioIn = document.getElementById('audioAppunto');
         const titolo = document.getElementById('titoloAppunto').value.trim();
         const materia = document.getElementById('materiaAppunto').value;
 
         if (!titolo) return alert("Inserisci un titolo!");
-        if (!fileIn.files || fileIn.files.length === 0) return alert("Seleziona il file dei tuoi appunti!");
+        if (!filesIn.files || filesIn.files.length === 0) return alert("Seleziona almeno un'immagine per gli appunti!");
 
         const btn = document.getElementById('btnPubblica');
         btn.textContent = "⏳ Caricamento in corso...";
         btn.disabled = true;
 
-        let success = false;
-
         try {
-            const file = fileIn.files[0];
-            let coverUrl = null;
-
-            if (coverIn.files && coverIn.files.length > 0) {
-                btn.textContent = "⏳ Caricamento Copertina...";
-                const coverFile = coverIn.files[0];
-                const resCover = await fetch(`/api/upload?filename=cover_${encodeURIComponent(coverFile.name)}`, {
-                    method: 'POST', body: coverFile,
+            // 1. Caricamento Immagini Multiple
+            let fileUrls = [];
+            for (let file of filesIn.files) {
+                const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, {
+                    method: 'POST', body: file
                 });
-                if (resCover.ok) {
-                    const coverBlob = await resCover.json();
-                    coverUrl = coverBlob.url;
+                if (!res.ok) throw new Error("Errore caricamento immagine");
+                const data = await res.json();
+                fileUrls.push(data.url);
+            }
+
+            // 2. Caricamento Audio (se presente)
+            let audioUrl = null;
+            if (audioIn.files && audioIn.files.length > 0) {
+                const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, {
+                    method: 'POST', body: audioIn.files[0]
+                });
+                if (resAudio.ok) {
+                    const dataAudio = await resAudio.json();
+                    audioUrl = dataAudio.url;
                 }
             }
 
-            btn.textContent = "⏳ Caricamento Documento...";
-            const resBlob = await fetch(`/api/upload?filename=appunto_${encodeURIComponent(file.name)}`, {
-                method: 'POST', body: file,
-            });
-            if (!resBlob.ok) throw new Error("Errore caricamento file principale");
-            const blob = await resBlob.json();
+            // 3. Caricamento Copertina (se presente, altrimenti usiamo la prima foto caricata)
+            let coverUrl = fileUrls[0];
+            if (coverIn.files && coverIn.files.length > 0) {
+                const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}_${encodeURIComponent(coverIn.files[0].name)}`, {
+                    method: 'POST', body: coverIn.files[0]
+                });
+                if (resCover.ok) {
+                    const dataCover = await resCover.json();
+                    coverUrl = dataCover.url;
+                }
+            }
 
-            btn.textContent = "⏳ Salvataggio...";
+            // 4. Salvataggio nel Database
             const resDb = await fetch('/api/appunti', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -359,24 +384,22 @@
                     utente_id: utenteId,
                     titolo: titolo,
                     materia: materia,
-                    file_url: blob.url,
+                    file_url: fileUrls.join(','), // Convertiamo l'array in una stringa separata da virgole
+                    audio_url: audioUrl,
                     cover_url: coverUrl 
                 })
             });
             if (!resDb.ok) throw new Error("Errore salvataggio DB");
 
-            success = true;
+            alert("✅ Appunto pubblicato con successo!");
+            window.location.reload();
 
         } catch (err) {
+            console.error(err);
             alert("❌ C'è stato un problema durante il caricamento.");
         } finally {
             btn.textContent = "🚀 Condividi con tutti";
             btn.disabled = false;
-        }
-
-        if (success) {
-            alert("✅ Appunto pubblicato con successo!");
-            window.location.reload();
         }
     }
 
@@ -405,6 +428,9 @@
                 const coverHTML = a.cover_url 
                     ? `<img src="${a.cover_url}" alt="Cover Appunto">`
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+                
+                // Prendiamo solo il primo link per il tasto apri se ci sono più file
+                const firstLink = a.file_url ? a.file_url.split(',')[0] : '#';
 
                 return `
                 <div class="note-card" id="nota-${a.id}">
@@ -413,7 +439,7 @@
                         <div class="note-title">${a.titolo}</div>
                         <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
                         <div class="note-actions">
-                            <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                            <a href="${firstLink}" target="_blank" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
                         </div>
                     </div>
@@ -450,6 +476,7 @@
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
 
                 const autore = a.username ? `@${a.username}` : 'Anonimo';
+                const firstLink = a.file_url ? a.file_url.split(',')[0] : '#';
 
                 return `
                 <div class="note-card">
@@ -458,7 +485,7 @@
                         <div class="note-title">${a.titolo}</div>
                         <div class="note-meta">${a.materia} • di ${autore}</div>
                         <div class="note-actions">
-                            <a href="${a.file_url}" target="_blank" class="btn-small btn-open">Apri</a>
+                            <a href="${firstLink}" target="_blank" class="btn-small btn-open">Apri</a>
                         </div>
                     </div>
                 </div>

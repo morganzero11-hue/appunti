@@ -10,7 +10,8 @@ export default async function handler(req, res) {
         const { utente_id, username } = req.query;
 
         try {
-            // Usiamo LEFT JOIN per unire la tabella appunti con la tabella utenti
+            // Usiamo LEFT JOIN per unire la tabella appunti con la tabella utenti.
+            // "a.*" prenderà in automatico anche la nuova colonna "audio_url" dal database.
             let query = `
                 SELECT a.*, u.username, u.nome, u.cognome, u.foto_profilo_url 
                 FROM appunti a 
@@ -42,16 +43,18 @@ export default async function handler(req, res) {
     // 2. CREAZIONE NUOVO APPUNTO (POST)
     // ==========================================
     if (req.method === 'POST') {
-        const { utente_id, titolo, materia, file_url, cover_url } = req.body;
+        // AGGIUNTA: Estraiamo anche audio_url dal body della richiesta
+        const { utente_id, titolo, materia, file_url, cover_url, audio_url } = req.body;
         
         if (!utente_id || !titolo || !file_url) {
             return res.status(400).json({ error: "Dati mancanti" });
         }
 
         try {
+            // AGGIUNTA: Inseriamo audio_url ($6) nella query SQL
             await pool.query(
-                'INSERT INTO appunti (utente_id, titolo, materia, file_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, NOW())',
-                [utente_id, titolo, materia, file_url, cover_url || null]
+                'INSERT INTO appunti (utente_id, titolo, materia, file_url, cover_url, audio_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
+                [utente_id, titolo, materia, file_url, cover_url || null, audio_url || null]
             );
             return res.status(201).json({ success: true });
         } catch (err) {
