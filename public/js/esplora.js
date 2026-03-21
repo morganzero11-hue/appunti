@@ -15,11 +15,10 @@ let currentAudio = new Audio();
 let isMuted = false;
 
 window.toggleMute = function(event) {
-    if (event) event.stopPropagation(); // Evita conflitti con click sull'immagine
+    if (event) event.stopPropagation();
     isMuted = !isMuted;
     currentAudio.muted = isMuted;
     
-    // Aggiorna tutte le icone audio presenti sulle card a schermo
     document.querySelectorAll('.card-audio-btn').forEach(btn => {
         btn.textContent = isMuted ? "🔇" : "🔊";
     });
@@ -70,9 +69,6 @@ function applicaFiltriCombinati() {
     }
 
     renderFeed(appuntiFiltrati);
-
-    const feedContainer = document.getElementById('feed');
-    if (feedContainer) feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ── FORMATTA DATA ── */
@@ -117,7 +113,7 @@ window.toggleLike = async function(appuntoId, btnElement) {
     }
 }
 
-/* ── SCARICA TUTTE LE IMMAGINI (Versione Potenziata Anti-Blocco) ── */
+/* ── SCARICA TUTTE LE IMMAGINI ── */
 window.scaricaTutteLeImmagini = async function(urlsString, titolo) {
     if (!urlsString) return;
     const urls = urlsString.split(',');
@@ -128,31 +124,24 @@ window.scaricaTutteLeImmagini = async function(urlsString, titolo) {
         window.toast(`⏳ Download in corso...`);
     }
 
-    // Usiamo un ciclo for per scaricare i file uno alla volta in background
     for (let i = 0; i < urls.length; i++) {
         try {
-            // 1. Scarica il file in memoria (bypassando l'apertura della nuova scheda)
             const response = await fetch(urls[i]);
             const blob = await response.blob();
             
-            // 2. Crea un link locale temporaneo
             const blobUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
             
-            // 3. Imposta il nome del file
             const nomePulito = (titolo || 'Appunto').replace(/[^a-zA-Z0-9]/g, '_');
             a.download = `Appunto_${nomePulito}_pag_${i + 1}.png`; 
             
-            // 4. Clicca di nascosto per forzare il download
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             
-            // Pulizia della memoria
             window.URL.revokeObjectURL(blobUrl);
             
-            // 5. Pausa di 600 millisecondi per non far allarmare l'antivirus del browser
             await new Promise(resolve => setTimeout(resolve, 600));
         } catch (err) {
             console.error("Errore nel download della pagina " + (i+1), err);
@@ -208,7 +197,6 @@ function renderFeed(lista) {
             ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
             : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
 
-        // Analisi file per slider e puntini
         const immagini = a.file_url ? a.file_url.split(',') : [];
         let sliderHTML = `<div class="card__slider" id="slider-${a.id}">`;
         let dotsHTML = `<div class="slider-dots" id="dots-${a.id}">`;
@@ -220,7 +208,6 @@ function renderFeed(lista) {
                         <img src="${img}" class="card__media-img" loading="lazy">
                         <div class="page-indicator">${i + 1} / ${immagini.length}</div>
                     </div>`;
-                // Puntini cliccabili
                 dotsHTML += `<div class="dot ${i === 0 ? 'active' : ''}" onclick="document.getElementById('slider-${a.id}').scrollTo({left: document.getElementById('slider-${a.id}').clientWidth * ${i}, behavior: 'smooth'})"></div>`;
             });
         } else {
@@ -240,6 +227,7 @@ function renderFeed(lista) {
 
         const card = document.createElement('div');
         card.className = 'card';
+        card.id = `appunto-${a.id}`; // Aggiunto ID per il focus
         if (a.audio_url) card.setAttribute('data-audio', a.audio_url);
         
         card.innerHTML = `
@@ -277,7 +265,7 @@ function renderFeed(lista) {
                     <span class="side-btn__count">Like</span>
                 </button>
                 
-                <button class="side-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/esplora.html'); window.toast('🔗 Link copiato!')">
+                <button class="side-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/esplora.html?focus=${a.id}'); window.toast('🔗 Link copiato!')">
                     <div class="side-btn__icon">🔗</div>
                     <span class="side-btn__count">Copia</span>
                 </button>
@@ -286,7 +274,6 @@ function renderFeed(lista) {
         feed.appendChild(card);
     });
 
-    // Evento per sincronizzare il puntino illuminato durante lo scorrimento
     document.querySelectorAll('.card__slider').forEach(slider => {
         slider.addEventListener('scroll', (e) => {
             const id = slider.id.replace('slider-', '');
@@ -302,6 +289,23 @@ function renderFeed(lista) {
     });
 
     initAudioObserver();
+    gestisciFocus(); // Chiama la funzione per lo scroll alla fine del render
+}
+
+/* ── GESTIONE FOCUS (SCROLL) ── */
+function gestisciFocus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const focusId = urlParams.get('focus');
+    
+    if (focusId) {
+        const cardToFocus = document.getElementById(`appunto-${focusId}`);
+        if (cardToFocus) {
+            // Un piccolo ritardo assicura che il DOM sia pronto prima di scrollare
+            setTimeout(() => {
+                cardToFocus.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
 }
 
 /* ── OBSERVER AUTOPLAY AUDIO ── */
@@ -348,7 +352,6 @@ window.pubblicaAppunto = async function() {
     btn.disabled = true;
 
     try {
-        // Carica file multipli
         let fileUrls = [];
         for (let file of filesIn.files) {
             const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, {
@@ -359,7 +362,6 @@ window.pubblicaAppunto = async function() {
             fileUrls.push(data.url);
         }
 
-        // Carica audio
         let audioUrl = null;
         if (audioIn.files && audioIn.files.length > 0) {
             const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, {
@@ -371,7 +373,6 @@ window.pubblicaAppunto = async function() {
             }
         }
 
-        // Carica copertina
         let coverUrl = fileUrls[0];
         if (coverIn.files && coverIn.files.length > 0) {
             const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}`, {
@@ -383,7 +384,6 @@ window.pubblicaAppunto = async function() {
             }
         }
 
-        // Salva su Database
         const dbRes = await fetch('/api/appunti', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -397,13 +397,11 @@ window.pubblicaAppunto = async function() {
         window.toast('🚀 Appunto pubblicato con successo!');
         chiudiModal();
         
-        // Svuota i campi
         document.getElementById('mTitolo').value = '';
         document.getElementById('mFile').value = '';
         document.getElementById('mCover').value = '';
         document.getElementById('mAudio').value = '';
         
-        // Ricarica il feed
         initEsplora();
 
     } catch (error) {

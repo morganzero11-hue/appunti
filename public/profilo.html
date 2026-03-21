@@ -322,7 +322,6 @@
         }
     }
 
-    // Funzione aggiornata per supportare array di immagini, audio e cover opzionale
     async function pubblicaAppunto() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
@@ -341,7 +340,6 @@
         btn.disabled = true;
 
         try {
-            // 1. Caricamento Immagini Multiple
             let fileUrls = [];
             for (let file of filesIn.files) {
                 const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, {
@@ -352,7 +350,6 @@
                 fileUrls.push(data.url);
             }
 
-            // 2. Caricamento Audio (se presente)
             let audioUrl = null;
             if (audioIn.files && audioIn.files.length > 0) {
                 const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, {
@@ -364,7 +361,6 @@
                 }
             }
 
-            // 3. Caricamento Copertina (se presente, altrimenti usiamo la prima foto caricata)
             let coverUrl = fileUrls[0];
             if (coverIn.files && coverIn.files.length > 0) {
                 const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}_${encodeURIComponent(coverIn.files[0].name)}`, {
@@ -376,7 +372,6 @@
                 }
             }
 
-            // 4. Salvataggio nel Database
             const resDb = await fetch('/api/appunti', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -384,7 +379,7 @@
                     utente_id: utenteId,
                     titolo: titolo,
                     materia: materia,
-                    file_url: fileUrls.join(','), // Convertiamo l'array in una stringa separata da virgole
+                    file_url: fileUrls.join(','), 
                     audio_url: audioUrl,
                     cover_url: coverUrl 
                 })
@@ -429,9 +424,6 @@
                     ? `<img src="${a.cover_url}" alt="Cover Appunto">`
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
                 
-                // Prendiamo solo il primo link per il tasto apri se ci sono più file
-                const firstLink = a.file_url ? a.file_url.split(',')[0] : '#';
-
                 return `
                 <div class="note-card" id="nota-${a.id}">
                     <div class="note-thumb">${coverHTML}</div>
@@ -439,7 +431,7 @@
                         <div class="note-title">${a.titolo}</div>
                         <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
                         <div class="note-actions">
-                            <a href="${firstLink}" target="_blank" class="btn-small btn-open">Apri</a>
+                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
                         </div>
                     </div>
@@ -476,7 +468,6 @@
                     : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
 
                 const autore = a.username ? `@${a.username}` : 'Anonimo';
-                const firstLink = a.file_url ? a.file_url.split(',')[0] : '#';
 
                 return `
                 <div class="note-card">
@@ -485,7 +476,7 @@
                         <div class="note-title">${a.titolo}</div>
                         <div class="note-meta">${a.materia} • di ${autore}</div>
                         <div class="note-actions">
-                            <a href="${firstLink}" target="_blank" class="btn-small btn-open">Apri</a>
+                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
                         </div>
                     </div>
                 </div>
