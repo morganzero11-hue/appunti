@@ -45,14 +45,14 @@
         .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
 
         /* ─── TABS ─── */
-        .tabs-container { max-width: 800px; margin: 0 auto; border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px; }
+        .tabs-container { max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px; }
         .tab-btn { background: none; border: none; color: var(--muted); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800; padding: 16px 0; cursor: pointer; position: relative; transition: color .2s; }
         .tab-btn:hover { color: var(--text); }
         .tab-btn.active { color: var(--text); }
         .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--accent); border-radius: 3px 3px 0 0; }
 
         /* ─── CONTENUTO DELLE SEZIONI ─── */
-        .tab-content { display: none; max-width: 800px; margin: 0 auto; padding: 0 20px; animation: fadeIn .3s ease; }
+        .tab-content { display: none; max-width: 900px; margin: 0 auto; padding: 0 20px; animation: fadeIn .3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -77,8 +77,8 @@
         .form-card { background: var(--surface); padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .form-group input[type="text"], .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
         
         .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; position: relative; }
         .file-input-wrapper:hover { border-color: var(--accent); }
@@ -139,7 +139,8 @@
 <div class="tabs-container">
     <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Appunti</button>
     <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
-    <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica</button>
+    <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica Appunto</button>
+    <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">🎙️ Pubblica Podcast</button>
 </div>
 
 <div id="tab-miei-appunti" class="tab-content active">
@@ -198,6 +199,50 @@
     </div>
 </div>
 
+<div id="tab-pubblica-podcast" class="tab-content">
+    <div class="form-card" id="sezionePubblicaPodcast">
+        <div class="form-group">
+            <label>Titolo Podcast</label>
+            <input type="text" id="podTitolo" placeholder="Es: La Rivoluzione Francese in 10 minuti">
+        </div>
+
+        <div class="form-group">
+            <label>Categoria</label>
+            <select id="podCategoria">
+                <option>Storia</option>
+                <option>Scienze</option>
+                <option>Letteratura</option>
+                <option>Filosofia</option>
+                <option>Motivazionale</option>
+                <option>Altro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Descrizione Breve</label>
+            <textarea id="podDesc" rows="3" placeholder="Di cosa parla questo episodio?"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>File Audio (MP3, WAV)</label>
+            <div class="file-input-wrapper">
+                <span class="file-label-text" id="podAudioLabelText">🎵 Clicca per selezionare l'audio</span>
+                <input type="file" id="podAudio" accept="audio/*" onchange="aggiornaTestoFile('podAudio', 'podAudioLabelText')">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Copertina (Opzionale)</label>
+            <div class="file-input-wrapper">
+                <span class="file-label-text" id="podCoverLabelText">📸 Clicca per selezionare l'immagine</span>
+                <input type="file" id="podCover" accept="image/*" onchange="aggiornaTestoFile('podCover', 'podCoverLabelText')">
+            </div>
+        </div>
+
+        <button class="btn-save" id="btnPubblicaPod" onclick="pubblicaPodcast()">🚀 Pubblica Podcast</button>
+    </div>
+</div>
+
 <script>
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
@@ -220,6 +265,8 @@
             if(inputId === 'coverAppunto') label.innerHTML = "📸 Clicca per selezionare l'immagine di copertina";
             if(inputId === 'fileAppunto') label.innerHTML = "📸 Clicca per selezionare le foto";
             if(inputId === 'audioAppunto') label.innerHTML = "🎙️ Aggiungi un commento vocale";
+            if(inputId === 'podAudio') label.innerHTML = "🎵 Clicca per selezionare l'audio";
+            if(inputId === 'podCover') label.innerHTML = "📸 Clicca per selezionare l'immagine";
             label.style.color = "var(--text)";
         }
     }
@@ -246,6 +293,7 @@
             document.getElementById('valNome').textContent = "Ospite";
             document.getElementById('valUsername').textContent = "effettua_login";
             document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
+            document.getElementById('sezionePubblicaPodcast').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
             return;
         }
 
@@ -395,6 +443,73 @@
             alert("❌ C'è stato un problema durante il caricamento.");
         } finally {
             btn.textContent = "🚀 Condividi con tutti";
+            btn.disabled = false;
+        }
+    }
+
+    // ── NUOVA FUNZIONE PER PUBBLICARE IL PODCAST ──
+    async function pubblicaPodcast() {
+        let utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return alert("Devi effettuare il login per pubblicare un podcast!");
+
+        const titolo = document.getElementById('podTitolo').value.trim();
+        const desc = document.getElementById('podDesc').value.trim();
+        const categoria = document.getElementById('podCategoria').value;
+        const audioIn = document.getElementById('podAudio').files[0];
+        const coverIn = document.getElementById('podCover').files[0];
+        const btn = document.getElementById('btnPubblicaPod');
+
+        if (!titolo) return alert("Inserisci il titolo del podcast!");
+        if (!audioIn) return alert("Devi caricare un file audio!");
+
+        btn.textContent = "⏳ Caricamento in corso...";
+        btn.disabled = true;
+
+        try {
+            // Upload Audio
+            const resAudio = await fetch(`/api/upload?filename=podcast_${Date.now()}.mp3`, {
+                method: 'POST', body: audioIn
+            });
+            if(!resAudio.ok) throw new Error("Errore upload audio");
+            const dataAudio = await resAudio.json();
+
+            // Upload Cover (se presente)
+            let coverUrl = null;
+            if (coverIn) {
+                const resCover = await fetch(`/api/upload?filename=podcover_${Date.now()}`, {
+                    method: 'POST', body: coverIn
+                });
+                if(resCover.ok) {
+                    const dataCover = await resCover.json();
+                    coverUrl = dataCover.url;
+                }
+            }
+
+            // Salva in DB
+            const resDb = await fetch('/api/podcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    utente_id: utenteId,
+                    titolo: titolo,
+                    descrizione: desc,
+                    categoria: categoria,
+                    audio_url: dataAudio.url,
+                    cover_url: coverUrl
+                })
+            });
+
+            if (!resDb.ok) throw new Error("Errore DB");
+
+            alert("🎙️ Podcast pubblicato con successo!");
+            // Reindirizza l'utente alla pagina dei podcast per vedere il risultato
+            window.location.href = "podcast.html";
+
+        } catch (err) {
+            console.error(err);
+            alert("❌ Errore durante il caricamento del podcast!");
+        } finally {
+            btn.textContent = "🚀 Pubblica Podcast";
             btn.disabled = false;
         }
     }
