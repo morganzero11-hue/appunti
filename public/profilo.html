@@ -139,6 +139,9 @@
 <div class="tabs-container">
     <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Contenuti</button>
     <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
+    
+    <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">Playlists 📂</button>
+    
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica Appunto</button>
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">🎙️ Pubblica Podcast</button>
 </div>
@@ -163,6 +166,17 @@
 
     <div id="listaAppuntiSalvati" class="notes-grid"></div>
     <div id="listaPodcastSalvati" class="notes-grid" style="display: none;"></div>
+</div>
+
+<div id="tab-playlists" class="tab-content">
+    <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+        <input type="text" id="nuovaPlaylistTitolo" placeholder="Es: Analisi 1, Chimica Organica..." style="flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--surface2); background: var(--surface); color: var(--text); outline: none;">
+        <button class="btn-small btn-open" onclick="creaPlaylist()" style="padding: 0 24px;">+ Crea Raccolta</button>
+    </div>
+
+    <div id="listaPlaylists" class="notes-grid">
+        <p style="color:var(--muted)">Caricamento playlist...</p>
+    </div>
 </div>
 
 <div id="tab-pubblica" class="tab-content">
@@ -374,7 +388,6 @@
         }
 
         document.getElementById('valUsername').textContent = usernameLoggato;
-        // Resetta i contatori per sicurezza (verranno riempiti dal DB in seguito)
         document.getElementById('statAppunti').textContent = "0";
 
         try {
@@ -589,7 +602,6 @@
             if (!res.ok) throw new Error("Errore API");
             const appunti = await res.json();
             
-            // Somma gli appunti al contatore totale delle pubblicazioni
             let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
             document.getElementById('statAppunti').textContent = currentCount + appunti.length;
 
@@ -623,14 +635,13 @@
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiPodcast');
         
-        if (!utenteId) return; // Se non loggato l'avviso c'è già nel tab appunti
+        if (!utenteId) return; 
 
         try {
             const res = await fetch(`/api/podcast?utente_id=${utenteId}`);
             if (!res.ok) throw new Error("Errore API");
             const podcast = await res.json();
             
-            // Somma i podcast al contatore totale delle pubblicazioni
             let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
             document.getElementById('statAppunti').textContent = currentCount + podcast.length;
 
@@ -679,7 +690,7 @@
             
             const salvati = await res.json();
 
-            // 1. Disegna la griglia degli Appunti Salvati
+            // Render Appunti
             if (salvati.appunti.length === 0) {
                 containerAppunti.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun appunto salvato.</div></div>";
             } else {
@@ -700,7 +711,7 @@
                 }).join('');
             }
 
-            // 2. Disegna la griglia dei Podcast Salvati
+            // Render Podcast
             if (salvati.podcast.length === 0) {
                 containerPodcast.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun podcast salvato.</div></div>";
             } else {
@@ -724,6 +735,65 @@
         } catch (err) {
             console.error(err);
             if(containerAppunti) containerAppunti.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+        }
+    }
+
+    // ── GESTIONE PLAYLIST ──
+    window.caricaPlaylists = async function() {
+        let utenteId = getCookieSafe('utente_id');
+        const container = document.getElementById('listaPlaylists');
+        if (!utenteId) {
+            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi essere loggato per vedere le playlist.</div></div>";
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error("Errore API");
+            const playlists = await res.json();
+
+            if (playlists.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora creato nessuna raccolta.</div></div>";
+                return;
+            }
+
+            container.innerHTML = playlists.map(pl => `
+                <div class="note-card" style="padding: 20px; text-align: center; justify-content: center; background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">📂</div>
+                    <div class="note-title" style="font-size: 1.3rem;">${pl.titolo}</div>
+                    <div class="note-meta">${pl.numero_appunti || 0} elementi salvati</div>
+                    <button class="btn-small btn-open" style="margin-top: 15px; width: 100%;">Vedi Contenuto</button>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = "<div class='empty-state'>Errore di caricamento.</div>";
+        }
+    }
+
+    window.creaPlaylist = async function() {
+        let utenteId = getCookieSafe('utente_id');
+        const inputTitolo = document.getElementById('nuovaPlaylistTitolo');
+        const titolo = inputTitolo.value.trim();
+
+        if (!utenteId) return alert("Devi essere loggato!");
+        if (!titolo) return alert("Inserisci un nome per la playlist!");
+
+        try {
+            const res = await fetch('/api/playlists', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ utente_id: utenteId, titolo: titolo })
+            });
+
+            if (res.ok) {
+                inputTitolo.value = "";
+                caricaPlaylists(); // Ricarica la lista per mostrare la nuova playlist
+            } else {
+                alert("Errore nella creazione della playlist.");
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -783,6 +853,7 @@
         caricaMieiAppunti();
         caricaMieiPodcast();
         caricaAppuntiSalvati(); 
+        caricaPlaylists(); // <-- Richiama la funzione delle playlist
     });
 </script>
 
