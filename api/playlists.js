@@ -2,13 +2,11 @@ const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
-    // GET: Recupera le playlist di un utente
     if (req.method === 'GET') {
         const { utente_id } = req.query;
         if (!utente_id) return res.status(400).json({ error: "Utente ID mancante" });
 
         try {
-            // Prende le playlist e conta quanti appunti ci sono dentro
             const query = `
                 SELECT p.*, COUNT(pe.id) as numero_appunti 
                 FROM playlists p
@@ -24,7 +22,6 @@ export default async function handler(req, res) {
         }
     }
 
-    // POST: Crea una nuova playlist
     if (req.method === 'POST') {
         const { utente_id, titolo } = req.body;
         if (!utente_id || !titolo) return res.status(400).json({ error: "Dati mancanti" });
