@@ -9,7 +9,7 @@ function getCookieSafe(name) {
 let tuttiAppunti = [];
 let activeMateria = 'Tutte';
 let searchQuery = '';
-let currentAppuntoPerPlaylist = null; // Variabile per ricordare quale appunto stiamo cercando di salvare
+let currentAppuntoPerPlaylist = null; 
 
 /* ── STATO AUDIO ── */
 let currentAudio = new Audio();
@@ -114,12 +114,12 @@ window.toggleLike = async function(appuntoId, btnElement) {
     }
 }
 
-/* ── NUOVA FUNZIONE: APRI MODALE PLAYLIST ── */
+/* ── APRI MODALE PLAYLIST ── */
 window.apriModalPlaylist = async function(appuntoId) {
     let utenteId = getCookieSafe('utente_id');
     if (!utenteId) return window.toast('⚠️ Devi fare il login per usare le playlist!');
 
-    currentAppuntoPerPlaylist = appuntoId; // Memorizziamo quale appunto stiamo cercando di salvare
+    currentAppuntoPerPlaylist = appuntoId; 
     const container = document.getElementById('elencoPlaylistsModale');
     container.innerHTML = '<p style="color:var(--muted); text-align:center;">Caricamento playlist...</p>';
     
@@ -153,12 +153,13 @@ window.chiudiModalPlaylist = function() {
     currentAppuntoPerPlaylist = null;
 }
 
-/* ── NUOVA FUNZIONE: SALVA NELLA PLAYLIST ── */
+/* ── SALVA NELLA PLAYLIST ── */
 window.salvaAppuntoInPlaylist = async function(playlistId) {
     if (!currentAppuntoPerPlaylist) return;
 
     try {
-        const res = await fetch('/api/playlists-elementi', {
+        // ORA PUNTA CORRETTAMENTE A /api/playlists
+        const res = await fetch('/api/playlists', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ playlist_id: playlistId, appunto_id: currentAppuntoPerPlaylist })
@@ -168,6 +169,7 @@ window.salvaAppuntoInPlaylist = async function(playlistId) {
             window.toast('✅ Appunto salvato nella playlist!');
             chiudiModalPlaylist();
         } else {
+            // Se c'è un errore (es. appunto già salvato), lo mostriamo!
             const data = await res.json();
             window.toast(`⚠️ ${data.error || 'Errore nel salvataggio.'}`);
         }
