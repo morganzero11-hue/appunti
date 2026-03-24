@@ -9,6 +9,7 @@ function getCookieSafe(name) {
 let tuttiAppunti = [];
 let activeMateria = 'Tutte';
 let searchQuery = '';
+let currentAppuntoPerPlaylist = null; // Variabile per ricordare quale appunto stiamo cercando di salvare
 
 /* ── STATO AUDIO ── */
 let currentAudio = new Audio();
@@ -93,12 +94,12 @@ window.toggleLike = async function(appuntoId, btnElement) {
         const res = await fetch('/api/likes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ utente_id: utenteId, appunto_id: appuntoId })
+            body: JSON.stringify({ utente_id: utenteId, elemento_id: appuntoId, tipo: 'appunto' })
         });
         if (!res.ok) throw new Error('Errore nel salvataggio del like');
         const data = await res.json();
 
-        if (data.action === 'liked') {
+        if (data.action === 'liked' || data.action === 'added') {
             btnElement.classList.add('liked');
             btnElement.querySelector('.side-btn__icon').textContent = '❤️';
             window.toast('❤️ Salvato nei tuoi Mi Piace!');
@@ -106,6 +107,69 @@ window.toggleLike = async function(appuntoId, btnElement) {
             btnElement.classList.remove('liked');
             btnElement.querySelector('.side-btn__icon').textContent = '🤍';
             window.toast('💔 Rimosso dai Mi Piace');
+        }
+    } catch (err) {
+        console.error(err);
+        window.toast('❌ Errore di connessione. Riprova.');
+    }
+}
+
+/* ── NUOVA FUNZIONE: APRI MODALE PLAYLIST ── */
+window.apriModalPlaylist = async function(appuntoId) {
+    let utenteId = getCookieSafe('utente_id');
+    if (!utenteId) return window.toast('⚠️ Devi fare il login per usare le playlist!');
+
+    currentAppuntoPerPlaylist = appuntoId; // Memorizziamo quale appunto stiamo cercando di salvare
+    const container = document.getElementById('elencoPlaylistsModale');
+    container.innerHTML = '<p style="color:var(--muted); text-align:center;">Caricamento playlist...</p>';
+    
+    document.getElementById('modalPlaylist').classList.add('open');
+
+    try {
+        const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
+        if (!res.ok) throw new Error('Errore API');
+        const playlists = await res.json();
+
+        if (playlists.length === 0) {
+            container.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 20px;">Non hai ancora creato nessuna playlist.</p>`;
+            return;
+        }
+
+        container.innerHTML = playlists.map(pl => `
+            <div class="playlist-item" onclick="salvaAppuntoInPlaylist(${pl.id})">
+                <span class="playlist-item-title">📂 ${pl.titolo}</span>
+                <span class="playlist-item-count">${pl.numero_appunti || 0} appunti</span>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = '<p style="color:var(--muted); text-align:center;">Errore nel caricamento delle playlist.</p>';
+    }
+}
+
+window.chiudiModalPlaylist = function() {
+    document.getElementById('modalPlaylist').classList.remove('open');
+    currentAppuntoPerPlaylist = null;
+}
+
+/* ── NUOVA FUNZIONE: SALVA NELLA PLAYLIST ── */
+window.salvaAppuntoInPlaylist = async function(playlistId) {
+    if (!currentAppuntoPerPlaylist) return;
+
+    try {
+        const res = await fetch('/api/playlists-elementi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playlist_id: playlistId, appunto_id: currentAppuntoPerPlaylist })
+        });
+        
+        if (res.ok) {
+            window.toast('✅ Appunto salvato nella playlist!');
+            chiudiModalPlaylist();
+        } else {
+            const data = await res.json();
+            window.toast(`⚠️ ${data.error || 'Errore nel salvataggio.'}`);
         }
     } catch (err) {
         console.error(err);
@@ -227,7 +291,7 @@ function renderFeed(lista) {
 
         const card = document.createElement('div');
         card.className = 'card';
-        card.id = `appunto-${a.id}`; // Aggiunto ID per il focus
+        card.id = `appunto-${a.id}`;
         if (a.audio_url) card.setAttribute('data-audio', a.audio_url);
         
         card.innerHTML = `
@@ -264,6 +328,11 @@ function renderFeed(lista) {
                     <div class="side-btn__icon">🤍</div>
                     <span class="side-btn__count">Like</span>
                 </button>
+
+                <button class="side-btn" onclick="apriModalPlaylist(${a.id})">
+                    <div class="side-btn__icon">📂</div>
+                    <span class="side-btn__count">Salva</span>
+                </button>
                 
                 <button class="side-btn" onclick="navigator.clipboard.writeText(window.location.origin + '/esplora.html?focus=${a.id}'); window.toast('🔗 Link copiato!')">
                     <div class="side-btn__icon">🔗</div>
@@ -289,7 +358,7 @@ function renderFeed(lista) {
     });
 
     initAudioObserver();
-    gestisciFocus(); // Chiama la funzione per lo scroll alla fine del render
+    gestisciFocus(); 
 }
 
 /* ── GESTIONE FOCUS (SCROLL) ── */
@@ -300,7 +369,6 @@ function gestisciFocus() {
     if (focusId) {
         const cardToFocus = document.getElementById(`appunto-${focusId}`);
         if (cardToFocus) {
-            // Un piccolo ritardo assicura che il DOM sia pronto prima di scrollare
             setTimeout(() => {
                 cardToFocus.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
@@ -459,6 +527,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if(modalEl) {
         modalEl.addEventListener('click', e => { 
             if (e.target === modalEl) chiudiModal(); 
+        });
+    }
+
+    const modalPlaylistEl = document.getElementById('modalPlaylist');
+    if(modalPlaylistEl) {
+        modalPlaylistEl.addEventListener('click', e => { 
+            if (e.target === modalPlaylistEl) chiudiModalPlaylist(); 
         });
     }
 });
