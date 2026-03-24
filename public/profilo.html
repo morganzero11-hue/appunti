@@ -148,11 +148,14 @@
 </div>
 
 <div id="tab-salvati" class="tab-content">
-    <h3 style="margin-bottom: 20px; font-family: 'Fraunces', serif; color: var(--accent)">📄 Appunti Salvati</h3>
-    <div id="listaAppuntiSalvati" class="notes-grid" style="margin-bottom: 60px;"></div>
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
+        <button id="subBtnAppunti" onclick="mostraSottoTab('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
+        <button id="subBtnPodcast" onclick="mostraSottoTab('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
+    </div>
 
-    <h3 style="margin-bottom: 20px; font-family: 'Fraunces', serif; color: var(--accent)">🎙️ Podcast Salvati</h3>
-    <div id="listaPodcastSalvati" class="notes-grid"></div>
+    <div id="listaAppuntiSalvati" class="notes-grid"></div>
+    <div id="listaPodcastSalvati" class="notes-grid" style="display: none;"></div>
 </div>
 
 <div id="tab-pubblica" class="tab-content">
@@ -216,6 +219,16 @@
                 <option>Altro</option>
             </select>
         </div>
+
+        <div class="form-group">
+            <label>Scuola dell'Utente (Opzionale)</label>
+            <input type="text" id="podScuola" placeholder="Es: Liceo Scientifico Galilei">
+        </div>
+        <div class="form-group">
+            <label>Libro di testo / Fonti (Opzionale)</label>
+            <input type="text" id="podFonti" placeholder="Es: Il manuale di Storia vol. 2">
+        </div>
+
         <div class="form-group">
             <label>Descrizione Breve</label>
             <textarea id="podDesc" rows="3" placeholder="Di cosa parla questo episodio?"></textarea>
@@ -239,6 +252,7 @@
 </div>
 
 <script>
+    // ── HELPER E GESTIONE MENU ──
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -271,6 +285,41 @@
         btnElement.classList.add('active');
     }
 
+    // ── FUNZIONE PER I SOTTO-MENU (SALVATI) ──
+    window.mostraSottoTab = function(tipo) {
+        const divAppunti = document.getElementById('listaAppuntiSalvati');
+        const divPodcast = document.getElementById('listaPodcastSalvati');
+        const btnAppunti = document.getElementById('subBtnAppunti');
+        const btnPodcast = document.getElementById('subBtnPodcast');
+
+        if (tipo === 'appunti') {
+            divAppunti.style.display = 'grid';
+            divPodcast.style.display = 'none';
+            btnAppunti.className = 'btn-small btn-open';
+            btnAppunti.style.background = 'rgba(200,240,96,0.15)';
+            btnAppunti.style.color = 'var(--accent)';
+            btnAppunti.style.border = 'none';
+            
+            btnPodcast.className = 'btn-small';
+            btnPodcast.style.background = 'transparent';
+            btnPodcast.style.color = 'var(--muted)';
+            btnPodcast.style.border = '1px solid var(--surface2)';
+        } else {
+            divAppunti.style.display = 'none';
+            divPodcast.style.display = 'grid';
+            btnPodcast.className = 'btn-small btn-open';
+            btnPodcast.style.background = 'rgba(200,240,96,0.15)';
+            btnPodcast.style.color = 'var(--accent)';
+            btnPodcast.style.border = 'none';
+
+            btnAppunti.className = 'btn-small';
+            btnAppunti.style.background = 'transparent';
+            btnAppunti.style.color = 'var(--muted)';
+            btnAppunti.style.border = '1px solid var(--surface2)';
+        }
+    }
+
+    // ── PROFILO E AVATAR ──
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
         let utenteId = getCookieSafe('utente_id');
@@ -354,6 +403,7 @@
         }
     }
 
+    // ── PUBBLICAZIONE APPUNTI ──
     window.pubblicaAppunto = async function() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
@@ -417,6 +467,7 @@
         }
     }
 
+    // ── PUBBLICAZIONE PODCAST ──
     window.pubblicaPodcast = async function() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un podcast!");
@@ -424,8 +475,11 @@
         const titolo = document.getElementById('podTitolo').value.trim();
         const desc = document.getElementById('podDesc').value.trim();
         const categoria = document.getElementById('podCategoria').value;
+        const scuola = document.getElementById('podScuola').value.trim();
+        const fonti = document.getElementById('podFonti').value.trim();
         const audioIn = document.getElementById('podAudio').files[0];
         const coverIn = document.getElementById('podCover').files[0];
+        
         const btn = document.getElementById('btnPubblicaPod');
 
         if (!titolo) return alert("Inserisci il titolo del podcast!");
@@ -451,7 +505,16 @@
             const resDb = await fetch('/api/podcast', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, descrizione: desc, categoria: categoria, audio_url: dataAudio.url, cover_url: coverUrl })
+                body: JSON.stringify({ 
+                    utente_id: utenteId, 
+                    titolo: titolo, 
+                    descrizione: desc, 
+                    categoria: categoria, 
+                    scuola: scuola,
+                    fonti: fonti,
+                    audio_url: dataAudio.url, 
+                    cover_url: coverUrl 
+                })
             });
 
             if (!resDb.ok) throw new Error("Errore DB");
@@ -468,6 +531,7 @@
         }
     }
 
+    // ── CARICAMENTO DEI MIEI APPUNTI ──
     async function caricaMieiAppunti() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
@@ -509,7 +573,7 @@
         }
     }
 
-    // ── NUOVA FUNZIONE: CARICA SALVATI (APPUNTI + PODCAST) ──
+    // ── CARICAMENTO SALVATI (APPUNTI + PODCAST) ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
         const containerAppunti = document.getElementById('listaAppuntiSalvati');
@@ -523,13 +587,13 @@
 
         try {
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore chiamata API likes");
+            if (!res.ok) throw new Error("Errore API salvati");
             
             const salvati = await res.json();
 
-            // Render Appunti
+            // 1. Disegna la griglia degli Appunti Salvati
             if (salvati.appunti.length === 0) {
-                containerAppunti.innerHTML = "<div class='empty-state' style='padding:20px;'><div class='empty-text'>Nessun appunto salvato.</div></div>";
+                containerAppunti.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun appunto salvato.</div></div>";
             } else {
                 containerAppunti.innerHTML = salvati.appunti.map(a => {
                     const coverHTML = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
@@ -548,9 +612,9 @@
                 }).join('');
             }
 
-            // Render Podcast
+            // 2. Disegna la griglia dei Podcast Salvati
             if (salvati.podcast.length === 0) {
-                containerPodcast.innerHTML = "<div class='empty-state' style='padding:20px;'><div class='empty-text'>Nessun podcast salvato.</div></div>";
+                containerPodcast.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun podcast salvato.</div></div>";
             } else {
                 containerPodcast.innerHTML = salvati.podcast.map(p => {
                     const coverHTML = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
@@ -575,6 +639,7 @@
         }
     }
 
+    // ── ELIMINA PROPRIO APPUNTO ──
     window.eliminaAppunto = async function(appuntoId) {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi essere loggato.");
@@ -598,6 +663,7 @@
         }
     }
 
+    // ── AVVIO INIZIALE DEL PROFILO ──
     document.addEventListener('DOMContentLoaded', () => {
         const btnLogin = document.getElementById('navLoginBtn');
         if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
