@@ -4,27 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impostazioni — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
-            --bg:       #0f0f0f;
-            --surface:  #181818;
-            --surface2: #222222;
-            --surface3: #2a2a2a;
-            --border:   rgba(255,255,255,0.07);
-            --border2:  rgba(255,255,255,0.12);
-            --text:     #f2f0ec;
-            --muted:    rgba(242,240,236,0.4);
-            --accent:   #c8f060;
-            --red:      #ff4444;
-            --blue:     #60b8f0;
-            --nav-h:    62px;
-            --sidebar:  240px;
-            --r:        14px;
+            --bg: #0a0a0a; 
+            --surface: #111111; 
+            --surface2: #181818;
+            --surface3: #222222;
+            --text: #f2f0ec; 
+            --muted: rgba(242,240,236,0.45);
+            --accent: #c8f060; /* Verde acido coerente */
+            --accent-soft: rgba(200,240,96,0.1);
+            --red: #ff4d6d;
+            --nav-h: 62px;
+            --sidebar-w: 260px;
+            --radius: 16px;
+            --border: rgba(255,255,255,0.05);
+            --border2: rgba(255,255,255,0.1);
         }
 
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
 
         body {
@@ -34,223 +33,147 @@
             min-height: 100vh;
         }
 
-        /* ─── NUOVA NAVBAR ─── */
-        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: #1c1c24; display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: #fff; text-decoration: none; margin-right: 30px; }
-        .topnav__logo { position: relative; width: 26px; height: 26px; }
-        .topnav__logo span { position: absolute; width: 14px; height: 14px; border-radius: 3px; }
-        .topnav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
-        .topnav__logo span:nth-child(2) { background: #ff4d6d; top: 6px; left: 6px; z-index: 2; }
-        .topnav__logo span:nth-child(3) { background: #60b8f0; top: 12px; left: 12px; z-index: 1; }
-        .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; margin: 0; padding: 0; }
-        .topnav__links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.95rem; font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: all .2s; }
-        .topnav__links a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .topnav__links a.active { background: #2c2c38; color: #fbbf24; }
-        .topnav__login { background: #f43f5e; color: #fff; padding: 8px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.95rem; transition: opacity .2s; }
-        .topnav__login:hover { opacity: 0.8; }
-        @media (max-width: 768px) { .topnav__links { display: none; } }
+        /* ─── NAVBAR UNIFICATA ─── */
+        .topnav { 
+            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); 
+            background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); 
+            display: flex; align-items: center; padding: 0 32px; z-index: 1000; 
+            border-bottom: 1px solid var(--border); 
+        }
+        .topnav__brand { 
+            display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; 
+            font-size: 1.5rem; font-weight: 900; color: var(--accent); text-decoration: none; margin-right: 30px; 
+        }
+        .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; }
+        .topnav__links a { 
+            color: var(--muted); text-decoration: none; font-size: 0.95rem; font-weight: 700; 
+            padding: 8px 16px; border-radius: 8px; transition: all .2s; 
+        }
+        .topnav__links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .topnav__links a.active { color: var(--accent); background: var(--accent-soft); }
+        .topnav__login { 
+            background: var(--accent); color: #0a0a0a; padding: 8px 24px; border-radius: 8px; 
+            text-decoration: none; font-weight: 800; font-size: 0.95rem; transition: transform .2s; margin-left: auto; 
+        }
+        .topnav__login:hover { transform: scale(1.05); }
 
-        /* ─── PAGE LAYOUT ─── */
-        .page {
+        /* ─── LAYOUT ─── */
+        .page-container {
             margin-top: var(--nav-h);
             display: grid;
-            grid-template-columns: var(--sidebar) 1fr;
+            grid-template-columns: var(--sidebar-w) 1fr;
             min-height: calc(100vh - var(--nav-h));
         }
 
         /* ─── SIDEBAR ─── */
         .sidebar {
-            position: sticky; top: var(--nav-h);
-            height: calc(100vh - var(--nav-h));
             background: var(--surface);
             border-right: 1px solid var(--border);
-            padding: 32px 16px;
-            display: flex; flex-direction: column; gap: 4px;
-            overflow-y: auto;
+            padding: 40px 16px;
+            position: sticky; top: var(--nav-h);
+            height: calc(100vh - var(--nav-h));
         }
         .sidebar__label {
-            font-size: 0.65rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1.5px;
-            color: var(--muted); padding: 0 12px;
-            margin: 16px 0 6px;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1.5px; color: var(--muted); padding-left: 12px; margin-bottom: 12px;
         }
-        .sidebar__label:first-child { margin-top: 0; }
+        .sidebar__nav { display: flex; flex-direction: column; gap: 4px; }
         .sidebar__item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 9px 12px; border-radius: 10px;
-            cursor: pointer; color: var(--muted);
-            font-size: 0.87rem; font-weight: 700;
-            transition: all .18s;
-            border: none; background: none;
-            width: 100%; text-align: left;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; border-radius: 12px;
+            color: var(--muted); text-decoration: none; font-weight: 700;
+            transition: all .2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
         }
         .sidebar__item:hover { color: var(--text); background: var(--surface2); }
-        .sidebar__item.active { color: var(--accent); background: rgba(200,240,96,0.08); }
-        .sidebar__item .s-icon { font-size: 1rem; width: 20px; text-align: center; }
-        .sidebar__divider { height: 1px; background: var(--border); margin: 12px 0; }
-        .sidebar__item--danger { color: rgba(255,68,68,0.7); }
-        .sidebar__item--danger:hover { color: var(--red); background: rgba(255,68,68,0.08); }
+        .sidebar__item.active { color: var(--accent); background: var(--accent-soft); }
+        .sidebar__item--danger { color: var(--red); margin-top: 20px; }
+        .sidebar__item--danger:hover { background: rgba(255, 77, 109, 0.1); }
 
-        /* ─── MAIN ─── */
-        .main { padding: 40px 48px; max-width: 720px; }
-
-        /* ─── SECTION ─── */
-        .section { display: none; animation: fadeIn .3s ease; }
+        /* ─── MAIN CONTENT ─── */
+        .main-content { padding: 60px 80px; max-width: 900px; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section__title {
-            font-family: 'Fraunces', serif;
-            font-size: 1.8rem; font-weight: 900;
-            letter-spacing: -0.5px; margin-bottom: 6px;
-        }
-        .section__sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 32px; line-height: 1.5; }
+        .section__title { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 8px; }
+        .section__sub { color: var(--muted); margin-bottom: 40px; font-size: 1rem; }
 
-        /* ─── SETTING ROW ─── */
-        .setting-group {
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
-        }
+        /* ─── SETTINGS COMPONENTS ─── */
+        .settings-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 30px; }
+        
         .setting-row {
-            display: flex; align-items: center;
-            padding: 18px 22px; gap: 16px;
+            display: flex; align-items: center; padding: 24px; gap: 20px;
             border-bottom: 1px solid var(--border);
-            transition: background .18s;
         }
         .setting-row:last-child { border-bottom: none; }
-        .setting-row:hover { background: var(--surface2); }
-        .setting-row__icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: var(--surface2); border: 1px solid var(--border2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; flex-shrink: 0;
+        .setting-row__icon { 
+            width: 44px; height: 44px; background: var(--surface2); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--border2);
         }
-        .setting-row__text { flex: 1; min-width: 0; }
-        .setting-row__label { font-size: 0.9rem; font-weight: 700; color: var(--text); }
-        .setting-row__desc { font-size: 0.76rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+        .setting-row__info { flex: 1; }
+        .setting-row__label { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+        .setting-row__desc { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
 
-        /* ─── TOGGLE ─── */
-        .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-        .toggle input { opacity: 0; width: 0; height: 0; }
-        .toggle__track {
-            position: absolute; inset: 0;
-            background: var(--surface3); border: 1px solid var(--border2);
-            border-radius: 12px; cursor: pointer;
-            transition: background .2s, border-color .2s;
-        }
-        .toggle__track::after {
-            content: ''; position: absolute;
-            width: 18px; height: 18px; top: 2px; left: 2px;
-            border-radius: 50%; background: var(--muted);
-            transition: transform .2s, background .2s;
-        }
-        .toggle input:checked + .toggle__track { background: rgba(200,240,96,0.2); border-color: var(--accent); }
-        .toggle input:checked + .toggle__track::after { transform: translateX(20px); background: var(--accent); }
-
-        /* ─── SELECT ─── */
-        .setting-select {
-            background: var(--surface2); border: 1px solid var(--border2);
-            border-radius: 8px; color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.83rem; font-weight: 700;
-            padding: 7px 28px 7px 12px; outline: none; cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 10px center;
-            transition: border-color .2s; flex-shrink: 0;
-        }
-        .setting-select:focus { border-color: var(--accent); }
-
-        /* ─── INPUT ─── */
+        /* Input Styles */
         .setting-input {
-            background: var(--surface2); border: 1px solid var(--border2);
-            border-radius: 8px; color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.87rem; font-weight: 600;
-            padding: 8px 14px; outline: none; width: 100%;
-            transition: border-color .2s; margin-top: 10px;
+            width: 100%; background: var(--bg); border: 1px solid var(--border2);
+            padding: 12px 16px; border-radius: 10px; color: var(--text);
+            font-family: inherit; font-weight: 600; margin-top: 12px; outline: none; transition: border-color .2s;
         }
         .setting-input:focus { border-color: var(--accent); }
-        .setting-input::placeholder { color: var(--muted); font-weight: 400; }
-        .setting-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ─── BUTTONS ─── */
-        .btn {
-            padding: 10px 22px; border-radius: 10px;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.87rem; font-weight: 800;
-            cursor: pointer; border: none;
-            transition: transform .2s, box-shadow .2s, background .2s;
-            display: inline-flex; align-items: center; gap: 8px;
+        .setting-select {
+            background: var(--surface2); border: 1px solid var(--border2);
+            color: var(--text); padding: 8px 16px; border-radius: 10px; font-weight: 700; outline: none;
         }
-        .btn:hover { transform: translateY(-2px); }
-        .btn:active { transform: translateY(0); }
-        .btn--accent { background: var(--accent); color: #0f0f0f; }
-        .btn--accent:hover { box-shadow: 0 6px 20px rgba(200,240,96,0.25); }
-        .btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
-        .btn--danger { background: rgba(255,68,68,0.1); color: var(--red); border: 1px solid rgba(255,68,68,0.2); }
-        .btn--danger:hover { background: rgba(255,68,68,0.18); box-shadow: none; }
-        .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 
-        /* ─── DANGER ZONE ─── */
-        .danger-zone {
-            background: rgba(255,68,68,0.04);
-            border: 1px solid rgba(255,68,68,0.15);
-            border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
+        /* Toggle */
+        .toggle { position: relative; width: 48px; height: 26px; cursor: pointer; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle__slider {
+            position: absolute; inset: 0; background: var(--surface3); border-radius: 30px;
+            transition: .3s; border: 1px solid var(--border2);
         }
-        .danger-zone .setting-row:hover { background: rgba(255,68,68,0.05); }
+        .toggle__slider:before {
+            content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background: var(--muted); transition: .3s; border-radius: 50%;
+        }
+        .toggle input:checked + .toggle__slider { background: var(--accent-soft); border-color: var(--accent); }
+        .toggle input:checked + .toggle__slider:before { transform: translateX(22px); background: var(--accent); }
 
-        /* ─── THEME ─── */
-        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+        /* Themes */
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
         .theme-card {
-            border-radius: 12px; padding: 16px; border: 2px solid var(--border);
-            cursor: pointer; transition: border-color .2s, transform .2s;
-            display: flex; flex-direction: column; gap: 8px;
+            border: 2px solid var(--border); border-radius: 14px; padding: 20px;
+            cursor: pointer; transition: all .2s; text-align: center;
         }
-        .theme-card:hover { transform: translateY(-2px); border-color: var(--border2); }
-        .theme-card.active { border-color: var(--accent); }
-        .theme-card__preview { height: 60px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-        .theme-card__name { font-size: 0.82rem; font-weight: 800; color: var(--text); }
-        .theme-card__desc { font-size: 0.72rem; color: var(--muted); }
+        .theme-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+        .theme-card.active { border-color: var(--accent); background: var(--accent-soft); }
+        .theme-card__icon { font-size: 2rem; margin-bottom: 10px; display: block; }
 
-        /* ─── COLOR PICKER ─── */
-        .color-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .color-swatch {
-            width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-            border: 3px solid transparent; transition: transform .2s, border-color .2s;
-            position: relative;
+        /* Buttons */
+        .btn {
+            padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer;
+            font-family: inherit; transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
         }
-        .color-swatch:hover { transform: scale(1.15); }
-        .color-swatch.active { border-color: #fff; transform: scale(1.1); }
-        .color-swatch.active::after {
-            content: '✓'; position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 900; color: #000;
-        }
+        .btn--accent { background: var(--accent); color: #0a0a0a; }
+        .btn--accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(200,240,96,0.2); }
+        .btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+        .btn--danger { background: rgba(255, 77, 109, 0.1); color: var(--red); }
 
-        /* ─── TOAST ─── */
+        /* Toast */
         .toast {
-            position: fixed; bottom: 24px; right: 24px;
-            background: var(--accent); color: #0f0f0f;
-            padding: 11px 22px; border-radius: 12px;
-            font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.9rem;
-            opacity: 0; transform: translateY(12px);
-            transition: all .3s; pointer-events: none; z-index: 9999;
+            position: fixed; bottom: 32px; right: 32px; background: var(--accent);
+            color: #0a0a0a; padding: 16px 24px; border-radius: 12px;
+            font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.95rem;
+            transform: translateY(100px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
         }
-        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.show { transform: translateY(0); }
 
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 720px) {
-            .page { grid-template-columns: 1fr; }
-            .sidebar {
-                position: static; height: auto;
-                flex-direction: row; flex-wrap: wrap;
-                padding: 12px; gap: 4px;
-                border-right: none; border-bottom: 1px solid var(--border);
-            }
-            .sidebar__label, .sidebar__divider { display: none; }
-            .sidebar__item { padding: 7px 12px; font-size: 0.8rem; }
-            .main { padding: 24px 16px; }
+        @media (max-width: 850px) {
+            .page-container { grid-template-columns: 1fr; }
+            .sidebar { height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+            .main-content { padding: 40px 20px; }
             .topnav__links { display: none; }
         }
     </style>
@@ -258,10 +181,7 @@
 <body>
 
 <nav class="topnav">
-    <a href="index.html" class="topnav__brand">
-        <div class="topnav__logo"><span></span><span></span><span></span></div>
-        Appunti
-    </a>
+    <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
         <li><a href="esplora.html">Esplora</a></li>
@@ -273,162 +193,127 @@
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
-<div class="page">
-
+<div class="page-container">
     <aside class="sidebar">
-        <div class="sidebar__label">Account</div>
-        <button class="sidebar__item active" onclick="mostraSezione('account', this)">
-            <span class="s-icon">👤</span> Account
-        </button>
-
         <div class="sidebar__label">Preferenze</div>
-        <button class="sidebar__item" onclick="mostraSezione('aspetto', this)">
-            <span class="s-icon">🎨</span> Aspetto
-        </button>
-
-        <div class="sidebar__divider"></div>
-        <button class="sidebar__item sidebar__item--danger" onclick="mostraSezione('zona-pericolo', this)">
-            <span class="s-icon">🚪</span> Logout
-        </button>
+        <nav class="sidebar__nav">
+            <button class="sidebar__item active" onclick="mostraSezione('account', this)">
+                👤 Account
+            </button>
+            <button class="sidebar__item" onclick="mostraSezione('aspetto', this)">
+                🎨 Aspetto
+            </button>
+            <div style="height: 1px; background: var(--border); margin: 20px 0;"></div>
+            <button class="sidebar__item sidebar__item--danger" onclick="mostraSezione('logout', this)">
+                🚪 Esci dall'account
+            </button>
+        </nav>
     </aside>
 
-    <main class="main">
-
+    <main class="main-content">
         <div class="section active" id="s-account">
-            <div class="section__title">Account</div>
-            <div class="section__sub">Gestisci le informazioni del tuo account.</div>
-            <div class="setting-group">
+            <h1 class="section__title">Account</h1>
+            <p class="section__sub">Gestisci le tue informazioni personali e scolastiche.</p>
+
+            <div class="settings-group">
                 <div class="setting-row">
-                    <div class="setting-row__icon">✏️</div>
-                    <div class="setting-row__text">
+                    <div class="setting-row__icon">🆔</div>
+                    <div class="setting-row__info">
                         <div class="setting-row__label">Username</div>
-                        <div class="setting-row__desc">Il nome che appare sui tuoi appunti</div>
-                        <input class="setting-input" id="setNick" type="text" maxlength="30" placeholder="Caricamento...">
+                        <div class="setting-row__desc">Il nome pubblico visualizzato sulla piattaforma.</div>
+                        <input type="text" id="setNick" class="setting-input" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
                     <div class="setting-row__icon">📧</div>
-                    <div class="setting-row__text">
+                    <div class="setting-row__info">
                         <div class="setting-row__label">Email</div>
-                        <div class="setting-row__desc">Usata per notifiche e recupero account</div>
-                        <input class="setting-input" id="setEmail" type="email" placeholder="Caricamento...">
+                        <div class="setting-row__desc">Indirizzo email collegato al tuo profilo.</div>
+                        <input type="email" id="setEmail" class="setting-input" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
                     <div class="setting-row__icon">🏫</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Scuola / Università</div>
-                        <div class="setting-row__desc">Opzionale — visibile nel profilo</div>
-                        <input class="setting-input" id="setScuola" type="text" placeholder="Caricamento...">
+                    <div class="setting-row__info">
+                        <div class="setting-row__label">Scuola o Università</div>
+                        <div class="setting-row__desc">Aiuta gli altri a trovare appunti del tuo istituto.</div>
+                        <input type="text" id="setScuola" class="setting-input" placeholder="Caricamento...">
                     </div>
                 </div>
                 <div class="setting-row">
-                    <div class="setting-row__icon">📅</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Anno scolastico</div>
-                        <div class="setting-row__desc">Il tuo anno di studio attuale</div>
+                    <div class="setting-row__icon">🎓</div>
+                    <div class="setting-row__info">
+                        <div class="setting-row__label">Anno di corso</div>
+                        <div class="setting-row__desc">Seleziona il tuo attuale anno di studi.</div>
                     </div>
                     <select class="setting-select" id="setAnno">
-                        <option>1° anno</option>
-                        <option>2° anno</option>
-                        <option selected>3° anno</option>
-                        <option>4° anno</option>
-                        <option>5° anno</option>
-                        <option>Università — Triennale</option>
-                        <option>Università — Magistrale</option>
+                        <option>Superiori - 1°</option>
+                        <option>Superiori - 2°</option>
+                        <option>Superiori - 3°</option>
+                        <option>Superiori - 4°</option>
+                        <option>Superiori - 5°</option>
+                        <option>Università</option>
                     </select>
                 </div>
             </div>
-            <div class="btn-row">
-                <button class="btn btn--accent" onclick="salva('Account aggiornato!')">💾 Salva modifiche</button>
-                <button class="btn btn--ghost" onclick="caricaDatiAccount()">Annulla</button>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn--accent" onclick="salva('Modifiche salvate con successo!')">Salva Modifiche</button>
+                <button class="btn btn--ghost" onclick="caricaDatiAccount()">Ripristina</button>
             </div>
         </div>
 
         <div class="section" id="s-aspetto">
-            <div class="section__title">Aspetto</div>
-            <div class="section__sub">Personalizza come vedi l'app.</div>
-            <div class="setting-group">
-                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
-                    <div style="display:flex;align-items:center;gap:16px;width:100%">
-                        <div class="setting-row__icon">🌙</div>
-                        <div class="setting-row__text">
-                            <div class="setting-row__label">Tema</div>
-                            <div class="setting-row__desc">Scegli l'aspetto generale dell'app</div>
-                        </div>
-                    </div>
-                    <div class="theme-grid" style="width:100%">
+            <h1 class="section__title">Aspetto</h1>
+            <p class="section__sub">Personalizza l'interfaccia di Appunti come preferisci.</p>
+
+            <div class="settings-group">
+                <div class="setting-row" style="display: block;">
+                    <div class="setting-row__label">Tema dell'app</div>
+                    <div class="theme-grid">
                         <div class="theme-card active" onclick="setTema('scuro', this)">
-                            <div class="theme-card__preview" style="background:#111">🌑</div>
-                            <div class="theme-card__name">Scuro</div>
-                            <div class="theme-card__desc">Meno affaticamento visivo</div>
+                            <span class="theme-card__icon">🌑</span>
+                            <div style="font-weight: 800;">Scuro</div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">Ideale per la notte</div>
                         </div>
                         <div class="theme-card" onclick="setTema('chiaro', this)">
-                            <div class="theme-card__preview" style="background:#f5f0e8">☀️</div>
-                            <div class="theme-card__name">Chiaro</div>
-                            <div class="theme-card__desc">Per ambienti luminosi</div>
+                            <span class="theme-card__icon">☀️</span>
+                            <div style="font-weight: 800;">Chiaro</div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">Massima luminosità</div>
                         </div>
-                    </div>
-                </div>
-                <div class="setting-row" style="flex-direction:column;align-items:flex-start">
-                    <div style="display:flex;align-items:center;gap:16px;width:100%">
-                        <div class="setting-row__icon">🎨</div>
-                        <div class="setting-row__text">
-                            <div class="setting-row__label">Colore accento</div>
-                            <div class="setting-row__desc">Il colore principale dell'interfaccia</div>
-                        </div>
-                    </div>
-                    <div class="color-grid">
-                        <div class="color-swatch active" style="background:#c8f060" onclick="setAccento('#c8f060', this)"></div>
-                        <div class="color-swatch" style="background:#60b8f0" onclick="setAccento('#60b8f0', this)"></div>
-                        <div class="color-swatch" style="background:#f06080" onclick="setAccento('#f06080', this)"></div>
-                        <div class="color-swatch" style="background:#f0a060" onclick="setAccento('#f0a060', this)"></div>
-                        <div class="color-swatch" style="background:#a060f0" onclick="setAccento('#a060f0', this)"></div>
-                        <div class="color-swatch" style="background:#60f0b8" onclick="setAccento('#60f0b8', this)"></div>
-                        <div class="color-swatch" style="background:#f0e060" onclick="setAccento('#f0e060', this)"></div>
-                        <div class="color-swatch" style="background:#ff7eb6" onclick="setAccento('#ff7eb6', this)"></div>
                     </div>
                 </div>
                 <div class="setting-row">
-                    <div class="setting-row__icon">✨</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label">Animazioni</div>
-                        <div class="setting-row__desc">Riduci le animazioni per prestazioni migliori</div>
+                    <div class="setting-row__info">
+                        <div class="setting-row__label">Animazioni Fluide</div>
+                        <div class="setting-row__desc">Attiva o disattiva gli effetti di transizione.</div>
                     </div>
                     <label class="toggle">
-                        <input type="checkbox" checked onchange="salva('Impostazione salvata!')">
-                        <span class="toggle__track"></span>
+                        <input type="checkbox" checked onchange="salva('Preferenza aggiornata!')">
+                        <span class="toggle__slider"></span>
                     </label>
                 </div>
             </div>
-            <div class="btn-row">
-                <button class="btn btn--accent" onclick="salva('Aspetto salvato!')">💾 Salva</button>
-            </div>
         </div>
 
-        <div class="section" id="s-zona-pericolo">
-            <div class="section__title" style="color:var(--red)">🚪 Logout</div>
-            <div class="section__sub">Disconnettiti dal tuo account su questo dispositivo.</div>
-
-            <div class="danger-zone">
+        <div class="section" id="s-logout">
+            <h1 class="section__title" style="color: var(--red);">Logout</h1>
+            <p class="section__sub">Vuoi uscire dalla sessione attuale?</p>
+            <div class="settings-group" style="border-color: rgba(255, 77, 109, 0.2);">
                 <div class="setting-row">
-                    <div class="setting-row__icon" style="background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2)">🚪</div>
-                    <div class="setting-row__text">
-                        <div class="setting-row__label" style="color:var(--red)">Logout</div>
-                        <div class="setting-row__desc">Verrai disconnesso e reindirizzato alla pagina principale.</div>
+                    <div class="setting-row__info">
+                        <div class="setting-row__label" style="color: var(--red);">Disconnetti</div>
+                        <div class="setting-row__desc">Dovrai inserire nuovamente le credenziali per accedere.</div>
                     </div>
-                    <button class="btn btn--danger" onclick="eseguiLogout()">Esci</button>
+                    <button class="btn btn--danger" onclick="eseguiLogout()">Esci ora</button>
                 </div>
             </div>
         </div>
-
     </main>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">Messaggio</div>
 
 <script>
-    /* ── HELPER COOKIE ── */
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -436,38 +321,6 @@
         return null;
     }
 
-    /* ── CARICAMENTO DATI ACCOUNT ── */
-    async function caricaDatiAccount() {
-        const usernameLoggato = getCookieSafe('username');
-        
-        if (!usernameLoggato) {
-            document.getElementById('setNick').disabled = true;
-            document.getElementById('setNick').placeholder = 'Effettua il login';
-            document.getElementById('setEmail').disabled = true;
-            document.getElementById('setEmail').placeholder = 'Effettua il login';
-            document.getElementById('setScuola').disabled = true;
-            document.getElementById('setScuola').placeholder = 'Effettua il login';
-            return;
-        }
-
-        try {
-            const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
-            if (res.ok) {
-                const user = await res.json();
-                document.getElementById('setNick').value = user.username || '';
-                document.getElementById('setEmail').value = user.email || '';
-                document.getElementById('setScuola').value = user.scuola || '';
-            } else {
-                console.error("Utente non trovato nel DB");
-            }
-        } catch (err) {
-            console.error("Errore nel caricamento dei dati utente:", err);
-            salva("Errore nel recuperare i dati");
-        }
-    }
-
-
-    /* ── NAVIGAZIONE ── */
     function mostraSezione(id, btn) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.sidebar__item').forEach(b => b.classList.remove('active'));
@@ -475,52 +328,42 @@
         btn.classList.add('active');
     }
 
-    /* ── TEMA E ASPETTO ── */
-    function setTema(tema, el) {
+    async function caricaDatiAccount() {
+        const userLog = getCookieSafe('username');
+        if (!userLog) return;
+        try {
+            const res = await fetch(`/api/utente?username=${encodeURIComponent(userLog)}`);
+            if (res.ok) {
+                const u = await res.json();
+                document.getElementById('setNick').value = u.username || '';
+                document.getElementById('setEmail').value = u.email || '';
+                document.getElementById('setScuola').value = u.scuola || '';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function setTema(t, el) {
         document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        salva('Tema ' + tema + ' applicato!');
+        salva("Tema aggiornato!");
     }
 
-    function setAccento(colore, el) {
-        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-        el.classList.add('active');
-        document.documentElement.style.setProperty('--accent', colore);
-        salva('Colore aggiornato!');
+    function salva(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    /* ── LOGOUT ── */
     async function eseguiLogout() {
-        try {
-            await fetch('/api/logout', { method: 'POST' });
-        } catch {}
-        document.cookie = 'utente_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        try { await fetch('/api/logout', { method: 'POST' }); } catch {}
         document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = 'index.html';
     }
 
-    /* ── TOAST ── */
-    function salva(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2600);
-    }
-
-    function annulla() { salva('Modifiche annullate'); }
-
-    /* ── NAVBAR AUTH E AVVIO ── */
-    function aggiornaNavbar() {
-        const btnLogin = document.getElementById('navLoginBtn');
-        if (!btnLogin) return;
-        const loggato = getCookieSafe('username') !== null;
-        if (loggato) {
-            btnLogin.style.display = 'none';
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-        aggiornaNavbar();
         caricaDatiAccount();
+        if (getCookieSafe('username')) document.getElementById('navLoginBtn').style.display = 'none';
     });
 </script>
 
