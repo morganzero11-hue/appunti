@@ -127,7 +127,7 @@
     <div class="profile-stats">
         <div class="stat-item">
             <span class="stat-num" id="statAppunti">0</span>
-            <span class="stat-label">Appunti Pubblicati</span>
+            <span class="stat-label">Contenuti Pubblicati</span>
         </div>
         <div class="stat-item">
             <span class="stat-num" id="statLikesRicevuti">0</span>
@@ -137,21 +137,28 @@
 </div>
 
 <div class="tabs-container">
-    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Appunti</button>
+    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Contenuti</button>
     <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica Appunto</button>
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">🎙️ Pubblica Podcast</button>
 </div>
 
 <div id="tab-miei-appunti" class="tab-content active">
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
+        <button id="subBtnMieiAppunti" onclick="mostraSottoTabMiei('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
+        <button id="subBtnMieiPodcast" onclick="mostraSottoTabMiei('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
+    </div>
+
     <div id="listaMieiAppunti" class="notes-grid"></div>
+    <div id="listaMieiPodcast" class="notes-grid" style="display: none;"></div>
 </div>
 
 <div id="tab-salvati" class="tab-content">
     
     <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
-        <button id="subBtnAppunti" onclick="mostraSottoTab('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
-        <button id="subBtnPodcast" onclick="mostraSottoTab('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
+        <button id="subBtnSalvatiAppunti" onclick="mostraSottoTabSalvati('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
+        <button id="subBtnSalvatiPodcast" onclick="mostraSottoTabSalvati('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
     </div>
 
     <div id="listaAppuntiSalvati" class="notes-grid"></div>
@@ -285,12 +292,46 @@
         btnElement.classList.add('active');
     }
 
-    // ── FUNZIONE PER I SOTTO-MENU (SALVATI) ──
-    window.mostraSottoTab = function(tipo) {
+    // ── FUNZIONE SOTTO-MENU (I MIEI CONTENUTI) ──
+    window.mostraSottoTabMiei = function(tipo) {
+        const divAppunti = document.getElementById('listaMieiAppunti');
+        const divPodcast = document.getElementById('listaMieiPodcast');
+        const btnAppunti = document.getElementById('subBtnMieiAppunti');
+        const btnPodcast = document.getElementById('subBtnMieiPodcast');
+
+        if (tipo === 'appunti') {
+            divAppunti.style.display = 'grid';
+            divPodcast.style.display = 'none';
+            btnAppunti.className = 'btn-small btn-open';
+            btnAppunti.style.background = 'rgba(200,240,96,0.15)';
+            btnAppunti.style.color = 'var(--accent)';
+            btnAppunti.style.border = 'none';
+            
+            btnPodcast.className = 'btn-small';
+            btnPodcast.style.background = 'transparent';
+            btnPodcast.style.color = 'var(--muted)';
+            btnPodcast.style.border = '1px solid var(--surface2)';
+        } else {
+            divAppunti.style.display = 'none';
+            divPodcast.style.display = 'grid';
+            btnPodcast.className = 'btn-small btn-open';
+            btnPodcast.style.background = 'rgba(200,240,96,0.15)';
+            btnPodcast.style.color = 'var(--accent)';
+            btnPodcast.style.border = 'none';
+
+            btnAppunti.className = 'btn-small';
+            btnAppunti.style.background = 'transparent';
+            btnAppunti.style.color = 'var(--muted)';
+            btnAppunti.style.border = '1px solid var(--surface2)';
+        }
+    }
+
+    // ── FUNZIONE SOTTO-MENU (SALVATI) ──
+    window.mostraSottoTabSalvati = function(tipo) {
         const divAppunti = document.getElementById('listaAppuntiSalvati');
         const divPodcast = document.getElementById('listaPodcastSalvati');
-        const btnAppunti = document.getElementById('subBtnAppunti');
-        const btnPodcast = document.getElementById('subBtnPodcast');
+        const btnAppunti = document.getElementById('subBtnSalvatiAppunti');
+        const btnPodcast = document.getElementById('subBtnSalvatiPodcast');
 
         if (tipo === 'appunti') {
             divAppunti.style.display = 'grid';
@@ -333,6 +374,8 @@
         }
 
         document.getElementById('valUsername').textContent = usernameLoggato;
+        // Resetta i contatori per sicurezza (verranno riempiti dal DB in seguito)
+        document.getElementById('statAppunti').textContent = "0";
 
         try {
             const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
@@ -546,10 +589,12 @@
             if (!res.ok) throw new Error("Errore API");
             const appunti = await res.json();
             
-            document.getElementById('statAppunti').textContent = appunti.length;
+            // Somma gli appunti al contatore totale delle pubblicazioni
+            let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = currentCount + appunti.length;
 
             if (appunti.length === 0) {
-                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato nulla.</div></div>";
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato appunti.</div></div>";
                 return;
             }
 
@@ -564,6 +609,49 @@
                         <div class="note-actions">
                             <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        } catch (err) {
+            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+        }
+    }
+
+    // ── CARICAMENTO DEI MIEI PODCAST ──
+    async function caricaMieiPodcast() {
+        let utenteId = getCookieSafe('utente_id');
+        const container = document.getElementById('listaMieiPodcast');
+        
+        if (!utenteId) return; // Se non loggato l'avviso c'è già nel tab appunti
+
+        try {
+            const res = await fetch(`/api/podcast?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error("Errore API");
+            const podcast = await res.json();
+            
+            // Somma i podcast al contatore totale delle pubblicazioni
+            let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = currentCount + podcast.length;
+
+            if (podcast.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato podcast.</div></div>";
+                return;
+            }
+
+            container.innerHTML = podcast.map(p => {
+                const coverHTML = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
+                return `
+                <div class="note-card" id="mio-podcast-${p.id}">
+                    <div class="note-thumb">${coverHTML}</div>
+                    <div class="note-info">
+                        <div class="note-title">${p.titolo}</div>
+                        <div class="note-meta">${p.categoria} • ${new Date(p.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
+                        <audio controls style="width:100%; height:35px; margin-top:10px; margin-bottom: 10px;">
+                            <source src="${p.audio_url}" type="audio/mpeg">
+                        </audio>
+                        <div class="note-actions">
+                            <button class="btn-small btn-delete" onclick="eliminaPodcast(${p.id})">Elimina</button>
                         </div>
                     </div>
                 </div>`;
@@ -652,24 +740,48 @@
             const notaCard = document.getElementById(`nota-${appuntoId}`);
             if (notaCard) notaCard.remove();
             
+            let cont = parseInt(document.getElementById('statAppunti').textContent);
+            if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
+            
             const container = document.getElementById('listaMieiAppunti');
             if (container.children.length === 0) caricaMieiAppunti(); 
-            else {
-                 let cont = parseInt(document.getElementById('statAppunti').textContent);
-                 if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
-            }
         } catch (err) {
             alert("❌ Non è stato possibile eliminare l'appunto.");
         }
     }
 
+    // ── ELIMINA PROPRIO PODCAST ──
+    window.eliminaPodcast = async function(podcastId) {
+        let utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return alert("Devi essere loggato.");
+        if (!confirm("Sei sicuro di voler eliminare questo podcast?")) return;
+
+        try {
+            const res = await fetch(`/api/podcast?id=${podcastId}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("Errore eliminazione");
+
+            const notaCard = document.getElementById(`mio-podcast-${podcastId}`);
+            if (notaCard) notaCard.remove();
+            
+            let cont = parseInt(document.getElementById('statAppunti').textContent);
+            if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
+
+            const container = document.getElementById('listaMieiPodcast');
+            if (container.children.length === 0) caricaMieiPodcast(); 
+        } catch (err) {
+            alert("❌ Non è stato possibile eliminare il podcast.");
+        }
+    }
+
     // ── AVVIO INIZIALE DEL PROFILO ──
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         const btnLogin = document.getElementById('navLoginBtn');
         if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
 
-        aggiornaHeaderProfilo();
+        // Avviamo tutte le funzioni di caricamento
+        await aggiornaHeaderProfilo();
         caricaMieiAppunti();
+        caricaMieiPodcast();
         caricaAppuntiSalvati(); 
     });
 </script>
