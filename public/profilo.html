@@ -45,7 +45,7 @@
         .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
 
         /* ─── TABS ─── */
-        .tabs-container { max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px; }
+        .tabs-container { max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px; flex-wrap: wrap;}
         .tab-btn { background: none; border: none; color: var(--muted); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800; padding: 16px 0; cursor: pointer; position: relative; transition: color .2s; }
         .tab-btn:hover { color: var(--text); }
         .tab-btn.active { color: var(--text); }
@@ -148,7 +148,11 @@
 </div>
 
 <div id="tab-salvati" class="tab-content">
-    <div id="listaAppuntiSalvati" class="notes-grid"></div>
+    <h3 style="margin-bottom: 20px; font-family: 'Fraunces', serif; color: var(--accent)">📄 Appunti Salvati</h3>
+    <div id="listaAppuntiSalvati" class="notes-grid" style="margin-bottom: 60px;"></div>
+
+    <h3 style="margin-bottom: 20px; font-family: 'Fraunces', serif; color: var(--accent)">🎙️ Podcast Salvati</h3>
+    <div id="listaPodcastSalvati" class="notes-grid"></div>
 </div>
 
 <div id="tab-pubblica" class="tab-content">
@@ -170,7 +174,6 @@
                 <option>Altro</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>Copertina (Opzionale, rende la card più bella)</label>
             <div class="file-input-wrapper">
@@ -178,7 +181,6 @@
                 <input type="file" id="coverAppunto" accept="image/*" onchange="aggiornaTestoFile('coverAppunto', 'coverLabelText')">
             </div>
         </div>
-
         <div class="form-group">
             <label>Immagini Appunti (Seleziona una o più foto)</label>
             <div class="file-input-wrapper">
@@ -186,7 +188,6 @@
                 <input type="file" id="fileAppunto" accept="image/*" multiple onchange="aggiornaTestoFile('fileAppunto', 'fileLabelText')">
             </div>
         </div>
-        
         <div class="form-group">
             <label>Spiegazione Audio (Opzionale)</label>
             <div class="file-input-wrapper">
@@ -194,7 +195,6 @@
                 <input type="file" id="audioAppunto" accept="audio/*" onchange="aggiornaTestoFile('audioAppunto', 'audioLabelText')">
             </div>
         </div>
-
         <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Condividi con tutti</button>
     </div>
 </div>
@@ -205,7 +205,6 @@
             <label>Titolo Podcast</label>
             <input type="text" id="podTitolo" placeholder="Es: La Rivoluzione Francese in 10 minuti">
         </div>
-
         <div class="form-group">
             <label>Categoria</label>
             <select id="podCategoria">
@@ -217,12 +216,10 @@
                 <option>Altro</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>Descrizione Breve</label>
             <textarea id="podDesc" rows="3" placeholder="Di cosa parla questo episodio?"></textarea>
         </div>
-        
         <div class="form-group">
             <label>File Audio (MP3, WAV)</label>
             <div class="file-input-wrapper">
@@ -230,7 +227,6 @@
                 <input type="file" id="podAudio" accept="audio/*" onchange="aggiornaTestoFile('podAudio', 'podAudioLabelText')">
             </div>
         </div>
-        
         <div class="form-group">
             <label>Copertina (Opzionale)</label>
             <div class="file-input-wrapper">
@@ -238,7 +234,6 @@
                 <input type="file" id="podCover" accept="image/*" onchange="aggiornaTestoFile('podCover', 'podCoverLabelText')">
             </div>
         </div>
-
         <button class="btn-save" id="btnPubblicaPod" onclick="pubblicaPodcast()">🚀 Pubblica Podcast</button>
     </div>
 </div>
@@ -256,9 +251,7 @@
         const label = document.getElementById(labelId);
         if (input.files && input.files.length > 0) {
             let labelText = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
-            if (input.files.length > 1) {
-                labelText = `✅ Selezionati: <strong>${input.files.length} file</strong>`;
-            }
+            if (input.files.length > 1) labelText = `✅ Selezionati: <strong>${input.files.length} file</strong>`;
             label.innerHTML = labelText;
             label.style.color = "var(--accent)";
         } else {
@@ -271,19 +264,12 @@
         }
     }
 
-    function cambiaTab(tabId, btnElement) {
+    window.cambiaTab = function(tabId, btnElement) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const btnLogin = document.getElementById('navLoginBtn');
-        if (!btnLogin) return;
-        const loggato = getCookieSafe('username') !== null;
-        if (loggato) { btnLogin.style.display = 'none'; }
-    });
 
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
@@ -303,7 +289,6 @@
             const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
             if (res.ok) {
                 const user = await res.json();
-                
                 let nomeCompleto = [];
                 if (user.nome && user.nome.trim() !== '') nomeCompleto.push(user.nome.trim());
                 if (user.cognome && user.cognome.trim() !== '') nomeCompleto.push(user.cognome.trim());
@@ -333,7 +318,7 @@
         }
     }
 
-    async function uploadAvatar(event) {
+    window.uploadAvatar = async function(event) {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
 
@@ -348,9 +333,7 @@
         img.style.display = 'none';
 
         try {
-            const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                method: 'POST', body: file,
-            });
+            const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
             if (!resBlob.ok) throw new Error("Errore Blob");
             const blob = await resBlob.json();
 
@@ -371,7 +354,7 @@
         }
     }
 
-    async function pubblicaAppunto() {
+    window.pubblicaAppunto = async function() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
 
@@ -391,9 +374,7 @@
         try {
             let fileUrls = [];
             for (let file of filesIn.files) {
-                const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, {
-                    method: 'POST', body: file
-                });
+                const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
                 if (!res.ok) throw new Error("Errore caricamento immagine");
                 const data = await res.json();
                 fileUrls.push(data.url);
@@ -401,9 +382,7 @@
 
             let audioUrl = null;
             if (audioIn.files && audioIn.files.length > 0) {
-                const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, {
-                    method: 'POST', body: audioIn.files[0]
-                });
+                const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, { method: 'POST', body: audioIn.files[0] });
                 if (resAudio.ok) {
                     const dataAudio = await resAudio.json();
                     audioUrl = dataAudio.url;
@@ -412,9 +391,7 @@
 
             let coverUrl = fileUrls[0];
             if (coverIn.files && coverIn.files.length > 0) {
-                const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}_${encodeURIComponent(coverIn.files[0].name)}`, {
-                    method: 'POST', body: coverIn.files[0]
-                });
+                const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}_${encodeURIComponent(coverIn.files[0].name)}`, { method: 'POST', body: coverIn.files[0] });
                 if (resCover.ok) {
                     const dataCover = await resCover.json();
                     coverUrl = dataCover.url;
@@ -424,14 +401,7 @@
             const resDb = await fetch('/api/appunti', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    utente_id: utenteId,
-                    titolo: titolo,
-                    materia: materia,
-                    file_url: fileUrls.join(','), 
-                    audio_url: audioUrl,
-                    cover_url: coverUrl 
-                })
+                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, materia: materia, file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl })
             });
             if (!resDb.ok) throw new Error("Errore salvataggio DB");
 
@@ -447,8 +417,7 @@
         }
     }
 
-    // ── NUOVA FUNZIONE PER PUBBLICARE IL PODCAST ──
-    async function pubblicaPodcast() {
+    window.pubblicaPodcast = async function() {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi effettuare il login per pubblicare un podcast!");
 
@@ -466,43 +435,28 @@
         btn.disabled = true;
 
         try {
-            // Upload Audio
-            const resAudio = await fetch(`/api/upload?filename=podcast_${Date.now()}.mp3`, {
-                method: 'POST', body: audioIn
-            });
+            const resAudio = await fetch(`/api/upload?filename=podcast_${Date.now()}.mp3`, { method: 'POST', body: audioIn });
             if(!resAudio.ok) throw new Error("Errore upload audio");
             const dataAudio = await resAudio.json();
 
-            // Upload Cover (se presente)
             let coverUrl = null;
             if (coverIn) {
-                const resCover = await fetch(`/api/upload?filename=podcover_${Date.now()}`, {
-                    method: 'POST', body: coverIn
-                });
+                const resCover = await fetch(`/api/upload?filename=podcover_${Date.now()}`, { method: 'POST', body: coverIn });
                 if(resCover.ok) {
                     const dataCover = await resCover.json();
                     coverUrl = dataCover.url;
                 }
             }
 
-            // Salva in DB
             const resDb = await fetch('/api/podcast', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    utente_id: utenteId,
-                    titolo: titolo,
-                    descrizione: desc,
-                    categoria: categoria,
-                    audio_url: dataAudio.url,
-                    cover_url: coverUrl
-                })
+                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, descrizione: desc, categoria: categoria, audio_url: dataAudio.url, cover_url: coverUrl })
             });
 
             if (!resDb.ok) throw new Error("Errore DB");
 
             alert("🎙️ Podcast pubblicato con successo!");
-            // Reindirizza l'utente alla pagina dei podcast per vedere il risultato
             window.location.href = "podcast.html";
 
         } catch (err) {
@@ -525,9 +479,9 @@
 
         try {
             const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore chiamata API appunti");
-            
+            if (!res.ok) throw new Error("Errore API");
             const appunti = await res.json();
+            
             document.getElementById('statAppunti').textContent = appunti.length;
 
             if (appunti.length === 0) {
@@ -536,10 +490,7 @@
             }
 
             container.innerHTML = appunti.map(a => {
-                const coverHTML = a.cover_url 
-                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
-                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
-                
+                const coverHTML = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
                 return `
                 <div class="note-card" id="nota-${a.id}">
                     <div class="note-thumb">${coverHTML}</div>
@@ -551,19 +502,22 @@
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
                         </div>
                     </div>
-                </div>
-            `}).join('');
+                </div>`;
+            }).join('');
         } catch (err) {
             container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
         }
     }
 
+    // ── NUOVA FUNZIONE: CARICA SALVATI (APPUNTI + PODCAST) ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
-        const container = document.getElementById('listaAppuntiSalvati');
+        const containerAppunti = document.getElementById('listaAppuntiSalvati');
+        const containerPodcast = document.getElementById('listaPodcastSalvati');
         
         if (!utenteId) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
+            if(containerAppunti) containerAppunti.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
+            if(containerPodcast) containerPodcast.innerHTML = "";
             return;
         }
 
@@ -571,54 +525,71 @@
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
             if (!res.ok) throw new Error("Errore chiamata API likes");
             
-            const appunti = await res.json();
+            const salvati = await res.json();
 
-            if (appunti.length === 0) {
-                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Non hai ancora salvato nessun appunto.</div></div>";
-                return;
+            // Render Appunti
+            if (salvati.appunti.length === 0) {
+                containerAppunti.innerHTML = "<div class='empty-state' style='padding:20px;'><div class='empty-text'>Nessun appunto salvato.</div></div>";
+            } else {
+                containerAppunti.innerHTML = salvati.appunti.map(a => {
+                    const coverHTML = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+                    const autore = a.username ? `@${a.username}` : 'Anonimo';
+                    return `
+                    <div class="note-card">
+                        <div class="note-thumb">${coverHTML}</div>
+                        <div class="note-info">
+                            <div class="note-title">${a.titolo}</div>
+                            <div class="note-meta">${a.materia} • di ${autore}</div>
+                            <div class="note-actions">
+                                <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
             }
 
-            container.innerHTML = appunti.map(a => {
-                const coverHTML = a.cover_url 
-                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
-                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
-
-                const autore = a.username ? `@${a.username}` : 'Anonimo';
-
-                return `
-                <div class="note-card">
-                    <div class="note-thumb">${coverHTML}</div>
-                    <div class="note-info">
-                        <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia} • di ${autore}</div>
-                        <div class="note-actions">
-                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
+            // Render Podcast
+            if (salvati.podcast.length === 0) {
+                containerPodcast.innerHTML = "<div class='empty-state' style='padding:20px;'><div class='empty-text'>Nessun podcast salvato.</div></div>";
+            } else {
+                containerPodcast.innerHTML = salvati.podcast.map(p => {
+                    const coverHTML = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
+                    const autore = p.username ? `@${p.username}` : 'Anonimo';
+                    return `
+                    <div class="note-card">
+                        <div class="note-thumb">${coverHTML}</div>
+                        <div class="note-info">
+                            <div class="note-title">${p.titolo}</div>
+                            <div class="note-meta">${p.categoria} • di ${autore}</div>
+                            <audio controls style="width:100%; height:35px; margin-top:10px;">
+                                <source src="${p.audio_url}" type="audio/mpeg">
+                            </audio>
                         </div>
-                    </div>
-                </div>
-            `}).join('');
+                    </div>`;
+                }).join('');
+            }
+
         } catch (err) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+            console.error(err);
+            if(containerAppunti) containerAppunti.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
         }
     }
 
-    async function eliminaAppunto(appuntoId) {
+    window.eliminaAppunto = async function(appuntoId) {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi essere loggato per eliminare un appunto.");
-
-        if (!confirm("Sei sicuro di voler eliminare questo appunto? L'azione è irreversibile.")) return;
+        if (!utenteId) return alert("Devi essere loggato.");
+        if (!confirm("Sei sicuro di voler eliminare questo appunto?")) return;
 
         try {
             const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Errore durante l'eliminazione");
+            if (!res.ok) throw new Error("Errore eliminazione");
 
             const notaCard = document.getElementById(`nota-${appuntoId}`);
             if (notaCard) notaCard.remove();
             
             const container = document.getElementById('listaMieiAppunti');
-            if (container.children.length === 0) {
-                caricaMieiAppunti(); 
-            } else {
+            if (container.children.length === 0) caricaMieiAppunti(); 
+            else {
                  let cont = parseInt(document.getElementById('statAppunti').textContent);
                  if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
             }
@@ -628,11 +599,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        const btnLogin = document.getElementById('navLoginBtn');
+        if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
+
         aggiornaHeaderProfilo();
         caricaMieiAppunti();
-        caricaAppuntiSalvati();
+        caricaAppuntiSalvati(); 
     });
-
 </script>
 
 </body>
