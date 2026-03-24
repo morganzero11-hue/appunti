@@ -139,44 +139,51 @@
 <div class="tabs-container">
     <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Contenuti</button>
     <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
-    
     <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">Playlists 📂</button>
-    
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica Appunto</button>
     <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">🎙️ Pubblica Podcast</button>
 </div>
 
 <div id="tab-miei-appunti" class="tab-content active">
-    
     <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
         <button id="subBtnMieiAppunti" onclick="mostraSottoTabMiei('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
         <button id="subBtnMieiPodcast" onclick="mostraSottoTabMiei('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
     </div>
-
     <div id="listaMieiAppunti" class="notes-grid"></div>
     <div id="listaMieiPodcast" class="notes-grid" style="display: none;"></div>
 </div>
 
 <div id="tab-salvati" class="tab-content">
-    
     <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
         <button id="subBtnSalvatiAppunti" onclick="mostraSottoTabSalvati('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
         <button id="subBtnSalvatiPodcast" onclick="mostraSottoTabSalvati('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
     </div>
-
     <div id="listaAppuntiSalvati" class="notes-grid"></div>
     <div id="listaPodcastSalvati" class="notes-grid" style="display: none;"></div>
 </div>
 
 <div id="tab-playlists" class="tab-content">
-    <div style="display: flex; gap: 10px; margin-bottom: 30px;">
-        <input type="text" id="nuovaPlaylistTitolo" placeholder="Es: Analisi 1, Chimica Organica..." style="flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--surface2); background: var(--surface); color: var(--text); outline: none;">
-        <button class="btn-small btn-open" onclick="creaPlaylist()" style="padding: 0 24px;">+ Crea Raccolta</button>
+    
+    <div id="vistaElencoPlaylists">
+        <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+            <input type="text" id="nuovaPlaylistTitolo" placeholder="Es: Analisi 1, Chimica Organica..." style="flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--surface2); background: var(--surface); color: var(--text); outline: none;">
+            <button class="btn-small btn-open" onclick="creaPlaylist()" style="padding: 0 24px;">+ Crea Raccolta</button>
+        </div>
+        <div id="listaPlaylists" class="notes-grid">
+            <p style="color:var(--muted)">Caricamento playlist...</p>
+        </div>
     </div>
 
-    <div id="listaPlaylists" class="notes-grid">
-        <p style="color:var(--muted)">Caricamento playlist...</p>
+    <div id="vistaContenutoPlaylist" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <button onclick="tornaAllePlaylists()" class="btn-small" style="background: var(--surface2); color: var(--text); max-width: max-content; padding: 8px 16px;">⬅️ Torna Indietro</button>
+            <h2 id="titoloPlaylistAttuale" style="font-family: 'Fraunces', serif; margin: 0;">Nome Playlist</h2>
+        </div>
+        
+        <div id="grigliaContenutoPlaylist" class="notes-grid">
+            </div>
     </div>
+
 </div>
 
 <div id="tab-pubblica" class="tab-content">
@@ -306,7 +313,7 @@
         btnElement.classList.add('active');
     }
 
-    // ── FUNZIONE SOTTO-MENU (I MIEI CONTENUTI) ──
+    // ── FUNZIONI SOTTO-MENU ──
     window.mostraSottoTabMiei = function(tipo) {
         const divAppunti = document.getElementById('listaMieiAppunti');
         const divPodcast = document.getElementById('listaMieiPodcast');
@@ -314,33 +321,16 @@
         const btnPodcast = document.getElementById('subBtnMieiPodcast');
 
         if (tipo === 'appunti') {
-            divAppunti.style.display = 'grid';
-            divPodcast.style.display = 'none';
-            btnAppunti.className = 'btn-small btn-open';
-            btnAppunti.style.background = 'rgba(200,240,96,0.15)';
-            btnAppunti.style.color = 'var(--accent)';
-            btnAppunti.style.border = 'none';
-            
-            btnPodcast.className = 'btn-small';
-            btnPodcast.style.background = 'transparent';
-            btnPodcast.style.color = 'var(--muted)';
-            btnPodcast.style.border = '1px solid var(--surface2)';
+            divAppunti.style.display = 'grid'; divPodcast.style.display = 'none';
+            btnAppunti.className = 'btn-small btn-open'; btnAppunti.style.background = 'rgba(200,240,96,0.15)'; btnAppunti.style.color = 'var(--accent)'; btnAppunti.style.border = 'none';
+            btnPodcast.className = 'btn-small'; btnPodcast.style.background = 'transparent'; btnPodcast.style.color = 'var(--muted)'; btnPodcast.style.border = '1px solid var(--surface2)';
         } else {
-            divAppunti.style.display = 'none';
-            divPodcast.style.display = 'grid';
-            btnPodcast.className = 'btn-small btn-open';
-            btnPodcast.style.background = 'rgba(200,240,96,0.15)';
-            btnPodcast.style.color = 'var(--accent)';
-            btnPodcast.style.border = 'none';
-
-            btnAppunti.className = 'btn-small';
-            btnAppunti.style.background = 'transparent';
-            btnAppunti.style.color = 'var(--muted)';
-            btnAppunti.style.border = '1px solid var(--surface2)';
+            divAppunti.style.display = 'none'; divPodcast.style.display = 'grid';
+            btnPodcast.className = 'btn-small btn-open'; btnPodcast.style.background = 'rgba(200,240,96,0.15)'; btnPodcast.style.color = 'var(--accent)'; btnPodcast.style.border = 'none';
+            btnAppunti.className = 'btn-small'; btnAppunti.style.background = 'transparent'; btnAppunti.style.color = 'var(--muted)'; btnAppunti.style.border = '1px solid var(--surface2)';
         }
     }
 
-    // ── FUNZIONE SOTTO-MENU (SALVATI) ──
     window.mostraSottoTabSalvati = function(tipo) {
         const divAppunti = document.getElementById('listaAppuntiSalvati');
         const divPodcast = document.getElementById('listaPodcastSalvati');
@@ -348,29 +338,13 @@
         const btnPodcast = document.getElementById('subBtnSalvatiPodcast');
 
         if (tipo === 'appunti') {
-            divAppunti.style.display = 'grid';
-            divPodcast.style.display = 'none';
-            btnAppunti.className = 'btn-small btn-open';
-            btnAppunti.style.background = 'rgba(200,240,96,0.15)';
-            btnAppunti.style.color = 'var(--accent)';
-            btnAppunti.style.border = 'none';
-            
-            btnPodcast.className = 'btn-small';
-            btnPodcast.style.background = 'transparent';
-            btnPodcast.style.color = 'var(--muted)';
-            btnPodcast.style.border = '1px solid var(--surface2)';
+            divAppunti.style.display = 'grid'; divPodcast.style.display = 'none';
+            btnAppunti.className = 'btn-small btn-open'; btnAppunti.style.background = 'rgba(200,240,96,0.15)'; btnAppunti.style.color = 'var(--accent)'; btnAppunti.style.border = 'none';
+            btnPodcast.className = 'btn-small'; btnPodcast.style.background = 'transparent'; btnPodcast.style.color = 'var(--muted)'; btnPodcast.style.border = '1px solid var(--surface2)';
         } else {
-            divAppunti.style.display = 'none';
-            divPodcast.style.display = 'grid';
-            btnPodcast.className = 'btn-small btn-open';
-            btnPodcast.style.background = 'rgba(200,240,96,0.15)';
-            btnPodcast.style.color = 'var(--accent)';
-            btnPodcast.style.border = 'none';
-
-            btnAppunti.className = 'btn-small';
-            btnAppunti.style.background = 'transparent';
-            btnAppunti.style.color = 'var(--muted)';
-            btnAppunti.style.border = '1px solid var(--surface2)';
+            divAppunti.style.display = 'none'; divPodcast.style.display = 'grid';
+            btnPodcast.className = 'btn-small btn-open'; btnPodcast.style.background = 'rgba(200,240,96,0.15)'; btnPodcast.style.color = 'var(--accent)'; btnPodcast.style.border = 'none';
+            btnAppunti.className = 'btn-small'; btnAppunti.style.background = 'transparent'; btnAppunti.style.color = 'var(--muted)'; btnAppunti.style.border = '1px solid var(--surface2)';
         }
     }
 
@@ -425,17 +399,13 @@
 
     window.uploadAvatar = async function(event) {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
-
+        if (!utenteId) return alert("Devi essere loggato!");
         const file = event.target.files[0];
         if (!file) return;
 
         const ph = document.getElementById('avatarPh');
         const img = document.getElementById('avatarImg');
-        
-        ph.textContent = '⏳';
-        ph.style.display = 'block';
-        img.style.display = 'none';
+        ph.textContent = '⏳'; ph.style.display = 'block'; img.style.display = 'none';
 
         try {
             const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
@@ -443,26 +413,21 @@
             const blob = await resBlob.json();
 
             const resDb = await fetch('/api/aggiorna-profilo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: utenteId, foto_profilo_url: blob.url })
             });
             if (!resDb.ok) throw new Error("Errore DB");
 
-            img.src = blob.url;
-            img.style.display = 'block';
-            ph.style.display = 'none';
-            alert("✅ Foto profilo aggiornata!");
+            img.src = blob.url; img.style.display = 'block'; ph.style.display = 'none';
         } catch (error) {
-            alert("❌ Impossibile caricare la foto.");
-            ph.textContent = '?';
+            alert("❌ Impossibile caricare la foto."); ph.textContent = '?';
         }
     }
 
-    // ── PUBBLICAZIONE APPUNTI ──
+    // ── PUBBLICAZIONI ──
     window.pubblicaAppunto = async function() {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
+        if (!utenteId) return alert("Devi effettuare il login!");
 
         const filesIn = document.getElementById('fileAppunto');
         const coverIn = document.getElementById('coverAppunto');
@@ -471,62 +436,43 @@
         const materia = document.getElementById('materiaAppunto').value;
 
         if (!titolo) return alert("Inserisci un titolo!");
-        if (!filesIn.files || filesIn.files.length === 0) return alert("Seleziona almeno un'immagine per gli appunti!");
+        if (!filesIn.files || filesIn.files.length === 0) return alert("Seleziona il documento!");
 
         const btn = document.getElementById('btnPubblica');
-        btn.textContent = "⏳ Caricamento in corso...";
-        btn.disabled = true;
+        btn.textContent = "⏳ Caricamento..."; btn.disabled = true;
 
         try {
             let fileUrls = [];
             for (let file of filesIn.files) {
-                const res = await fetch(`/api/upload?filename=page_${Date.now()}_${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
-                if (!res.ok) throw new Error("Errore caricamento immagine");
-                const data = await res.json();
-                fileUrls.push(data.url);
+                const res = await fetch(`/api/upload?filename=page_${Date.now()}`, { method: 'POST', body: file });
+                const data = await res.json(); fileUrls.push(data.url);
             }
 
             let audioUrl = null;
-            if (audioIn.files && audioIn.files.length > 0) {
-                const resAudio = await fetch(`/api/upload?filename=audio_${Date.now()}.mp3`, { method: 'POST', body: audioIn.files[0] });
-                if (resAudio.ok) {
-                    const dataAudio = await resAudio.json();
-                    audioUrl = dataAudio.url;
-                }
+            if (audioIn.files.length > 0) {
+                const resA = await fetch(`/api/upload?filename=audio_${Date.now()}`, { method: 'POST', body: audioIn.files[0] });
+                const datA = await resA.json(); audioUrl = datA.url;
             }
 
             let coverUrl = fileUrls[0];
-            if (coverIn.files && coverIn.files.length > 0) {
-                const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}_${encodeURIComponent(coverIn.files[0].name)}`, { method: 'POST', body: coverIn.files[0] });
-                if (resCover.ok) {
-                    const dataCover = await resCover.json();
-                    coverUrl = dataCover.url;
-                }
+            if (coverIn.files.length > 0) {
+                const resC = await fetch(`/api/upload?filename=cover_${Date.now()}`, { method: 'POST', body: coverIn.files[0] });
+                const datC = await resC.json(); coverUrl = datC.url;
             }
 
-            const resDb = await fetch('/api/appunti', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            await fetch('/api/appunti', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo: titolo, materia: materia, file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl })
             });
-            if (!resDb.ok) throw new Error("Errore salvataggio DB");
 
-            alert("✅ Appunto pubblicato con successo!");
-            window.location.reload();
-
-        } catch (err) {
-            console.error(err);
-            alert("❌ C'è stato un problema durante il caricamento.");
-        } finally {
-            btn.textContent = "🚀 Condividi con tutti";
-            btn.disabled = false;
-        }
+            alert("✅ Appunto pubblicato!"); window.location.reload();
+        } catch (err) { alert("❌ Errore durante il caricamento."); } 
+        finally { btn.textContent = "🚀 Condividi"; btn.disabled = false; }
     }
 
-    // ── PUBBLICAZIONE PODCAST ──
     window.pubblicaPodcast = async function() {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi effettuare il login per pubblicare un podcast!");
+        if (!utenteId) return alert("Devi effettuare il login!");
 
         const titolo = document.getElementById('podTitolo').value.trim();
         const desc = document.getElementById('podDesc').value.trim();
@@ -537,87 +483,53 @@
         const coverIn = document.getElementById('podCover').files[0];
         
         const btn = document.getElementById('btnPubblicaPod');
+        if (!titolo || !audioIn) return alert("Mancano titolo o audio!");
 
-        if (!titolo) return alert("Inserisci il titolo del podcast!");
-        if (!audioIn) return alert("Devi caricare un file audio!");
-
-        btn.textContent = "⏳ Caricamento in corso...";
-        btn.disabled = true;
+        btn.textContent = "⏳ Caricamento..."; btn.disabled = true;
 
         try {
-            const resAudio = await fetch(`/api/upload?filename=podcast_${Date.now()}.mp3`, { method: 'POST', body: audioIn });
-            if(!resAudio.ok) throw new Error("Errore upload audio");
-            const dataAudio = await resAudio.json();
+            const resA = await fetch(`/api/upload?filename=pod_${Date.now()}`, { method: 'POST', body: audioIn });
+            const datA = await resA.json();
 
             let coverUrl = null;
             if (coverIn) {
-                const resCover = await fetch(`/api/upload?filename=podcover_${Date.now()}`, { method: 'POST', body: coverIn });
-                if(resCover.ok) {
-                    const dataCover = await resCover.json();
-                    coverUrl = dataCover.url;
-                }
+                const resC = await fetch(`/api/upload?filename=podcov_${Date.now()}`, { method: 'POST', body: coverIn });
+                const datC = await resC.json(); coverUrl = datC.url;
             }
 
-            const resDb = await fetch('/api/podcast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    utente_id: utenteId, 
-                    titolo: titolo, 
-                    descrizione: desc, 
-                    categoria: categoria, 
-                    scuola: scuola,
-                    fonti: fonti,
-                    audio_url: dataAudio.url, 
-                    cover_url: coverUrl 
-                })
+            await fetch('/api/podcast', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, descrizione: desc, categoria: categoria, scuola: scuola, fonti: fonti, audio_url: datA.url, cover_url: coverUrl })
             });
 
-            if (!resDb.ok) throw new Error("Errore DB");
-
-            alert("🎙️ Podcast pubblicato con successo!");
-            window.location.href = "podcast.html";
-
-        } catch (err) {
-            console.error(err);
-            alert("❌ Errore durante il caricamento del podcast!");
-        } finally {
-            btn.textContent = "🚀 Pubblica Podcast";
-            btn.disabled = false;
-        }
+            alert("🎙️ Podcast pubblicato!"); window.location.href = "podcast.html";
+        } catch (err) { alert("❌ Errore."); } 
+        finally { btn.textContent = "🚀 Pubblica Podcast"; btn.disabled = false; }
     }
 
-    // ── CARICAMENTO DEI MIEI APPUNTI ──
+    // ── CARICAMENTI GRID ──
     async function caricaMieiAppunti() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
-        
-        if (!utenteId) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi appunti.</div></div>";
-            return;
-        }
+        if (!utenteId) return;
 
         try {
             const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore API");
             const appunti = await res.json();
             
-            let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
-            document.getElementById('statAppunti').textContent = currentCount + appunti.length;
+            let count = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = count + appunti.length;
 
-            if (appunti.length === 0) {
-                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato appunti.</div></div>";
-                return;
-            }
+            if (appunti.length === 0) return container.innerHTML = "<div class='empty-state'>Nessun appunto.</div>";
 
             container.innerHTML = appunti.map(a => {
-                const coverHTML = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+                const cover = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
                 return `
                 <div class="note-card" id="nota-${a.id}">
-                    <div class="note-thumb">${coverHTML}</div>
+                    <div class="note-thumb">${cover}</div>
                     <div class="note-info">
                         <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
+                        <div class="note-meta">${a.materia}</div>
                         <div class="note-actions">
                             <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
@@ -625,39 +537,31 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch (err) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
-        }
+        } catch (err) {}
     }
 
-    // ── CARICAMENTO DEI MIEI PODCAST ──
     async function caricaMieiPodcast() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiPodcast');
-        
         if (!utenteId) return; 
 
         try {
             const res = await fetch(`/api/podcast?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore API");
             const podcast = await res.json();
             
-            let currentCount = parseInt(document.getElementById('statAppunti').textContent) || 0;
-            document.getElementById('statAppunti').textContent = currentCount + podcast.length;
+            let count = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = count + podcast.length;
 
-            if (podcast.length === 0) {
-                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato podcast.</div></div>";
-                return;
-            }
+            if (podcast.length === 0) return container.innerHTML = "<div class='empty-state'>Nessun podcast.</div>";
 
             container.innerHTML = podcast.map(p => {
-                const coverHTML = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
+                const cover = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
                 return `
                 <div class="note-card" id="mio-podcast-${p.id}">
-                    <div class="note-thumb">${coverHTML}</div>
+                    <div class="note-thumb">${cover}</div>
                     <div class="note-info">
                         <div class="note-title">${p.titolo}</div>
-                        <div class="note-meta">${p.categoria} • ${new Date(p.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
+                        <div class="note-meta">${p.categoria}</div>
                         <audio controls style="width:100%; height:35px; margin-top:10px; margin-bottom: 10px;">
                             <source src="${p.audio_url}" type="audio/mpeg">
                         </audio>
@@ -667,108 +571,67 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch (err) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
-        }
+        } catch (err) {}
     }
 
-    // ── CARICAMENTO SALVATI (APPUNTI + PODCAST) ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
-        const containerAppunti = document.getElementById('listaAppuntiSalvati');
-        const containerPodcast = document.getElementById('listaPodcastSalvati');
-        
-        if (!utenteId) {
-            if(containerAppunti) containerAppunti.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
-            if(containerPodcast) containerPodcast.innerHTML = "";
-            return;
-        }
+        const contA = document.getElementById('listaAppuntiSalvati');
+        const contP = document.getElementById('listaPodcastSalvati');
+        if (!utenteId) return;
 
         try {
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore API salvati");
-            
             const salvati = await res.json();
 
-            // Render Appunti
-            if (salvati.appunti.length === 0) {
-                containerAppunti.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun appunto salvato.</div></div>";
-            } else {
-                containerAppunti.innerHTML = salvati.appunti.map(a => {
-                    const coverHTML = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
-                    const autore = a.username ? `@${a.username}` : 'Anonimo';
-                    return `
+            if (salvati.appunti.length > 0) {
+                contA.innerHTML = salvati.appunti.map(a => `
                     <div class="note-card">
-                        <div class="note-thumb">${coverHTML}</div>
+                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '📄'}</div>
                         <div class="note-info">
                             <div class="note-title">${a.titolo}</div>
-                            <div class="note-meta">${a.materia} • di ${autore}</div>
-                            <div class="note-actions">
-                                <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
-                            </div>
+                            <div class="note-meta">${a.materia} • @${a.username || 'Anonimo'}</div>
+                            <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
                         </div>
-                    </div>`;
-                }).join('');
-            }
+                    </div>`).join('');
+            } else { contA.innerHTML = "<div class='empty-state'>Nessun appunto salvato.</div>"; }
 
-            // Render Podcast
-            if (salvati.podcast.length === 0) {
-                containerPodcast.innerHTML = "<div class='empty-state' style='padding:40px 20px;'><div class='empty-text'>Nessun podcast salvato.</div></div>";
-            } else {
-                containerPodcast.innerHTML = salvati.podcast.map(p => {
-                    const coverHTML = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
-                    const autore = p.username ? `@${p.username}` : 'Anonimo';
-                    return `
+            if (salvati.podcast.length > 0) {
+                contP.innerHTML = salvati.podcast.map(p => `
                     <div class="note-card">
-                        <div class="note-thumb">${coverHTML}</div>
+                        <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '🎙️'}</div>
                         <div class="note-info">
                             <div class="note-title">${p.titolo}</div>
-                            <div class="note-meta">${p.categoria} • di ${autore}</div>
-                            <audio controls style="width:100%; height:35px; margin-top:10px;">
-                                <source src="${p.audio_url}" type="audio/mpeg">
-                            </audio>
+                            <div class="note-meta">${p.categoria} • @${p.username || 'Anonimo'}</div>
+                            <audio controls style="width:100%; height:35px; margin-top:10px;"><source src="${p.audio_url}" type="audio/mpeg"></audio>
                         </div>
-                    </div>`;
-                }).join('');
-            }
+                    </div>`).join('');
+            } else { contP.innerHTML = "<div class='empty-state'>Nessun podcast salvato.</div>"; }
 
-        } catch (err) {
-            console.error(err);
-            if(containerAppunti) containerAppunti.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
-        }
+        } catch (err) {}
     }
 
     // ── GESTIONE PLAYLIST ──
     window.caricaPlaylists = async function() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaPlaylists');
-        if (!utenteId) {
-            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi essere loggato per vedere le playlist.</div></div>";
-            return;
-        }
+        if (!utenteId) return container.innerHTML = "<div class='empty-state'>Effettua il login per le playlist.</div>";
 
         try {
             const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error("Errore API");
             const playlists = await res.json();
 
-            if (playlists.length === 0) {
-                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora creato nessuna raccolta.</div></div>";
-                return;
-            }
+            if (playlists.length === 0) return container.innerHTML = "<div class='empty-state'>Nessuna raccolta creata.</div>";
 
             container.innerHTML = playlists.map(pl => `
                 <div class="note-card" style="padding: 20px; text-align: center; justify-content: center; background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);">
                     <div style="font-size: 3rem; margin-bottom: 10px;">📂</div>
                     <div class="note-title" style="font-size: 1.3rem;">${pl.titolo}</div>
-                    <div class="note-meta">${pl.numero_appunti || 0} elementi salvati</div>
-                    <button class="btn-small btn-open" style="margin-top: 15px; width: 100%;">Vedi Contenuto</button>
+                    <div class="note-meta">${pl.numero_appunti || 0} elementi</div>
+                    <button class="btn-small btn-open" style="margin-top: 15px; width: 100%;" onclick="apriContenutoPlaylist(${pl.id}, '${pl.titolo.replace(/'/g, "\\'")}')">Vedi Contenuto</button>
                 </div>
             `).join('');
-        } catch (err) {
-            console.error(err);
-            container.innerHTML = "<div class='empty-state'>Errore di caricamento.</div>";
-        }
+        } catch (err) { container.innerHTML = "<div class='empty-state'>Errore caricamento.</div>"; }
     }
 
     window.creaPlaylist = async function() {
@@ -777,83 +640,89 @@
         const titolo = inputTitolo.value.trim();
 
         if (!utenteId) return alert("Devi essere loggato!");
-        if (!titolo) return alert("Inserisci un nome per la playlist!");
+        if (!titolo) return alert("Inserisci un nome!");
 
         try {
             const res = await fetch('/api/playlists', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo: titolo })
             });
+            if (res.ok) { inputTitolo.value = ""; caricaPlaylists(); }
+        } catch (err) { console.error(err); }
+    }
 
-            if (res.ok) {
-                inputTitolo.value = "";
-                caricaPlaylists(); // Ricarica la lista per mostrare la nuova playlist
-            } else {
-                alert("Errore nella creazione della playlist.");
+    // ── APRI IL CONTENUTO DI UNA PLAYLIST ──
+    window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
+        document.getElementById('vistaElencoPlaylists').style.display = 'none';
+        document.getElementById('vistaContenutoPlaylist').style.display = 'block';
+        document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
+        
+        const container = document.getElementById('grigliaContenutoPlaylist');
+        container.innerHTML = "<p style='color:var(--muted);'>Caricamento in corso...</p>";
+
+        try {
+            const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
+            if (!res.ok) throw new Error("Errore API");
+            const appunti = await res.json();
+
+            if (appunti.length === 0) {
+                container.innerHTML = "<div class='empty-state'>Questa cartella è vuota. Trova appunti in Esplora per aggiungerli!</div>";
+                return;
             }
+
+            container.innerHTML = appunti.map(a => {
+                const cover = a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+                return `
+                <div class="note-card">
+                    <div class="note-thumb">${cover}</div>
+                    <div class="note-info">
+                        <div class="note-title">${a.titolo}</div>
+                        <div class="note-meta">${a.materia} • @${a.username || 'Anonimo'}</div>
+                        <div class="note-actions">
+                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
         } catch (err) {
             console.error(err);
+            container.innerHTML = "<div class='empty-state'>Errore nel caricamento degli appunti.</div>";
         }
     }
 
-    // ── ELIMINA PROPRIO APPUNTO ──
-    window.eliminaAppunto = async function(appuntoId) {
-        let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi essere loggato.");
-        if (!confirm("Sei sicuro di voler eliminare questo appunto?")) return;
+    window.tornaAllePlaylists = function() {
+        document.getElementById('vistaContenutoPlaylist').style.display = 'none';
+        document.getElementById('vistaElencoPlaylists').style.display = 'block';
+        caricaPlaylists(); // Aggiorna i contatori
+    }
 
+    // ── ELIMINA SINGOLI (MIEI) ──
+    window.eliminaAppunto = async function(id) {
+        if (!confirm("Sei sicuro?")) return;
         try {
-            const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Errore eliminazione");
-
-            const notaCard = document.getElementById(`nota-${appuntoId}`);
-            if (notaCard) notaCard.remove();
-            
-            let cont = parseInt(document.getElementById('statAppunti').textContent);
-            if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
-            
-            const container = document.getElementById('listaMieiAppunti');
-            if (container.children.length === 0) caricaMieiAppunti(); 
-        } catch (err) {
-            alert("❌ Non è stato possibile eliminare l'appunto.");
-        }
+            await fetch(`/api/appunti?id=${id}`, { method: 'DELETE' });
+            document.getElementById(`nota-${id}`).remove();
+        } catch (e) {}
     }
-
-    // ── ELIMINA PROPRIO PODCAST ──
-    window.eliminaPodcast = async function(podcastId) {
-        let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi essere loggato.");
-        if (!confirm("Sei sicuro di voler eliminare questo podcast?")) return;
-
+    window.eliminaPodcast = async function(id) {
+        if (!confirm("Sei sicuro?")) return;
         try {
-            const res = await fetch(`/api/podcast?id=${podcastId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Errore eliminazione");
-
-            const notaCard = document.getElementById(`mio-podcast-${podcastId}`);
-            if (notaCard) notaCard.remove();
-            
-            let cont = parseInt(document.getElementById('statAppunti').textContent);
-            if(cont > 0) document.getElementById('statAppunti').textContent = cont - 1;
-
-            const container = document.getElementById('listaMieiPodcast');
-            if (container.children.length === 0) caricaMieiPodcast(); 
-        } catch (err) {
-            alert("❌ Non è stato possibile eliminare il podcast.");
-        }
+            await fetch(`/api/podcast?id=${id}`, { method: 'DELETE' });
+            document.getElementById(`mio-podcast-${id}`).remove();
+        } catch (e) {}
     }
 
-    // ── AVVIO INIZIALE DEL PROFILO ──
+    // ── AVVIO ──
     document.addEventListener('DOMContentLoaded', async () => {
         const btnLogin = document.getElementById('navLoginBtn');
         if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
 
-        // Avviamo tutte le funzioni di caricamento
         await aggiornaHeaderProfilo();
         caricaMieiAppunti();
         caricaMieiPodcast();
         caricaAppuntiSalvati(); 
-        caricaPlaylists(); // <-- Richiama la funzione delle playlist
+        caricaPlaylists(); 
     });
 </script>
 

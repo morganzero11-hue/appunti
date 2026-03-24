@@ -2,32 +2,51 @@ const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
-    // GET: Recupera le playlist dell'utente
+    // GET: Recupera dati
     if (req.method === 'GET') {
-        const { utente_id } = req.query;
-        if (!utente_id) return res.status(400).json({ error: "Utente ID mancante" });
+        const { utente_id, playlist_id } = req.query;
 
         try {
-            const query = `
-                SELECT p.*, COUNT(pe.id) as numero_appunti 
-                FROM playlists p
-                LEFT JOIN playlist_elementi pe ON p.id = pe.playlist_id
-                WHERE p.utente_id = $1
-                GROUP BY p.id
-                ORDER BY p.data_creazione DESC
-            `;
-            const result = await pool.query(query, [utente_id]);
-            return res.status(200).json(result.rows);
+            // CASO A: Se passi playlist_id, restituisce gli APPUNTI DENTRO quella playlist
+            if (playlist_id) {
+                const query = `
+                    SELECT a.*, u.username, u.nome, u.cognome, u.foto_profilo_url, pe.id as collegamento_id
+                    FROM playlist_elementi pe
+                    JOIN appunti a ON pe.appunto_id = a.id
+                    LEFT JOIN utenti u ON a.utente_id::text = u.id::text
+                    WHERE pe.playlist_id = $1
+                    ORDER BY pe.id DESC
+                `;
+                const result = await pool.query(query, [playlist_id]);
+                return res.status(200).json(result.rows);
+            }
+
+            // CASO B: Se passi utente_id, restituisce L'ELENCO DELLE PLAYLIST dell'utente
+            if (utente_id) {
+                const query = `
+                    SELECT p.*, COUNT(pe.id) as numero_appunti 
+                    FROM playlists p
+                    LEFT JOIN playlist_elementi pe ON p.id = pe.playlist_id
+                    WHERE p.utente_id = $1
+                    GROUP BY p.id
+                    ORDER BY p.data_creazione DESC
+                `;
+                const result = await pool.query(query, [utente_id]);
+                return res.status(200).json(result.rows);
+            }
+
+            return res.status(400).json({ error: "Manca utente_id o playlist_id" });
+
         } catch (err) {
             return res.status(500).json({ error: err.message });
         }
     }
 
-    // POST: Unico comando per CREARE o SALVARE
+    // POST: Crea o Aggiunge elementi
     if (req.method === 'POST') {
         const { utente_id, titolo, playlist_id, appunto_id } = req.body;
 
-        // CASO A: Se mi mandi playlist_id e appunto_id -> Salva l'appunto nella cartella
+        // Aggiungi un appunto alla playlist
         if (playlist_id && appunto_id) {
             try {
                 const check = await pool.query('SELECT * FROM playlist_elementi WHERE playlist_id = $1 AND appunto_id = $2', [playlist_id, appunto_id]);
@@ -40,7 +59,7 @@ export default async function handler(req, res) {
             }
         }
 
-        // CASO B: Se mi mandi utente_id e titolo -> Crea una nuova cartella
+        // Crea una nuova playlist vuota
         if (utente_id && titolo) {
             try {
                 await pool.query('INSERT INTO playlists (utente_id, titolo) VALUES ($1, $2)', [utente_id, titolo]);
