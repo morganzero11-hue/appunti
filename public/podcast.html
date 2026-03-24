@@ -29,38 +29,56 @@
         /* ─── MAIN CONTENT ─── */
         .main-content { padding: calc(var(--nav-h) + 40px) 20px 40px; max-width: 1200px; margin: 0 auto; }
         
-        .header-pod { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;}
+        .header-pod { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 20px;}
         .header-pod h1 { font-family: 'Fraunces', serif; font-size: 2.5rem; }
         .btn-upload { background: var(--accent); color: #000; padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; transition: transform 0.2s;}
         .btn-upload:hover { transform: translateY(-2px); }
 
+        /* NUOVO: Filtri di Ricerca */
+        .filters-container { display: flex; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; }
+        .filters-container input, .filters-container select { 
+            padding: 12px 16px; border-radius: 12px; border: 1px solid var(--surface2); 
+            background: var(--surface); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
+            flex: 1; min-width: 180px; outline: none; transition: border-color 0.2s;
+        }
+        .filters-container input:focus, .filters-container select:focus { border-color: var(--accent); }
+
         /* Griglia Podcast */
         .pod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
-        .pod-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
+        .pod-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
         .pod-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
         .pod-cover { height: 200px; background: var(--surface2); background-size: cover; background-position: center; position: relative; }
         .pod-info { padding: 24px; flex: 1; display: flex; flex-direction: column; }
         .pod-category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 8px; }
         .pod-title { font-family: 'Fraunces', serif; font-size: 1.4rem; margin-bottom: 8px; line-height: 1.2; }
         .pod-author { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; font-weight: 600;}
-        .pod-desc { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 24px; line-height: 1.5; flex: 1;}
-        .pod-audio { width: 100%; border-radius: 30px; }
+        .pod-desc { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 16px; line-height: 1.5; flex: 1;}
+        .pod-audio { width: 100%; border-radius: 30px; margin-top: 10px; }
         
+        /* NUOVO: Bottone Like */
+        .btn-like { 
+            margin-top: 15px; background: transparent; border: 1px solid rgba(255,77,109,0.3); 
+            color: var(--accent2); padding: 8px 16px; border-radius: 8px; cursor: pointer; 
+            font-weight: bold; font-family: 'Cabinet Grotesk', sans-serif; transition: all 0.2s; width: fit-content;
+        }
+        .btn-like:hover { background: rgba(255,77,109,0.1); transform: scale(1.05); }
+
         /* Modal Upload */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.open { display: flex; }
-        .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 32px; width: 520px; max-width: 95vw; }
+        /* Aggiunto scroll al modal nel caso lo schermo sia piccolo */
+        .modal { background: var(--surface); border: 1px solid var(--surface2); border-radius: 20px; padding: 32px; width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
         .modal__title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 24px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--surface2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-        .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; position: relative; }
+        .file-input-wrapper { background: var(--surface2); border: 2px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; position: relative; }
         .file-input-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
         .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
         .modal__btn { flex: 1; padding: 14px; border-radius: 11px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800; cursor: pointer; border: none; }
         .modal__btn--accent { background: var(--accent); color: #0f0f0f; }
-        .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+        .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1 / -1; }
     </style>
@@ -83,6 +101,23 @@
     <div class="header-pod">
         <h1>🎙️ Libreria Podcast</h1>
         <button class="btn-upload" onclick="document.getElementById('uploadModal').classList.add('open')">✦ Carica Episodio</button>
+    </div>
+
+    <div class="filters-container">
+        <input type="text" id="searchTitolo" placeholder="🔍 Cerca per titolo o descr..." oninput="applicaFiltri()">
+        
+        <select id="filterCategoria" onchange="applicaFiltri()">
+            <option value="">Tutte le categorie</option>
+            <option value="Storia">Storia</option>
+            <option value="Scienze">Scienze</option>
+            <option value="Letteratura">Letteratura</option>
+            <option value="Filosofia">Filosofia</option>
+            <option value="Motivazionale">Motivazionale</option>
+            <option value="Altro">Altro</option>
+        </select>
+
+        <input type="text" id="filterScuola" placeholder="🏫 Cerca per scuola..." oninput="applicaFiltri()">
+        <input type="text" id="filterFonti" placeholder="📚 Cerca libro/fonti..." oninput="applicaFiltri()">
     </div>
 
     <div class="pod-grid" id="podcastFeed">
@@ -112,8 +147,17 @@
         </div>
 
         <div class="form-group">
+            <label>Scuola dell'Utente (Opzionale)</label>
+            <input type="text" id="podScuola" placeholder="Es: Liceo Scientifico Galilei">
+        </div>
+
+        <div class="form-group">
+            <label>Libro di testo / Fonti (Opzionale)</label>
+            <input type="text" id="podFonti" placeholder="Es: Il manuale di Storia vol. 2">
+        </div>
+        <div class="form-group">
             <label>Descrizione Breve</label>
-            <textarea id="podDesc" rows="3" placeholder="Di cosa parla questo episodio?"></textarea>
+            <textarea id="podDesc" rows="2" placeholder="Di cosa parla questo episodio?"></textarea>
         </div>
         
         <div class="form-group">

@@ -2,10 +2,11 @@ const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
-    // GET: Recupera tutti i podcast (o quelli di un utente specifico)
+    // GET: Recupera tutti i podcast
     if (req.method === 'GET') {
         const { utente_id } = req.query;
         try {
+            // Nota che p.* prenderà in automatico anche le nuove colonne 'scuola' e 'fonti'
             let query = `
                 SELECT p.*, u.username, u.foto_profilo_url 
                 FROM podcast p 
@@ -29,16 +30,26 @@ export default async function handler(req, res) {
 
     // POST: Carica un nuovo podcast
     if (req.method === 'POST') {
-        const { utente_id, titolo, descrizione, categoria, audio_url, cover_url } = req.body;
+        const { utente_id, titolo, descrizione, categoria, scuola, fonti, audio_url, cover_url } = req.body;
         
         if (!utente_id || !titolo || !audio_url) {
             return res.status(400).json({ error: "Dati mancanti" });
         }
 
         try {
+            // AGGIORNATO l'INSERT per includere le nuove colonne
             await pool.query(
-                'INSERT INTO podcast (utente_id, titolo, descrizione, categoria, audio_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
-                [utente_id, titolo, descrizione || null, categoria || 'Generale', audio_url, cover_url || null]
+                'INSERT INTO podcast (utente_id, titolo, descrizione, categoria, scuola, fonti, audio_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+                [
+                    utente_id, 
+                    titolo, 
+                    descrizione || null, 
+                    categoria || 'Generale', 
+                    scuola || null,   // Salva la scuola
+                    fonti || null,    // Salva le fonti
+                    audio_url, 
+                    cover_url || null
+                ]
             );
             return res.status(201).json({ success: true });
         } catch (err) {
