@@ -230,13 +230,6 @@
         "Biologia":"🧬","Geometria":"📐"
     };
 
-    // Array fittizio di ricerche "popolari" nel caso la cronologia sia vuota
-    const ricerchePopolari = [
-        { nome: "Mario", cognome: "Rossi", username: "mariorossi", foto_profilo_url: null },
-        { nome: "Giulia", cognome: "Bianchi", username: "giuliab_99", foto_profilo_url: null },
-        { nome: "Prof.", cognome: "Matematica", username: "matematicaprof", foto_profilo_url: null }
-    ];
-
     const usernameUrl = new URLSearchParams(window.location.search).get('user') || '';
 
     // --- GESTIONE CRONOLOGIA ---
@@ -328,12 +321,9 @@
                 ${history.map(u => generaHtmlUtente(u, true)).join('')}
             `;
         } else {
-            // Se non c'è cronologia, mostriamo gli account popolari
+            // Se non c'è cronologia mostriamo un messaggio vuoto invece dei profili fittizi
             box.innerHTML = `
-                <div class="results-header">
-                    <h3 class="results-label">Profili Popolari 🔥</h3>
-                </div>
-                ${ricerchePopolari.map(u => generaHtmlUtente(u, false)).join('')}
+                <div class="empty">Inizia a scrivere per cercare qualcuno...</div>
             `;
         }
     }
