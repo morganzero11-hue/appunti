@@ -105,7 +105,6 @@
             text-align: center;
         }
 
-        /* Mesh gradient background */
         .hero::before {
             content: '';
             position: absolute; inset: 0;
@@ -115,7 +114,6 @@
                 radial-gradient(ellipse 500px 500px at 60% 90%, var(--hero-grad-accent3) 0%, transparent 60%);
         }
 
-        /* Dot grid */
         .hero::after {
             content: '';
             position: absolute; inset: 0;
@@ -162,7 +160,6 @@
             animation: fadeUp .8s .2s cubic-bezier(.22,1,.36,1) both;
         }
 
-        /* Waveform decoration */
         .hero__wave {
             margin-top: 40px; display: flex; align-items: center; justify-content: center;
             gap: 4px; height: 48px;
@@ -191,7 +188,6 @@
             max-width: 1200px; margin: 0 auto; padding: 0 28px;
         }
 
-        /* ─── SEZIONE IN EVIDENZA ─── */
         .section-header {
             display: flex; align-items: flex-end; justify-content: space-between;
             margin-bottom: 28px;
@@ -211,7 +207,6 @@
             font-weight: 900; letter-spacing: -0.5px; line-height: 1;
         }
 
-        /* ─── FEATURED SECTION ─── */
         .featured-section {
             margin-bottom: 64px; display: none;
         }
@@ -293,7 +288,6 @@
         }
         body.light-theme .pod-card:hover { border-color: var(--accent); }
 
-        /* Featured card variant */
         .featured-card {
             border-color: var(--accent-glow);
         }
@@ -313,7 +307,6 @@
             overflow: hidden;
         }
 
-        /* Gradient overlay on cover */
         .pod-cover::after {
             content: '';
             position: absolute; inset: 0;
@@ -331,7 +324,6 @@
             font-size: 3.5rem; opacity: 0.3; position: relative; z-index: 1;
         }
 
-        /* Featured badge */
         .featured-badge {
             position: absolute; top: 14px; right: 14px; z-index: 10;
             background: var(--accent); color: #0a0a0a;
@@ -343,7 +335,6 @@
         }
         body.light-theme .featured-badge { color: #fff; }
 
-        /* Waveform bars on cover (decorative) */
         .pod-cover-wave {
             position: absolute; bottom: 14px; left: 16px; z-index: 10;
             display: flex; align-items: flex-end; gap: 3px; height: 24px;
@@ -530,7 +521,9 @@
         }
     </script>
 </head>
-<body class=""> <nav class="topnav">
+<body class="">
+
+<nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
@@ -633,19 +626,16 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    /* ── Recupero il tema e controlli login all'avvio ── */
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
             document.body.classList.add('light-theme');
         }
-        
         if (document.cookie.includes('username=')) {
             const loginBtn = document.getElementById('navLoginBtn');
             if(loginBtn) loginBtn.style.display = 'none';
         }
     });
 
-    /* ── Waveform animata nell'hero ── */
     (function buildWave() {
         const w = document.getElementById('heroWave');
         const heights = [12,22,34,28,16,40,32,18,44,26,14,38,30,20,42,24,16,36,28,12,40];
@@ -659,7 +649,6 @@
         });
     })();
 
-    /* ── Toast Utility ── */
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -669,22 +658,16 @@
 </script>
 
 <script>
-    /* ── Override creaCardHTML per aggiungere il tasto Playlist ── */
-    let podcastAttualeSelezionato = null; // Variabile globale per ricordare quale podcast stiamo salvando
+    let podcastAttualeSelezionato = null;
 
+    /* ── Override creaCardHTML per aggiungere il tasto Playlist ── */
     function creaCardHTML(p, isFeatured) {
         const hasCover = p.cover_url;
-        const coverStyle = hasCover
-            ? `background-image: url('${p.cover_url}'); background-size: cover; background-position: center;`
-            : '';
-
+        const coverStyle = hasCover ? `background-image: url('${p.cover_url}'); background-size: cover; background-position: center;` : '';
         const autore = p.username ? `@${p.username}` : 'Anonimo';
         const testoScuola = p.scuola ? ` · 🏫 ${p.scuola}` : '';
-        const testoFonti = p.fonti
-            ? `<div class="pod-fonti">📚 ${p.fonti}</div>`
-            : '';
+        const testoFonti = p.fonti ? `<div class="pod-fonti">📚 ${p.fonti}</div>` : '';
 
-        // Controlla se 'mieiLikesPodcast' esiste (viene gestita dentro podcast.js)
         const isLiked = typeof mieiLikesPodcast !== 'undefined' ? mieiLikesPodcast.includes(p.id) : false;
         const iconaCuore = isLiked ? '❤️' : '🤍';
         const stileBottone = isLiked ? 'background:rgba(255,77,109,0.12);border-color:rgba(255,77,109,0.3);color:var(--accent2);' : '';
@@ -693,21 +676,14 @@
         const badgeHTML = isFeatured ? `<div class="featured-badge">TOP 🔥</div>` : '';
         const btnId = isFeatured ? `btn-like-top-${p.id}` : `btn-like-${p.id}`;
 
-        /* Mini waveform decorativa sulla cover */
         const waveHeights = [10,16,22,14,20,8,18,24,12,20,16,10,22];
-        const waveHTML = `<div class="pod-cover-wave">
-            ${waveHeights.map(h => `<span style="height:${h}px"></span>`).join('')}
-        </div>`;
+        const waveHTML = `<div class="pod-cover-wave">${waveHeights.map(h => `<span style="height:${h}px"></span>`).join('')}</div>`;
 
         const coverContent = hasCover
             ? `<div class="pod-cover" style="${coverStyle}">${badgeHTML}${waveHTML}</div>`
-            : `<div class="pod-cover pod-cover--empty">
-                   ${badgeHTML}
-                   <span class="pod-cover--empty-icon">🎙️</span>
-                   ${waveHTML}
-               </div>`;
+            : `<div class="pod-cover pod-cover--empty">${badgeHTML}<span class="pod-cover--empty-icon">🎙️</span>${waveHTML}</div>`;
 
-        // AGGIUNTO: Tasto per le playlist
+        // AGGIUNTO: Classe .like-row con display: flex; e il pulsante per le playlist a fianco a Mi Piace
         return `
         <div class="${cardClass}">
             ${coverContent}
@@ -723,17 +699,16 @@
                 </audio>
                 <div class="like-row">
                     <button id="${btnId}" class="btn-like" style="${stileBottone}" onclick="mettiMiPiace(${p.id}, '${btnId}')">
-                        ${iconaCuore} Mi piace
+                        ${iconaCuore} Mi Piace
                     </button>
                     <button class="btn-playlist" onclick="apriModalePlaylist(${p.id})">
-                        [+] Salva
+                        📁 Salva
                     </button>
                 </div>
             </div>
         </div>`;
     }
 
-    /* ── LOGICA MODALE PLAYLIST (Integrata per la pagina Podcast) ── */
     function getCookie(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -774,7 +749,7 @@
             `).join('');
 
         } catch (error) {
-            container.innerHTML = '<p style="color:var(--red); font-size:0.9rem; text-align:center;">Impossibile caricare le playlist.</p>';
+            container.innerHTML = '<p style="color:var(--accent2); font-size:0.9rem; text-align:center;">Impossibile caricare le playlist.</p>';
         }
     }
 
@@ -792,7 +767,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     playlist_id: playlistId,
-                    appunto_id: podcastAttualeSelezionato // Il backend dovrà supportare il salvataggio dei podcast nelle playlist
+                    appunto_id: podcastAttualeSelezionato // Il backend deve supportare questa opzione
                 })
             });
 
