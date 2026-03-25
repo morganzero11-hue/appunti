@@ -106,8 +106,7 @@
         }
 
         .hero::before {
-            content: '';
-            position: absolute; inset: 0;
+            content: ''; position: absolute; inset: 0;
             background:
                 radial-gradient(ellipse 600px 400px at 20% 50%, var(--hero-grad-accent) 0%, transparent 60%),
                 radial-gradient(ellipse 400px 300px at 80% 30%, var(--hero-grad-accent2) 0%, transparent 60%),
@@ -115,8 +114,7 @@
         }
 
         .hero::after {
-            content: '';
-            position: absolute; inset: 0;
+            content: ''; position: absolute; inset: 0;
             background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 28px 28px;
         }
@@ -148,9 +146,7 @@
         }
 
         .hero__title em {
-            font-style: italic;
-            color: transparent;
-            -webkit-text-stroke: 1.5px var(--accent);
+            font-style: italic; color: transparent; -webkit-text-stroke: 1.5px var(--accent);
         }
 
         .hero__sub {
@@ -207,9 +203,7 @@
             font-weight: 900; letter-spacing: -0.5px; line-height: 1;
         }
 
-        .featured-section {
-            margin-bottom: 64px; display: none;
-        }
+        .featured-section { margin-bottom: 64px; display: none; }
 
         .featured-grid {
             display: grid;
@@ -217,7 +211,6 @@
             gap: 20px;
         }
 
-        /* ─── FILTERS SECTION ─── */
         .filters-section { margin-bottom: 40px; }
 
         .filters-card {
@@ -229,9 +222,7 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .filter-group {
-            position: relative; flex: 1; min-width: 180px;
-        }
+        .filter-group { position: relative; flex: 1; min-width: 180px; }
 
         .filter-icon {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -240,97 +231,69 @@
 
         .filters-card input,
         .filters-card select {
-            width: 100%;
-            padding: 11px 14px 11px 38px;
-            border-radius: 12px;
-            border: 1.5px solid var(--border2);
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.88rem; font-weight: 600;
-            outline: none;
+            width: 100%; padding: 11px 14px 11px 38px; border-radius: 12px;
+            border: 1.5px solid var(--border2); background: var(--bg);
+            color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.88rem; font-weight: 600; outline: none;
             transition: border-color .2s, background .2s, box-shadow .2s;
         }
 
         .filters-card input::placeholder { color: var(--muted); }
-        .filters-card input:focus,
-        .filters-card select:focus {
-            border-color: var(--accent);
-            background: var(--accent-glow);
+        .filters-card input:focus, .filters-card select:focus {
+            border-color: var(--accent); background: var(--accent-glow);
             box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
         }
 
         .filters-card select { cursor: pointer; }
         .filters-card select option { background: var(--surface); color: var(--text); }
 
-        /* ─── POD GRID ─── */
+        /* ─── POD GRID E CARDS ─── */
         .pod-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
 
-        /* ─── POD CARD ─── */
         .pod-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: transform .3s ease, border-color .3s, box-shadow .3s;
-            position: relative;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;
+            transition: transform .3s ease, border-color .3s, box-shadow .3s; position: relative;
         }
 
         .pod-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--border2);
-            box-shadow: 0 20px 50px var(--shadow-color-hover);
+            transform: translateY(-6px); border-color: var(--border2); box-shadow: 0 20px 50px var(--shadow-color-hover);
         }
         body.light-theme .pod-card:hover { border-color: var(--accent); }
 
-        .featured-card {
-            border-color: var(--accent-glow);
-        }
-
+        .featured-card { border-color: var(--accent-glow); }
         .featured-card:hover {
             border-color: var(--accent);
             box-shadow: 0 20px 50px var(--shadow-color-hover), 0 0 0 1px rgba(200,240,96,0.1);
         }
 
-        /* Cover image */
         .pod-cover {
-            height: 200px;
-            background: var(--surface2);
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
+            height: 200px; background: var(--surface2); background-size: cover;
+            background-position: center; position: relative; overflow: hidden;
         }
 
         .pod-cover::after {
-            content: '';
-            position: absolute; inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(to top, var(--cover-gradient-start) 0%, transparent 50%);
         }
 
         .pod-cover--empty {
-            display: flex; align-items: center; justify-content: center;
-            background: var(--surface2);
+            display: flex; align-items: center; justify-content: center; background: var(--surface2);
         }
         body.light-theme .pod-cover--empty { background: linear-gradient(135deg, #e9ecef 0%, #f1f3f5 100%); }
         body:not(.light-theme) .pod-cover--empty { background: linear-gradient(135deg, #161616 0%, #202020 100%); }
 
-        .pod-cover--empty-icon {
-            font-size: 3.5rem; opacity: 0.3; position: relative; z-index: 1;
-        }
+        .pod-cover--empty-icon { font-size: 3.5rem; opacity: 0.3; position: relative; z-index: 1; }
 
         .featured-badge {
             position: absolute; top: 14px; right: 14px; z-index: 10;
-            background: var(--accent); color: #0a0a0a;
-            padding: 5px 12px; border-radius: 20px;
-            font-size: 0.72rem; font-weight: 800;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            letter-spacing: 0.3px;
+            background: var(--accent); color: #0a0a0a; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.72rem; font-weight: 800;
+            font-family: 'Cabinet Grotesk', sans-serif; letter-spacing: 0.3px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         body.light-theme .featured-badge { color: #fff; }
@@ -339,16 +302,12 @@
             position: absolute; bottom: 14px; left: 16px; z-index: 10;
             display: flex; align-items: flex-end; gap: 3px; height: 24px;
         }
-
         .pod-cover-wave span {
             display: block; width: 3px; border-radius: 2px;
             background: var(--accent); opacity: 0.8;
         }
 
-        /* Info area */
-        .pod-info {
-            padding: 22px; flex: 1; display: flex; flex-direction: column; gap: 0;
-        }
+        .pod-info { padding: 22px; flex: 1; display: flex; flex-direction: column; gap: 0; }
 
         .pod-category {
             font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
@@ -357,105 +316,71 @@
 
         .pod-title {
             font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900;
-            line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.3px;
-            color: var(--text);
+            line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.3px; color: var(--text);
         }
 
         .pod-author {
             font-size: 0.82rem; color: var(--muted); font-weight: 700;
             margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
         }
-
         .pod-author::before {
-            content: '';
-            display: inline-block; width: 6px; height: 6px;
+            content: ''; display: inline-block; width: 6px; height: 6px;
             border-radius: 50%; background: var(--accent); flex-shrink: 0;
         }
 
         .pod-desc {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.88rem; color: var(--muted);
+            font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--muted);
             line-height: 1.6; margin-bottom: 14px; flex: 1;
         }
 
         .pod-fonti {
-            font-size: 0.78rem; color: var(--accent);
-            margin-bottom: 14px; font-weight: 700;
+            font-size: 0.78rem; color: var(--accent); margin-bottom: 14px; font-weight: 700;
             display: flex; align-items: center; gap: 6px;
         }
 
-        /* Custom audio player */
         .pod-audio {
-            width: 100%; height: 36px;
-            border-radius: 30px;
-            margin-bottom: 16px;
-            accent-color: var(--accent);
-            filter: var(--audio-invert);
+            width: 100%; height: 36px; border-radius: 30px; margin-bottom: 16px;
+            accent-color: var(--accent); filter: var(--audio-invert);
         }
+        audio::-webkit-media-controls-panel { background: var(--surface3); }
 
-        audio::-webkit-media-controls-panel {
-            background: var(--surface3);
-        }
-
-        /* Like & Playlist row */
-        .like-row {
-            display: flex; align-items: center; gap: 8px; margin-top: auto;
+        /* ─── BOTTONI: LIKE & PLAYLIST ─── */
+        .actions-row {
+            display: flex; align-items: center; gap: 10px; margin-top: auto;
         }
 
         .btn-like, .btn-playlist {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: var(--surface2);
-            border: 1px solid var(--border2);
-            color: var(--muted);
-            padding: 9px 18px; border-radius: 12px;
-            cursor: pointer; font-weight: 800; font-size: 0.85rem;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            transition: all .2s;
-            flex: 1;
-            justify-content: center;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            background: var(--surface2); border: 1px solid var(--border2); color: var(--muted);
+            padding: 9px 0; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.85rem;
+            font-family: 'Cabinet Grotesk', sans-serif; transition: all .2s; flex: 1;
         }
 
         .btn-like:hover {
-            background: rgba(255,77,109,0.12);
-            border-color: rgba(255,77,109,0.3);
-            color: var(--accent2);
-            transform: translateY(-1px);
+            background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3);
+            color: var(--accent2); transform: translateY(-1px);
         }
 
         .btn-playlist:hover {
-            background: var(--accent-glow);
-            border-color: var(--accent);
-            color: var(--accent);
-            transform: translateY(-1px);
+            background: var(--accent-glow); border-color: rgba(200,240,96,0.3);
+            color: var(--accent); transform: translateY(-1px);
         }
 
-        .btn-like--liked,
-        .btn-like[style*="rgba(255,77,109"] {
+        .btn-like--liked, .btn-like[style*="rgba(255,77,109"] {
             background: rgba(255,77,109,0.1) !important;
             border-color: rgba(255,77,109,0.3) !important;
             color: var(--accent2) !important;
         }
 
-        /* ─── EMPTY STATE ─── */
         .empty-state {
-            grid-column: 1 / -1; text-align: center;
-            padding: 80px 40px; color: var(--muted);
+            grid-column: 1 / -1; text-align: center; padding: 80px 40px; color: var(--muted);
         }
-
         .empty-state__icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
-
         .empty-state h3 {
-            font-family: 'Fraunces', serif; font-size: 1.4rem;
-            font-weight: 900; color: var(--text); margin-bottom: 8px;
+            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: var(--text); margin-bottom: 8px;
         }
 
-        .empty-state p { font-size: 0.9rem; line-height: 1.6; }
-
-        /* ─── DIVIDER ─── */
-        .section-divider {
-            border: none; border-top: 1px solid var(--border);
-            margin: 0 0 60px;
-        }
+        .section-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 60px; }
 
         /* ─── PLAYLIST MODAL ─── */
         .modal-overlay {
@@ -509,8 +434,7 @@
         @media (max-width: 768px) {
             .hero { padding: 60px 20px 50px; }
             .main-content { padding: 0 16px; }
-            .featured-grid,
-            .pod-grid { grid-template-columns: 1fr; }
+            .featured-grid, .pod-grid { grid-template-columns: 1fr; }
             .filters-card { flex-direction: column; }
             .filter-group { min-width: 100%; }
         }
@@ -539,18 +463,13 @@
 <header class="hero">
     <div class="hero__inner">
         <div class="hero__eyebrow">✦ Ascolta e impara</div>
-        <h1 class="hero__title">
-            Libreria<br><em>Podcast</em>
-        </h1>
-        <p class="hero__sub">
-            Spiegazioni vocali create da studenti come te. Ascolta mentre sei in giro, in treno, ovunque.
-        </p>
+        <h1 class="hero__title">Libreria<br><em>Podcast</em></h1>
+        <p class="hero__sub">Spiegazioni vocali create da studenti come te. Ascolta mentre sei in giro, in treno, ovunque.</p>
         <div class="hero__wave" id="heroWave"></div>
     </div>
 </header>
 
 <main class="main-content">
-
     <section class="featured-section" id="featuredSection">
         <div class="section-header">
             <div class="section-label">
@@ -604,7 +523,6 @@
             <h3>Caricamento podcast...</h3>
         </div>
     </div>
-
 </main>
 
 <div class="modal-overlay" id="modalPlaylist">
@@ -624,6 +542,8 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<script src="/js/podcast.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -655,20 +575,20 @@
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 3000);
     }
-</script>
 
-<script>
+    // Variabile globale per ricordare quale podcast stiamo salvando
     let podcastAttualeSelezionato = null;
 
-    /* ── Override creaCardHTML per aggiungere il tasto Playlist ── */
-    function creaCardHTML(p, isFeatured) {
+    // Questa è la chiave: forziamo window.creaCardHTML così sovrascrive al 100% quella in podcast.js
+    window.creaCardHTML = function(p, isFeatured) {
         const hasCover = p.cover_url;
         const coverStyle = hasCover ? `background-image: url('${p.cover_url}'); background-size: cover; background-position: center;` : '';
         const autore = p.username ? `@${p.username}` : 'Anonimo';
         const testoScuola = p.scuola ? ` · 🏫 ${p.scuola}` : '';
         const testoFonti = p.fonti ? `<div class="pod-fonti">📚 ${p.fonti}</div>` : '';
 
-        const isLiked = typeof mieiLikesPodcast !== 'undefined' ? mieiLikesPodcast.includes(p.id) : false;
+        // Controllo robusto: se la variabile mieiLikesPodcast non si è caricata, la mettiamo a false di default
+        const isLiked = (typeof window.mieiLikesPodcast !== 'undefined') ? window.mieiLikesPodcast.includes(p.id) : false;
         const iconaCuore = isLiked ? '❤️' : '🤍';
         const stileBottone = isLiked ? 'background:rgba(255,77,109,0.12);border-color:rgba(255,77,109,0.3);color:var(--accent2);' : '';
 
@@ -683,7 +603,7 @@
             ? `<div class="pod-cover" style="${coverStyle}">${badgeHTML}${waveHTML}</div>`
             : `<div class="pod-cover pod-cover--empty">${badgeHTML}<span class="pod-cover--empty-icon">🎙️</span>${waveHTML}</div>`;
 
-        // AGGIUNTO: Classe .like-row con display: flex; e il pulsante per le playlist a fianco a Mi Piace
+        // Ecco la riga incriminata! Questa deve apparire per forza.
         return `
         <div class="${cardClass}">
             ${coverContent}
@@ -697,7 +617,7 @@
                     <source src="${p.audio_url}" type="audio/mpeg">
                     Il browser non supporta l'audio.
                 </audio>
-                <div class="like-row">
+                <div class="actions-row">
                     <button id="${btnId}" class="btn-like" style="${stileBottone}" onclick="mettiMiPiace(${p.id}, '${btnId}')">
                         ${iconaCuore} Mi Piace
                     </button>
@@ -707,7 +627,7 @@
                 </div>
             </div>
         </div>`;
-    }
+    };
 
     function getCookie(name) {
         let value = `; ${document.cookie}`;
@@ -716,7 +636,8 @@
         return null;
     }
 
-    async function apriModalePlaylist(podcastId) {
+    // Dobbiamo renderla globale per lo stesso motivo
+    window.apriModalePlaylist = async function(podcastId) {
         const utenteId = getCookie('utente_id');
         if (!utenteId) {
             alert('Devi effettuare l\'accesso per salvare in una playlist.');
@@ -751,14 +672,14 @@
         } catch (error) {
             container.innerHTML = '<p style="color:var(--accent2); font-size:0.9rem; text-align:center;">Impossibile caricare le playlist.</p>';
         }
-    }
+    };
 
-    function chiudiModalPlaylist() {
+    window.chiudiModalPlaylist = function() {
         document.getElementById('modalPlaylist').classList.remove('open');
         podcastAttualeSelezionato = null;
-    }
+    };
 
-    async function salvaInPlaylistSelezionata(playlistId) {
+    window.salvaInPlaylistSelezionata = async function(playlistId) {
         if (!podcastAttualeSelezionato) return;
 
         try {
@@ -786,8 +707,14 @@
         } finally {
             chiudiModalPlaylist();
         }
-    }
+    };
+    
+    // Siccome podcast.js viene caricato *prima*, forziamo l'aggiornamento della grafica subito dopo aver sovrascritto la funzione!
+    window.addEventListener('load', () => {
+        if (typeof window.caricaPodcast === 'function') {
+            window.caricaPodcast(); // Ricarica le card usando la NOSTRA funzione
+        }
+    });
 </script>
-<script src="/js/podcast.js"></script>
 </body>
 </html>
