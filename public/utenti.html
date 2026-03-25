@@ -161,10 +161,32 @@
         .stat-card__n { display: block; font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 6px; }
         .stat-card__l { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
 
+        /* ─── TABS SWITCH ─── */
+        .tabs-container {
+            display: flex; gap: 10px; margin-bottom: 24px;
+            background: var(--surface); padding: 6px; border-radius: 12px;
+            border: 1px solid var(--border); width: max-content;
+        }
+        .tab-btn {
+            background: transparent; border: none; color: var(--muted);
+            padding: 8px 20px; border-radius: 8px; font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: all .2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { background: rgba(200,240,96,0.1); color: var(--accent); }
+        .tab-btn.active-podcast { background: rgba(255,77,109,0.1); color: var(--accent2); }
+        
         /* ─── GRIGLIA APPUNTI & PODCAST ─── */
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .note-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: all .25s; }
         .note-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .podcast-card:hover { border-color: var(--accent2); }
+        
         .note-card__thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .note-card__thumb-bg { position: absolute; inset: 0; opacity: 0.15; }
         .note-card__thumb-icon { font-size: 2.5rem; position: relative; z-index: 1; }
@@ -343,15 +365,33 @@
         }
     }
 
+    // --- SWITCH TABS ---
+    function showTab(tabName) {
+        // Nascondi le sezioni
+        document.getElementById('section-appunti').classList.remove('active');
+        document.getElementById('section-podcast').classList.remove('active');
+        
+        // Disattiva i bottoni
+        document.getElementById('btn-tab-appunti').classList.remove('active');
+        document.getElementById('btn-tab-podcast').classList.remove('active', 'active-podcast');
+        
+        if (tabName === 'appunti') {
+            document.getElementById('section-appunti').classList.add('active');
+            document.getElementById('btn-tab-appunti').classList.add('active');
+        } else if (tabName === 'podcast') {
+            document.getElementById('section-podcast').classList.add('active');
+            document.getElementById('btn-tab-podcast').classList.add('active-podcast');
+        }
+    }
+
     // --- MODALITÀ: PROFILO ---
     async function caricaProfilo() {
         document.getElementById('navBack').style.display = 'flex';
         try {
-            // Effettuiamo le 3 chiamate in parallelo per prendere i dati base, gli appunti e i podcast dell'utente
             const [resU, resA, resP] = await Promise.all([
                 fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`),
                 fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`),
-                fetch(`/api/podcast?username=${encodeURIComponent(usernameUrl)}`) // endpoint per prendere i podcast
+                fetch(`/api/podcast?username=${encodeURIComponent(usernameUrl)}`) 
             ]);
             
             if (!resU.ok) { mostraNotFound(); return; }
@@ -360,7 +400,7 @@
             document.title = `${u.nome} ${u.cognome} (@${u.username}) — Appunti`;
 
             const appunti = resA.ok ? await resA.json() : [];
-            const podcast = resP.ok ? await resP.json() : []; // Se esiste l'endpoint, li carica
+            const podcast = resP.ok ? await resP.json() : []; 
 
             renderProfiloHtml(u, appunti, podcast);
         } catch (e) { mostraNotFound(); }
@@ -389,8 +429,8 @@
             <div class="main">
                 <div class="stats-row">
                     <div class="stat-card">
-                        <span class="stat-card__n">${appunti.length}</span>
-                        <span class="stat-card__l">Appunti pubblicati</span>
+                        <span class="stat-card__n">${appunti.length + podcast.length}</span>
+                        <span class="stat-card__l">Contenuti totali</span>
                     </div>
                     <div class="stat-card">
                         <span class="stat-card__n" style="font-size: 1.25rem; word-break: break-word;">${u.scuola || 'Nessuna'}</span>
@@ -398,44 +438,51 @@
                     </div>
                 </div>
                 
-                <h2 class="results-label">Appunti di ${u.nome}</h2>
-                <div class="notes-grid">
-                    ${appunti.map(a => {
-                        const c = coloriMateria[a.materia] || '#888';
-                        const icon = iconeMateria[a.materia] || '📄';
-                        return `
-                        <a href="esplora.html?focus=${a.id}" class="note-card">
-                            <div class="note-card__thumb">
-                                <div class="note-card__thumb-bg" style="background:${a.cover_url ? `url('${a.cover_url}') center/cover` : `radial-gradient(circle, ${c}, transparent)`}; opacity: ${a.cover_url ? 0.4 : 0.15}"></div>
-                                <div class="note-card__thumb-icon">${icon}</div>
-                            </div>
-                            <div class="note-card__body">
-                                <div class="note-card__chip" style="background:${c}20; color:${c}; border:1px solid ${c}40">${a.materia}</div>
-                                <div class="note-card__title">${a.titolo}</div>
-                                <div class="note-card__meta">Visualizza appunto</div>
-                            </div>
-                        </a>`;
-                    }).join('')}
+                <div class="tabs-container">
+                    <button class="tab-btn active" id="btn-tab-appunti" onclick="showTab('appunti')">📄 Appunti</button>
+                    <button class="tab-btn" id="btn-tab-podcast" onclick="showTab('podcast')">🎙️ Podcast</button>
                 </div>
-                ${appunti.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato appunti.</div>' : ''}
 
-                <h2 class="results-label" style="margin-top: 40px;">Podcast di ${u.nome}</h2>
-                <div class="notes-grid">
-                    ${podcast.map(p => `
-                        <a href="podcast.html?id=${p.id}" class="note-card">
-                            <div class="note-card__thumb" style="background: var(--surface2);">
-                                <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
-                                <div class="note-card__thumb-icon">🎙️</div>
-                            </div>
-                            <div class="note-card__body">
-                                <div class="note-card__chip" style="background:rgba(255,77,109,0.15); color:var(--accent2); border:1px solid rgba(255,77,109,0.3)">Podcast</div>
-                                <div class="note-card__title">${p.titolo}</div>
-                                <div class="note-card__meta">Ascolta ora</div>
-                            </div>
-                        </a>
-                    `).join('')}
+                <div id="section-appunti" class="content-section active">
+                    <div class="notes-grid">
+                        ${appunti.map(a => {
+                            const c = coloriMateria[a.materia] || '#888';
+                            const icon = iconeMateria[a.materia] || '📄';
+                            return `
+                            <a href="esplora.html?focus=${a.id}" class="note-card">
+                                <div class="note-card__thumb">
+                                    <div class="note-card__thumb-bg" style="background:${a.cover_url ? `url('${a.cover_url}') center/cover` : `radial-gradient(circle, ${c}, transparent)`}; opacity: ${a.cover_url ? 0.4 : 0.15}"></div>
+                                    <div class="note-card__thumb-icon">${icon}</div>
+                                </div>
+                                <div class="note-card__body">
+                                    <div class="note-card__chip" style="background:${c}20; color:${c}; border:1px solid ${c}40">${a.materia}</div>
+                                    <div class="note-card__title">${a.titolo}</div>
+                                    <div class="note-card__meta">Visualizza appunto</div>
+                                </div>
+                            </a>`;
+                        }).join('')}
+                    </div>
+                    ${appunti.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato appunti.</div>' : ''}
                 </div>
-                ${podcast.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato podcast.</div>' : ''}
+
+                <div id="section-podcast" class="content-section">
+                    <div class="notes-grid">
+                        ${podcast.map(p => `
+                            <a href="podcast.html?id=${p.id}" class="note-card podcast-card">
+                                <div class="note-card__thumb" style="background: var(--surface2);">
+                                    <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
+                                    <div class="note-card__thumb-icon">🎙️</div>
+                                </div>
+                                <div class="note-card__body">
+                                    <div class="note-card__chip" style="background:rgba(255,77,109,0.15); color:var(--accent2); border:1px solid rgba(255,77,109,0.3)">Podcast</div>
+                                    <div class="note-card__title">${p.titolo}</div>
+                                    <div class="note-card__meta">Ascolta ora</div>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                    ${podcast.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato podcast.</div>' : ''}
+                </div>
             </div>`;
     }
 
