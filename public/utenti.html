@@ -11,7 +11,6 @@
             --bg: #0a0a0a; 
             --surface: #111111; 
             --surface2: #181818;
-            --surface3: #22222e;
             --text: #f2f0ec; 
             --muted: rgba(242,240,236,0.45);
             --accent: #c8f060; 
@@ -31,7 +30,6 @@
             --bg: #f8f9fa; 
             --surface: #ffffff; 
             --surface2: #f1f3f5;
-            --surface3: #e9ecef;
             --text: #1a1a1a; 
             --muted: rgba(0,0,0,0.55);
             --accent: #a3cc2b;
@@ -164,7 +162,6 @@
         }
         .user-result__photo img { width: 100%; height: 100%; object-fit: cover; }
         .user-result__name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; }
-        .user-result__username { color: var(--accent); font-size: 0.85rem; font-weight: 700; }
 
         /* ─── PROFILO UTENTE ─── */
         .cover { height: 220px; background: linear-gradient(135deg, #111 0%, #1c1c1c 100%); margin-top: var(--nav-h); position: relative; overflow: hidden; }
@@ -184,9 +181,8 @@
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
         .profile-info { flex: 1; padding-bottom: 10px; }
-        .profile-name { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; line-height: 1.1; text-transform: capitalize; }
+        .profile-name { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; line-height: 1.1; }
         .profile-username-sub { font-size: 1rem; color: var(--muted); font-weight: 700; margin-top: 4px; }
-        .profile-username-sub span { color: var(--accent); }
 
         .profile-actions { padding-bottom: 12px; }
         .btn-share { padding: 10px 20px; background: var(--surface2); color: var(--text); border: 1px solid var(--border2); border-radius: 12px; font-weight: 800; cursor: pointer; transition: all .2s; }
@@ -316,7 +312,7 @@
         }
     </script>
 </head>
-<body class="">
+<body class=""> 
 
 <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
@@ -340,6 +336,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    // Applico il tema al body a caricamento DOM per sicurezza
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
             document.body.classList.add('light-theme');
@@ -393,18 +390,17 @@
     }
 
     function generaHtmlUtente(u, isHistory = false) {
-        const onclickAttr = `onclick="aggiungiACronologia({nome: '${u.nome.replace(/'/g, "\\'")}', cognome: '${u.cognome ? u.cognome.replace(/'/g, "\\'") : ''}', username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
+        const onclickAttr = `onclick="aggiungiACronologia({username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
         
         return `
             <a class="${isHistory ? 'history-result' : 'user-result'}" href="utenti.html?user=${u.username}" ${onclickAttr}>
                 ${isHistory ? '<div class="history-icon">🕒</div>' : `
                 <div class="user-result__photo">
-                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : u.nome.charAt(0).toUpperCase()}
+                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
                 </div>
                 `}
                 <div>
-                    <div class="user-result__name">${u.nome} ${u.cognome || ''}</div>
-                    <div class="user-result__username">@${u.username}</div>
+                    <div class="user-result__name">@${u.username}</div>
                 </div>
             </a>`;
     }
@@ -418,7 +414,7 @@
                 <h1 class="search-page__title">Cerca utenti</h1>
                 <p class="search-page__sub">Trova altri studenti e scopri i loro contenuti pubblicati</p>
                 <div class="search-box">
-                    <input class="search-box__input" id="userInput" type="text" placeholder="Nome o @username..." oninput="gestisciInput(this)" onclick="gestisciInput(this)" autocomplete="off">
+                    <input class="search-box__input" id="userInput" type="text" placeholder="Cerca @username..." oninput="gestisciInput(this)" onclick="gestisciInput(this)" autocomplete="off">
                     <button class="search-box__btn" onclick="eseguiRicerca(document.getElementById('userInput').value)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     </button>
@@ -525,7 +521,7 @@
             if (!resU.ok) { mostraNotFound(); return; }
             
             const u = await resU.json();
-            document.title = `${u.nome} ${u.cognome} (@${u.username}) — Appunti`;
+            document.title = `@${u.username} — Appunti`;
 
             const allAppunti = resA.ok ? await resA.json() : [];
             const allPodcast = resP.ok ? await resP.json() : []; 
@@ -552,14 +548,14 @@
             </div>
             <div class="profile-header">
                 <div class="profile-avatar">
-                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : u.nome.charAt(0).toUpperCase()}
+                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
                 </div>
                 <div class="profile-info">
-                    <h1 class="profile-name">${u.nome} ${u.cognome}</h1>
-                    <div class="profile-username-sub">@<span>${u.username}</span> • Iscritto il ${data}</div>
+                    <h1 class="profile-name">@${u.username}</h1>
+                    <div class="profile-username-sub">Iscritto il ${data}</div>
                 </div>
                 <div class="profile-actions">
-                    <button class="btn-share" onclick="condividi('${u.nome.replace(/'/g, "\\'")}')">↗ Condividi</button>
+                    <button class="btn-share" onclick="condividi('${u.username.replace(/'/g, "\\'")}')">↗ Condividi</button>
                 </div>
             </div>
             <div class="main">
@@ -714,10 +710,10 @@
             </div>`;
     }
 
-    function condividi(nome) {
+    function condividi(username) {
         const url = window.location.href;
         if (navigator.share) {
-            navigator.share({ title: `Profilo di ${nome} su Appunti`, url });
+            navigator.share({ title: `Profilo di @${username} su Appunti`, url });
         } else {
             navigator.clipboard.writeText(url).then(() => {
                 const t = document.getElementById('toast');
