@@ -161,8 +161,8 @@
         .stat-card__n { display: block; font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 6px; }
         .stat-card__l { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
 
-        /* ─── GRIGLIA APPUNTI ─── */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        /* ─── GRIGLIA APPUNTI & PODCAST ─── */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .note-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: all .25s; }
         .note-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
         .note-card__thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
@@ -177,7 +177,7 @@
         .loading { display: flex; justify-content: center; padding: 100px 0; }
         .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+        .empty { text-align: center; padding: 60px 20px; color: var(--muted); margin-bottom: 30px; }
         .toast { position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: #000; padding: 12px 24px; border-radius: 12px; font-weight: 800; opacity: 0; transform: translateY(20px); transition: all .3s; z-index: 9999; }
         .toast.show { opacity: 1; transform: translateY(0); }
     </style>
@@ -239,10 +239,8 @@
 
     function aggiungiACronologia(userObj) {
         let history = getCronologia();
-        // Rimuove l'utente se è già presente per rimetterlo in cima
         history = history.filter(u => u.username !== userObj.username);
         history.unshift(userObj);
-        // Tiene solo le ultime 5 ricerche
         if (history.length > 5) history.pop();
         localStorage.setItem('searchHistory', JSON.stringify(history));
     }
@@ -288,7 +286,6 @@
                 </div>
             </div>`;
         
-        // Se c'è già testo (es. reload), cerchiamo subito. Altrimenti mostriamo suggerimenti.
         const inputVal = document.getElementById('userInput').value;
         if(inputVal.length > 0) eseguiRicerca(inputVal);
         else mostraSuggerimenti();
@@ -303,8 +300,6 @@
             mostraSuggerimenti();
             return;
         }
-        
-        // Ricerca non appena viene digitato 1 carattere
         timer = setTimeout(() => eseguiRicerca(val), 300);
     }
 
@@ -321,10 +316,7 @@
                 ${history.map(u => generaHtmlUtente(u, true)).join('')}
             `;
         } else {
-            // Se non c'è cronologia mostriamo un messaggio vuoto invece dei profili fittizi
-            box.innerHTML = `
-                <div class="empty">Inizia a scrivere per cercare qualcuno...</div>
-            `;
+            box.innerHTML = `<div class="empty">Inizia a scrivere per cercare qualcuno...</div>`;
         }
     }
 
@@ -347,7 +339,6 @@
             box.innerHTML = `<div class="results-header"><h3 class="results-label">Risultati della ricerca</h3></div>` 
                             + utenti.map(u => generaHtmlUtente(u, false)).join('');
         } catch (e) { 
-            // Fallback in caso di errore API (utile per non rompere il sito se manca il backend)
             box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; 
         }
     }
@@ -356,19 +347,26 @@
     async function caricaProfilo() {
         document.getElementById('navBack').style.display = 'flex';
         try {
-            const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`);
-            if (!res.ok) { mostraNotFound(); return; }
-            const u = await res.json();
+            // Effettuiamo le 3 chiamate in parallelo per prendere i dati base, gli appunti e i podcast dell'utente
+            const [resU, resA, resP] = await Promise.all([
+                fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`),
+                fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`),
+                fetch(`/api/podcast?username=${encodeURIComponent(usernameUrl)}`) // endpoint per prendere i podcast
+            ]);
+            
+            if (!resU.ok) { mostraNotFound(); return; }
+            
+            const u = await resU.json();
             document.title = `${u.nome} ${u.cognome} (@${u.username}) — Appunti`;
 
-            const resA = await fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`);
-            const appunti = await resA.json();
+            const appunti = resA.ok ? await resA.json() : [];
+            const podcast = resP.ok ? await resP.json() : []; // Se esiste l'endpoint, li carica
 
-            renderProfiloHtml(u, appunti);
+            renderProfiloHtml(u, appunti, podcast);
         } catch (e) { mostraNotFound(); }
     }
 
-    function renderProfiloHtml(u, appunti) {
+    function renderProfiloHtml(u, appunti, podcast) {
         const data = new Date(u.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
         
         document.getElementById('pageContent').innerHTML = `
@@ -395,11 +393,12 @@
                         <span class="stat-card__l">Appunti pubblicati</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-card__n">${u.scuola ? '1' : '0'}</span>
-                        <span class="stat-card__l">Scuole associate</span>
+                        <span class="stat-card__n" style="font-size: 1.25rem; word-break: break-word;">${u.scuola || 'Nessuna'}</span>
+                        <span class="stat-card__l">Scuola</span>
                     </div>
                 </div>
-                <h2 class="results-label">Contenuti di ${u.nome}</h2>
+                
+                <h2 class="results-label">Appunti di ${u.nome}</h2>
                 <div class="notes-grid">
                     ${appunti.map(a => {
                         const c = coloriMateria[a.materia] || '#888';
@@ -419,6 +418,24 @@
                     }).join('')}
                 </div>
                 ${appunti.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato appunti.</div>' : ''}
+
+                <h2 class="results-label" style="margin-top: 40px;">Podcast di ${u.nome}</h2>
+                <div class="notes-grid">
+                    ${podcast.map(p => `
+                        <a href="podcast.html?id=${p.id}" class="note-card">
+                            <div class="note-card__thumb" style="background: var(--surface2);">
+                                <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
+                                <div class="note-card__thumb-icon">🎙️</div>
+                            </div>
+                            <div class="note-card__body">
+                                <div class="note-card__chip" style="background:rgba(255,77,109,0.15); color:var(--accent2); border:1px solid rgba(255,77,109,0.3)">Podcast</div>
+                                <div class="note-card__title">${p.titolo}</div>
+                                <div class="note-card__meta">Ascolta ora</div>
+                            </div>
+                        </a>
+                    `).join('')}
+                </div>
+                ${podcast.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato podcast.</div>' : ''}
             </div>`;
     }
 
