@@ -248,16 +248,16 @@
         }
 
         .subjects-slider {
-            overflow-x: auto; /* Permette lo scroll nativo manuale (touch) */
+            overflow-x: auto; 
             cursor: grab;
             -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
             mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
             padding: 8px 0 16px;
-            scrollbar-width: none; /* Nasconde scrollbar su Firefox */
-            -ms-overflow-style: none; /* Nasconde scrollbar su IE/Edge */
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
         }
         .subjects-slider::-webkit-scrollbar {
-            display: none; /* Nasconde scrollbar su Chrome/Safari */
+            display: none; 
         }
         .subjects-track {
             display: flex; gap: 12px; padding: 0 20px; width: max-content;
@@ -540,7 +540,7 @@
                 <a href="esplora.html" class="cta-primary">
                     🧭 Esplora Appunti
                 </a>
-                <a href="login.html" class="cta-secondary">Accedi al tuo profilo</a>
+                <a href="login.html" class="cta-secondary" id="heroLoginBtn">Accedi al tuo profilo</a>
             </div>
 
             <div class="hero__stats">
@@ -549,11 +549,11 @@
                     <span class="hero__stat-label">Appunti Pubblicati</span>
                 </div>
                 <div class="hero__stat">
-                    <span class="hero__stat-num" id="statMaterie">13</span>
-                    <span class="hero__stat-label">Materie Disponibili</span>
+                    <span class="hero__stat-num" id="statUtenti">—</span>
+                    <span class="hero__stat-label">Numero Utenti</span>
                 </div>
                 <div class="hero__stat">
-                    <span class="hero__stat-num" id="statPodcast">42</span>
+                    <span class="hero__stat-num" id="statPodcast">—</span>
                     <span class="hero__stat-label">Podcast Disponibili</span>
                 </div>
             </div>
@@ -718,30 +718,63 @@
             </div>`;
         }
 
-        /* ─── CARICA HOME ─── */
+        /* ─── CARICA HOME (Griglie e Statistiche Reali) ─── */
         async function caricaHome() {
             try {
+                // Chiamate API per i feed principali
                 const [resU, resT] = await Promise.all([
                     fetch('/api/appunti?limit=9'),
                     fetch('/api/likes?top=6')
                 ]);
-                const ultimi = await resU.json();
-                const top    = await resT.json();
-
-                document.getElementById('homeNotesGrid').innerHTML =
-                    ultimi.length ? ultimi.map(n => creaCardHTML(n)).join('') : '<div class="notes-empty">Nessun appunto trovato.</div>';
-
-                document.getElementById('topNotesGrid').innerHTML =
-                    top.length ? top.map((n,i) => creaCardHTML(n, i+1)).join('') : '<div class="notes-empty">Nessun appunto trovato.</div>';
-
-                /* update hero stats */
-                if (ultimi.length) document.getElementById('statAppunti').textContent = ultimi.length + '+';
                 
-                /* La statistica dei Podcast attualmente usa un mock di 42 definito direttamente nell'HTML, 
-                   potresti sostituirlo con una futura chiamata API come per le altre sezioni */
-                // document.getElementById('statPodcast').textContent = numPodcastDaAPI;
+                if (resU.ok) {
+                    const ultimi = await resU.json();
+                    document.getElementById('homeNotesGrid').innerHTML = ultimi.length 
+                        ? ultimi.map(n => creaCardHTML(n)).join('') 
+                        : '<div class="notes-empty">Nessun appunto trovato.</div>';
+                }
 
-            } catch(e) { console.error(e); }
+                if (resT.ok) {
+                    const top = await resT.json();
+                    document.getElementById('topNotesGrid').innerHTML = top.length 
+                        ? top.map((n,i) => creaCardHTML(n, i+1)).join('') 
+                        : '<div class="notes-empty">Nessun appunto trovato.</div>';
+                }
+            } catch(e) { 
+                console.error("Errore nel caricamento delle griglie:", e); 
+            }
+        }
+
+        async function caricaStatistiche() {
+            try {
+                // Esegue tre richieste separate per ricavare i conteggi totali reali
+                const [resAppunti, resUtenti, resPodcast] = await Promise.all([
+                    fetch('/api/appunti'),
+                    fetch('/api/utenti'),
+                    fetch('/api/podcast')
+                ]);
+
+                if (resAppunti.ok) {
+                    const appunti = await resAppunti.json();
+                    document.getElementById('statAppunti').textContent = appunti.length;
+                }
+                
+                if (resUtenti.ok) {
+                    const utenti = await resUtenti.json();
+                    document.getElementById('statUtenti').textContent = utenti.length;
+                }
+
+                if (resPodcast.ok) {
+                    const podcast = await resPodcast.json();
+                    document.getElementById('statPodcast').textContent = podcast.length;
+                }
+            } catch(e) {
+                console.error("Errore nel caricamento delle statistiche reali:", e);
+                // Fallback nel caso in cui le API non rispondano o non esistano (per evitare lo zero o il trattino a lungo)
+                document.getElementById('statAppunti').textContent = "0";
+                document.getElementById('statUtenti').textContent = "0";
+                document.getElementById('statPodcast').textContent = "0";
+            }
         }
 
         /* ─── FILTRO MATERIA ─── */
@@ -773,11 +806,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderSlider();
             caricaHome();
+            caricaStatistiche(); // Avvia la funzione per caricare i numeri reali in alto
             autoScroll();
             
-            // Nascondi il pulsante "Accedi" se l'utente è loggato
+            // Nascondi i pulsanti di "Accedi" se l'utente risulta già loggato (presenza del cookie)
             if (document.cookie.includes('username=')) {
                 document.getElementById('navLoginBtn').style.display = 'none';
+                
+                const heroLoginBtn = document.getElementById('heroLoginBtn');
+                if (heroLoginBtn) {
+                    heroLoginBtn.style.display = 'none';
+                }
             }
         });
     </script>
