@@ -12,7 +12,7 @@
             --surface2: #181818;
             --text: #f2f0ec; 
             --muted: rgba(242,240,236,0.45);
-            --accent: #c8f060; /* Verde acido coerente con Profilo */
+            --accent: #c8f060; 
             --accent2: #ff4d6d; 
             --nav-h: 62px;
             --radius: 16px;
@@ -31,7 +31,7 @@
             padding-bottom: 40px;
         }
 
-        /* ─── NAVBAR (Identica a Profilo) ─── */
+        /* ─── NAVBAR ─── */
         .topnav { 
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); 
             background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); 
@@ -55,7 +55,6 @@
         }
         .topnav__login:hover { transform: scale(1.05); }
         
-        /* Pulsante Back in Navbar */
         .nav__back {
             display: none; align-items: center; gap: 8px;
             padding: 7px 16px; border-radius: 10px;
@@ -101,17 +100,26 @@
         }
         .search-box__btn:hover { transform: translateY(-50%) scale(1.05); }
 
-        /* ─── RISULTATI RICERCA ─── */
+        /* ─── RISULTATI E CRONOLOGIA ─── */
         .results-container { width: 100%; max-width: 600px; }
-        .results-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 16px; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .results-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin: 0; }
+        .clear-history-btn { background: none; border: none; color: var(--accent2); font-size: 0.75rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: opacity .2s; }
+        .clear-history-btn:hover { opacity: 0.7; }
 
-        .user-result {
+        .user-result, .history-result {
             display: flex; align-items: center; gap: 16px; padding: 16px;
             background: var(--surface); border: 1.5px solid var(--border);
             border-radius: var(--radius); margin-bottom: 12px;
             text-decoration: none; color: var(--text); transition: all .2s;
         }
-        .user-result:hover { border-color: var(--accent); transform: translateX(6px); background: var(--surface2); }
+        .user-result:hover, .history-result:hover { border-color: var(--accent); transform: translateX(6px); background: var(--surface2); }
+        
+        .history-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); color: var(--muted);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+        }
         
         .user-result__photo {
             width: 54px; height: 54px; border-radius: 50%;
@@ -124,7 +132,7 @@
         .user-result__name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; }
         .user-result__username { color: var(--accent); font-size: 0.85rem; font-weight: 700; }
 
-        /* ─── PROFILO UTENTE (Identico a Profilo.html) ─── */
+        /* ─── PROFILO UTENTE ─── */
         .cover { height: 220px; background: linear-gradient(135deg, #111 0%, #1c1c1c 100%); margin-top: var(--nav-h); position: relative; overflow: hidden; }
         .cover__pattern { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 24px 24px; }
         .cover__grad { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(10,10,10,0.95) 100%); }
@@ -222,7 +230,51 @@
         "Biologia":"🧬","Geometria":"📐"
     };
 
+    // Array fittizio di ricerche "popolari" nel caso la cronologia sia vuota
+    const ricerchePopolari = [
+        { nome: "Mario", cognome: "Rossi", username: "mariorossi", foto_profilo_url: null },
+        { nome: "Giulia", cognome: "Bianchi", username: "giuliab_99", foto_profilo_url: null },
+        { nome: "Prof.", cognome: "Matematica", username: "matematicaprof", foto_profilo_url: null }
+    ];
+
     const usernameUrl = new URLSearchParams(window.location.search).get('user') || '';
+
+    // --- GESTIONE CRONOLOGIA ---
+    function getCronologia() {
+        return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    }
+
+    function aggiungiACronologia(userObj) {
+        let history = getCronologia();
+        // Rimuove l'utente se è già presente per rimetterlo in cima
+        history = history.filter(u => u.username !== userObj.username);
+        history.unshift(userObj);
+        // Tiene solo le ultime 5 ricerche
+        if (history.length > 5) history.pop();
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+    }
+
+    function pulisciCronologia() {
+        localStorage.removeItem('searchHistory');
+        gestisciInput(document.getElementById('userInput'));
+    }
+
+    function generaHtmlUtente(u, isHistory = false) {
+        const onclickAttr = `onclick="aggiungiACronologia({nome: '${u.nome.replace(/'/g, "\\'")}', cognome: '${u.cognome ? u.cognome.replace(/'/g, "\\'") : ''}', username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
+        
+        return `
+            <a class="${isHistory ? 'history-result' : 'user-result'}" href="utenti.html?user=${u.username}" ${onclickAttr}>
+                ${isHistory ? '<div class="history-icon">🕒</div>' : `
+                <div class="user-result__photo">
+                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : u.nome.charAt(0).toUpperCase()}
+                </div>
+                `}
+                <div>
+                    <div class="user-result__name">${u.nome} ${u.cognome || ''}</div>
+                    <div class="user-result__username">@${u.username}</div>
+                </div>
+            </a>`;
+    }
 
     // --- MODALITÀ: RICERCA ---
     function mostraRicerca() {
@@ -233,7 +285,7 @@
                 <h1 class="search-page__title">Cerca utenti</h1>
                 <p class="search-page__sub">Trova altri studenti e scopri i loro contenuti pubblicati</p>
                 <div class="search-box">
-                    <input class="search-box__input" id="userInput" type="text" placeholder="Nome o @username..." oninput="onInput(this.value)">
+                    <input class="search-box__input" id="userInput" type="text" placeholder="Nome o @username..." oninput="gestisciInput(this)" onclick="gestisciInput(this)" autocomplete="off">
                     <button class="search-box__btn" onclick="eseguiRicerca(document.getElementById('userInput').value)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     </button>
@@ -242,36 +294,72 @@
                     <div class="empty">Inizia a scrivere per cercare qualcuno...</div>
                 </div>
             </div>`;
+        
+        // Se c'è già testo (es. reload), cerchiamo subito. Altrimenti mostriamo suggerimenti.
+        const inputVal = document.getElementById('userInput').value;
+        if(inputVal.length > 0) eseguiRicerca(inputVal);
+        else mostraSuggerimenti();
     }
 
     let timer;
-    function onInput(val) {
+    function gestisciInput(inputEl) {
+        const val = inputEl.value.trim();
         clearTimeout(timer);
-        if (val.trim().length < 2) return;
-        timer = setTimeout(() => eseguiRicerca(val.trim()), 300);
+        
+        if (val.length === 0) {
+            mostraSuggerimenti();
+            return;
+        }
+        
+        // Ricerca non appena viene digitato 1 carattere
+        timer = setTimeout(() => eseguiRicerca(val), 300);
+    }
+
+    function mostraSuggerimenti() {
+        const box = document.getElementById('risultati');
+        const history = getCronologia();
+
+        if (history.length > 0) {
+            box.innerHTML = `
+                <div class="results-header">
+                    <h3 class="results-label">Ricerche Recenti</h3>
+                    <button class="clear-history-btn" onclick="pulisciCronologia()">Cancella</button>
+                </div>
+                ${history.map(u => generaHtmlUtente(u, true)).join('')}
+            `;
+        } else {
+            // Se non c'è cronologia, mostriamo gli account popolari
+            box.innerHTML = `
+                <div class="results-header">
+                    <h3 class="results-label">Profili Popolari 🔥</h3>
+                </div>
+                ${ricerchePopolari.map(u => generaHtmlUtente(u, false)).join('')}
+            `;
+        }
     }
 
     async function eseguiRicerca(q) {
         const box = document.getElementById('risultati');
+        if (!q.trim()) {
+            mostraSuggerimenti();
+            return;
+        }
+
         box.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
         try {
             const res = await fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`);
             const utenti = await res.json();
+            
             if (utenti.length === 0) {
                 box.innerHTML = `<div class="empty">Nessun utente trovato per "${q}"</div>`;
                 return;
             }
-            box.innerHTML = `<div class="results-label">${utenti.length} Risultati</div>` + utenti.map(u => `
-                <a class="user-result" href="utenti.html?user=${u.username}">
-                    <div class="user-result__photo">
-                        ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : u.nome.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                        <div class="user-result__name">${u.nome} ${u.cognome}</div>
-                        <div class="user-result__username">@${u.username}</div>
-                    </div>
-                </a>`).join('');
-        } catch (e) { box.innerHTML = `<div class="empty">Errore nella ricerca.</div>`; }
+            box.innerHTML = `<div class="results-header"><h3 class="results-label">Risultati della ricerca</h3></div>` 
+                            + utenti.map(u => generaHtmlUtente(u, false)).join('');
+        } catch (e) { 
+            // Fallback in caso di errore API (utile per non rompere il sito se manca il backend)
+            box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; 
+        }
     }
 
     // --- MODALITÀ: PROFILO ---
@@ -307,7 +395,7 @@
                     <div class="profile-username-sub">@<span>${u.username}</span> • Iscritto il ${data}</div>
                 </div>
                 <div class="profile-actions">
-                    <button class="btn-share" onclick="condividi('${u.nome}')">↗ Condividi</button>
+                    <button class="btn-share" onclick="condividi('${u.nome.replace(/'/g, "\\'")}')">↗ Condividi</button>
                 </div>
             </div>
             <div class="main">
