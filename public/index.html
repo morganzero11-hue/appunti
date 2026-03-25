@@ -54,7 +54,7 @@
         .brand-icon { font-size: 1.5rem; animation: gentleFloat 4s ease-in-out infinite; }
         @keyframes gentleFloat {
             0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50%       { transform: translateY(-4px) rotate(2deg); }
+            50%      { transform: translateY(-4px) rotate(2deg); }
         }
 
         .topnav__links {
@@ -68,28 +68,6 @@
         }
         .topnav__links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
         .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
-
-        .topnav__search {
-            display: flex; align-items: center;
-            background: var(--surface2);
-            border: 1px solid var(--border2);
-            border-radius: 12px; overflow: hidden;
-            margin-left: 20px; transition: border-color .2s;
-        }
-        .topnav__search:focus-within { border-color: var(--accent); }
-        .topnav__search input {
-            background: transparent; border: none; color: var(--text);
-            padding: 8px 14px; font-size: 0.88rem;
-            font-family: 'Cabinet Grotesk', sans-serif; font-weight: 500;
-            width: 190px; outline: none;
-        }
-        .topnav__search input::placeholder { color: var(--muted); }
-        .topnav__search button {
-            background: transparent; border: none; color: var(--muted);
-            padding: 8px 12px; cursor: pointer; transition: color .2s;
-            display: flex; align-items: center;
-        }
-        .topnav__search button:hover { color: var(--accent); }
 
         .nav__login {
             background: var(--accent); color: #0a0a0f;
@@ -270,10 +248,16 @@
         }
 
         .subjects-slider {
-            overflow: hidden; cursor: grab;
+            overflow-x: auto; /* Permette lo scroll nativo manuale (touch) */
+            cursor: grab;
             -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
             mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
             padding: 8px 0 16px;
+            scrollbar-width: none; /* Nasconde scrollbar su Firefox */
+            -ms-overflow-style: none; /* Nasconde scrollbar su IE/Edge */
+        }
+        .subjects-slider::-webkit-scrollbar {
+            display: none; /* Nasconde scrollbar su Chrome/Safari */
         }
         .subjects-track {
             display: flex; gap: 12px; padding: 0 20px; width: max-content;
@@ -434,7 +418,7 @@
         }
 
         /* ════════════════════════════
-           FEATURE STRIP (NEW)
+           FEATURE STRIP
         ════════════════════════════ */
         .feature-strip {
             padding: 80px 28px;
@@ -485,63 +469,6 @@
         }
 
         /* ════════════════════════════
-           SEARCH OVERLAY
-        ════════════════════════════ */
-        .search-overlay {
-            position: fixed; inset: 0;
-            background: rgba(10,10,15,0.97);
-            backdrop-filter: blur(20px);
-            z-index: 2000; padding: 60px 40px;
-            overflow-y: auto; display: none;
-        }
-        .search-overlay__inner { max-width: 1000px; margin: 0 auto; }
-        .search-overlay__header {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 48px;
-            padding-bottom: 20px; border-bottom: 1px solid var(--border2);
-        }
-        .search-overlay__title {
-            font-family: 'Fraunces', serif;
-            font-size: 2rem; font-weight: 900; letter-spacing: -0.5px;
-        }
-        .search-overlay__close {
-            background: var(--surface2); color: var(--text);
-            border: 1px solid var(--border2);
-            padding: 9px 20px; border-radius: 10px;
-            font-weight: 800; font-size: 0.88rem;
-            cursor: pointer; transition: all .2s;
-            font-family: 'Cabinet Grotesk', sans-serif;
-        }
-        .search-overlay__close:hover { background: var(--accent); color: #0a0a0f; border-color: var(--accent); }
-
-        .search-section-label {
-            font-weight: 800; text-transform: uppercase;
-            letter-spacing: 2px; color: var(--accent);
-            margin: 32px 0 18px; font-size: 0.72rem;
-        }
-
-        .users-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px; margin-bottom: 40px;
-        }
-        .user-mini-card {
-            background: var(--surface); padding: 16px;
-            border-radius: 14px; display: flex; align-items: center;
-            gap: 12px; cursor: pointer; border: 1px solid var(--border);
-            transition: all .2s;
-        }
-        .user-mini-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .user-mini-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: var(--accent); color: #0a0a0f;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 1.1rem; flex-shrink: 0;
-        }
-        .user-mini-info { min-width: 0; }
-        .user-mini-info b { display: block; font-weight: 800; font-size: 0.9rem; }
-        .user-mini-info small { color: var(--muted); font-size: 0.78rem; font-weight: 600; }
-
-        /* ════════════════════════════
            FOOTER
         ════════════════════════════ */
         .footer {
@@ -562,7 +489,6 @@
         @media (max-width: 768px) {
             .topnav { padding: 0 20px; }
             .topnav__links { display: none; }
-            .topnav__search input { width: 140px; }
             .hero__title { letter-spacing: -1.5px; }
             .hero__ctas { flex-direction: column; align-items: stretch; max-width: 300px; margin-left: auto; margin-right: auto; }
             .hero__stats { flex-direction: column; }
@@ -571,13 +497,11 @@
             .feature-strip { padding: 40px 16px; }
             .notes-grid { grid-template-columns: 1fr; }
             .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .search-overlay { padding: 32px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ═══ NAVBAR ═══ -->
     <nav class="topnav">
         <a href="index.html" class="topnav__brand">
             <span class="brand-icon">📚</span>
@@ -591,16 +515,9 @@
             <li><a href="podcast.html">Podcast</a></li>
             <li><a href="impostazioni.html">Impostazioni</a></li>
         </ul>
-        <div class="topnav__search">
-            <input type="text" id="searchInput" placeholder="Cerca..." autocomplete="off">
-            <button onclick="cerca()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </button>
-        </div>
         <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
     </nav>
 
-    <!-- ═══ HERO ═══ -->
     <header class="hero">
         <div class="hero__bg">
             <div class="blob blob--1"></div>
@@ -636,13 +553,12 @@
                     <span class="hero__stat-label">Materie Disponibili</span>
                 </div>
                 <div class="hero__stat">
-                    <span class="hero__stat-num" id="statTop">—</span>
-                    <span class="hero__stat-label">Top Appunto Likes</span>
+                    <span class="hero__stat-num" id="statPodcast">42</span>
+                    <span class="hero__stat-label">Podcast Disponibili</span>
                 </div>
             </div>
         </div>
 
-        <!-- Subjects Slider inside hero bottom -->
         <div class="subjects-section">
             <div class="subjects-section__label">Tutte le materie</div>
             <div class="subjects-slider">
@@ -651,7 +567,6 @@
         </div>
     </header>
 
-    <!-- ═══ FEATURE STRIP ═══ -->
     <div class="feature-strip">
         <div class="feature-strip__grid">
             <div class="feature-card feature-card--green">
@@ -674,7 +589,6 @@
 
     <hr class="section-divider">
 
-    <!-- ═══ MAIN GRIDS ═══ -->
     <main class="main-content" id="mainContent">
 
         <div class="section-header">
@@ -701,26 +615,6 @@
 
     </main>
 
-    <!-- ═══ SEARCH OVERLAY ═══ -->
-    <div class="search-overlay" id="searchOverlay">
-        <div class="search-overlay__inner">
-            <div class="search-overlay__header">
-                <h2 class="search-overlay__title" id="searchTitle">Risultati Ricerca</h2>
-                <button class="search-overlay__close" onclick="chiudiRicerca()">✕ Chiudi</button>
-            </div>
-            <div id="searchUsersSection" style="display:none">
-                <div class="search-section-label">👤 Utenti trovati</div>
-                <div class="users-grid" id="searchUsersGrid"></div>
-            </div>
-            <div id="searchNotesSection" style="display:none">
-                <div class="search-section-label">📄 Appunti trovati</div>
-                <div class="notes-grid" id="searchNotesGrid"></div>
-            </div>
-            <p id="noResults" class="notes-empty" style="display:none">Nessun risultato trovato.</p>
-        </div>
-    </div>
-
-    <!-- ═══ FOOTER ═══ -->
     <footer class="footer">
         <p>© 2026 <strong>Appunti</strong> — Tutti i diritti riservati &nbsp;·&nbsp; Fatto con ❤️ per gli studenti italiani</p>
     </footer>
@@ -733,21 +627,61 @@
             {n:"Arte",i:"🎨"},{n:"Biologia",i:"🧬"},{n:"Geometria",i:"📐"},{n:"Altro",i:"📌"}
         ];
 
-        /* ─── SLIDER ─── */
+        /* ─── SLIDER & MANAGE DRAG ─── */
         const track = document.getElementById('subjectsTrack');
+        const slider = document.querySelector('.subjects-slider');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
         function renderSlider() {
             const content = materie.map(m => `
                 <div class="subject-card" onclick="filtraPerMateria('${m.n}')">
                     <span class="subject-card__icon">${m.i}</span>
                     <span>${m.n}</span>
                 </div>`).join('');
+            // Duplichiamo il contenuto per creare l'effetto di loop continuo
             track.innerHTML = content + content;
         }
 
+        /* Mouse drag events per lo scorrimento manuale */
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.style.cursor = 'grabbing';
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.style.cursor = 'grab';
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.style.cursor = 'grab';
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // Moltiplicatore velocità trascinamento
+            slider.scrollLeft = scrollLeft - walk;
+
+            // Reset della posizione per creare l'effetto infinito anche col trascinamento manuale
+            if (slider.scrollLeft >= track.scrollWidth / 2) {
+                slider.scrollLeft = 0;
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = 0;
+            } else if (slider.scrollLeft <= 0) {
+                slider.scrollLeft = track.scrollWidth / 2;
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = track.scrollWidth / 2;
+            }
+        });
+
         /* ─── AUTO-SCROLL ─── */
-        const slider = document.querySelector('.subjects-slider');
         function autoScroll() {
-            if (slider && !slider.matches(':hover')) {
+            // Ferma l'autoscroll se l'utente sta interagendo col mouse (hover o trascinamento)
+            if (slider && !slider.matches(':hover') && !isDown) {
                 slider.scrollLeft += 0.8;
                 if (slider.scrollLeft >= track.scrollWidth / 2) slider.scrollLeft = 0;
             }
@@ -802,7 +736,10 @@
 
                 /* update hero stats */
                 if (ultimi.length) document.getElementById('statAppunti').textContent = ultimi.length + '+';
-                if (top.length)    document.getElementById('statTop').textContent = top[0].likes_count || '—';
+                
+                /* La statistica dei Podcast attualmente usa un mock di 42 definito direttamente nell'HTML, 
+                   potresti sostituirlo con una futura chiamata API come per le altre sezioni */
+                // document.getElementById('statPodcast').textContent = numPodcastDaAPI;
 
             } catch(e) { console.error(e); }
         }
@@ -813,13 +750,18 @@
             const title = document.getElementById('homeSectionTitle');
             title.innerHTML = `Appunti di ${materia} <button onclick="resetFiltro()" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:2px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;margin-left:12px;font-family:inherit;font-weight:800;">✕ Reset</button>`;
             grid.innerHTML = '<div class="notes-empty">Filtrando…</div>';
-            const res = await fetch('/api/appunti');
-            const data = await res.json();
-            const filtered = data.filter(n => n.materia === materia);
-            grid.innerHTML = filtered.length
-                ? filtered.map(n => creaCardHTML(n)).join('')
-                : '<div class="notes-empty">Nessun appunto trovato per questa materia.</div>';
-            document.getElementById('mainContent').scrollIntoView({ behavior:'smooth' });
+            
+            try {
+                const res = await fetch('/api/appunti');
+                const data = await res.json();
+                const filtered = data.filter(n => n.materia === materia);
+                grid.innerHTML = filtered.length
+                    ? filtered.map(n => creaCardHTML(n)).join('')
+                    : '<div class="notes-empty">Nessun appunto trovato per questa materia.</div>';
+                document.getElementById('mainContent').scrollIntoView({ behavior:'smooth' });
+            } catch(e) {
+                console.error(e);
+            }
         }
 
         function resetFiltro() {
@@ -827,63 +769,16 @@
             caricaHome();
         }
 
-        /* ─── RICERCA ─── */
-        async function cerca() {
-            const q = document.getElementById('searchInput').value.trim();
-            if (!q) return;
-            const [resU, resA] = await Promise.all([
-                fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`),
-                fetch(`/api/cerca-appunti?q=${encodeURIComponent(q)}`)
-            ]);
-            const utenti  = await resU.json();
-            const appunti = await resA.json();
-
-            document.getElementById('searchOverlay').style.display = 'block';
-            document.getElementById('searchTitle').innerText = `Risultati per "${q}"`;
-
-            const uSection = document.getElementById('searchUsersSection');
-            if (utenti.length) {
-                uSection.style.display = 'block';
-                document.getElementById('searchUsersGrid').innerHTML = utenti.map(u => `
-                    <div class="user-mini-card" onclick="window.location.href='utenti.html?user=${u.username}'">
-                        <div class="user-mini-avatar">${u.nome[0].toUpperCase()}</div>
-                        <div class="user-mini-info">
-                            <b>${u.nome}</b>
-                            <small>@${u.username}</small>
-                        </div>
-                    </div>`).join('');
-            } else uSection.style.display = 'none';
-
-            const nSection = document.getElementById('searchNotesSection');
-            if (appunti.length) {
-                nSection.style.display = 'block';
-                document.getElementById('searchNotesGrid').innerHTML = appunti.map(a => creaCardHTML(a)).join('');
-            } else nSection.style.display = 'none';
-
-            document.getElementById('noResults').style.display =
-                (!utenti.length && !appunti.length) ? 'block' : 'none';
-        }
-
-        function chiudiRicerca() {
-            document.getElementById('searchOverlay').style.display = 'none';
-        }
-
-        /* chiudi overlay con ESC */
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') chiudiRicerca();
-        });
-        /* chiudi con invio nella search */
-        document.getElementById('searchInput').addEventListener('keydown', e => {
-            if (e.key === 'Enter') cerca();
-        });
-
         /* ─── INIT ─── */
         document.addEventListener('DOMContentLoaded', () => {
             renderSlider();
             caricaHome();
             autoScroll();
-            if (document.cookie.includes('username='))
+            
+            // Nascondi il pulsante "Accedi" se l'utente è loggato
+            if (document.cookie.includes('username=')) {
                 document.getElementById('navLoginBtn').style.display = 'none';
+            }
         });
     </script>
 </body>

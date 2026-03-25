@@ -49,9 +49,10 @@
 
         /* ── TOP BAR (Filtri + Ricerca) ── */
         .top-bar {
-            position: absolute; top: 0; left: 0; right: 0; padding: 24px 20px 16px;
+            position: absolute; top: 0; left: 0; right: 0; padding: 24px 80px 16px 20px; /* Aumentato padding-right per fare spazio al bottone occhio */
             background: linear-gradient(to bottom, rgba(15,15,15,0.95) 0%, rgba(15,15,15,0) 100%);
             display: flex; align-items: center; gap: 16px; z-index: 100; pointer-events: none;
+            transition: opacity 0.3s ease;
         }
         .filter-bar { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; flex: 1; pointer-events: auto; }
         .filter-bar::-webkit-scrollbar { display: none; }
@@ -62,6 +63,47 @@
         .search-container { pointer-events: auto; flex-shrink: 0; }
         .search-input { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 8px 16px 8px 36px; outline: none; width: 200px; transition: all 0.3s; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='rgba(255,255,255,0.6)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
         .search-input:focus { background: rgba(255, 255, 255, 0.15); border-color: var(--accent); width: 240px; }
+
+        /* ── TASTO VISIBILITA' INTERFACCIA (Occhio) ── */
+        .toggle-view-btn {
+            position: fixed;
+            top: 24px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .toggle-view-btn:hover {
+            transform: scale(1.1);
+            background: rgba(0,0,0,0.8);
+        }
+
+        /* ── CLASSE PER NASCONDERE L'INTERFACCIA ── */
+        body.clean-view .top-bar,
+        body.clean-view .card__content,
+        body.clean-view .card__sidebar,
+        body.clean-view .page-indicator,
+        body.clean-view .card-audio-btn,
+        body.clean-view .scroll-hint {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Transizioni per elementi che scompaiono */
+        .card__content, .card__sidebar, .page-indicator, .card-audio-btn, .scroll-hint {
+            transition: opacity 0.3s ease;
+        }
 
         /* ── CARD (Stile 9:16) ── */
         .card { height: 100vh; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 20px; }
@@ -139,7 +181,7 @@
             .card { padding: 0; } 
             .card__media-container { width: 100%; border-radius: 0; max-height: none; } 
             .card__sidebar { right: 12px; bottom: 80px; } 
-            .top-bar { flex-direction: column-reverse; align-items: stretch; padding: 16px 12px; gap: 12px; }
+            .top-bar { flex-direction: column-reverse; align-items: stretch; padding: 16px 60px 16px 12px; gap: 12px; } /* Padding aggiustato per mobile */
             .search-input { width: 100%; }
         }
     </style>
@@ -185,6 +227,10 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Cerca nel titolo..." oninput="onSearchInput(event)">
         </div>
     </div>
+
+    <button class="toggle-view-btn" id="toggleViewBtn" onclick="toggleInterfaceVisibility()" title="Nascondi/Mostra interfaccia">
+        👁️
+    </button>
 
     <div class="feed" id="feed"></div>
     <div class="scroll-hint" id="scrollHint">
@@ -260,6 +306,21 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<script>
+    function toggleInterfaceVisibility() {
+        document.body.classList.toggle('clean-view');
+        const btn = document.getElementById('toggleViewBtn');
+        
+        if (document.body.classList.contains('clean-view')) {
+            // Se nascosto, cambia l'icona
+            btn.innerHTML = '🙈';
+        } else {
+            // Se visibile, torna all'occhio normale
+            btn.innerHTML = '👁️';
+        }
+    }
+</script>
 
 <script src="/js/esplora.js"></script>
 
