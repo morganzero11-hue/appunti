@@ -9,6 +9,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
+            /* TEMA SCURO (DEFAULT) */
             --bg:       #0a0a0f;
             --surface:  #111118;
             --surface2: #1a1a24;
@@ -24,11 +25,27 @@
             --radius:   16px;
         }
 
-        html, body { height: 100%; overflow: hidden; background: var(--bg); }
+        /* ─── VARIABILI TEMA CHIARO ─── */
+        body.light-theme {
+            --bg: #f8f9fa; 
+            --surface: #ffffff; 
+            --surface2: #f1f3f5;
+            --surface3: #e9ecef;
+            --text: #1a1a1a; 
+            --muted: rgba(0,0,0,0.55);
+            --accent: #a3cc2b;
+            --accent2: #e63950;
+            --accent3: #4a9bd6;
+            --border: rgba(0,0,0,0.08);
+            --border2: rgba(0,0,0,0.15);
+        }
+
+        html, body { height: 100%; overflow: hidden; background: var(--bg); transition: background-color 0.3s; }
         body {
             font-family: 'Cabinet Grotesk', sans-serif;
             color: var(--text);
             display: flex;
+            transition: color 0.3s;
         }
 
         /* ══════════════════════════
@@ -37,13 +54,15 @@
         .sidenav {
             position: fixed; top: 0; left: 0; bottom: 0;
             width: var(--sidebar-w);
-            background: rgba(14, 14, 20, 0.97);
+            background: rgba(var(--bg-rgb, 14, 14, 20), 0.97);
             backdrop-filter: blur(20px);
             border-right: 1px solid var(--border);
             padding: 28px 16px 28px;
             display: flex; flex-direction: column;
             z-index: 1000;
+            transition: background-color 0.3s, border-color 0.3s;
         }
+        body.light-theme .sidenav { background: rgba(248, 249, 250, 0.97); }
 
         .sidenav__brand {
             display: flex; align-items: center; gap: 10px;
@@ -79,7 +98,7 @@
             letter-spacing: -0.1px;
         }
         .sidenav__links a:hover {
-            background: rgba(255,255,255,0.06);
+            background: var(--surface2);
             color: var(--text);
         }
         .sidenav__links a.active {
@@ -94,7 +113,8 @@
             border: 1px solid var(--border);
             transition: background .2s, border-color .2s;
         }
-        .sidenav__links a:hover .nav-icon { background: rgba(255,255,255,0.08); }
+        body.light-theme .sidenav__links a .nav-icon { background: rgba(0,0,0,0.04); }
+        .sidenav__links a:hover .nav-icon { background: var(--surface3); }
         .sidenav__links a.active .nav-icon {
             background: rgba(200,240,96,0.12);
             border-color: rgba(200,240,96,0.25);
@@ -113,6 +133,7 @@
             letter-spacing: -0.2px;
             display: flex; align-items: center; justify-content: center; gap: 7px;
         }
+        body.light-theme .sidenav__login { color: #fff; }
         .sidenav__login:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(200,240,96,0.28);
@@ -151,6 +172,7 @@
             z-index: 100; pointer-events: none;
             transition: opacity 0.3s ease;
         }
+        body.light-theme .top-bar { background: linear-gradient(to bottom, rgba(248, 249, 250, 0.96) 0%, rgba(248, 249, 250, 0) 100%); }
 
         .filter-bar {
             display: flex; gap: 8px;
@@ -174,8 +196,9 @@
             display: flex; align-items: center; gap: 5px;
             letter-spacing: -0.1px;
         }
+        body.light-theme .filter-chip { background: rgba(0,0,0,0.04); }
         .filter-chip:hover {
-            background: rgba(255,255,255,0.12);
+            background: var(--surface2);
             color: var(--text);
             transform: translateY(-2px);
         }
@@ -185,6 +208,7 @@
             border-color: var(--accent);
             box-shadow: 0 4px 16px rgba(200,240,96,0.3);
         }
+        body.light-theme .filter-chip.active { color: #fff; }
 
         .search-container { pointer-events: auto; flex-shrink: 0; }
         .search-input {
@@ -201,9 +225,13 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: 12px center;
         }
+        body.light-theme .search-input { 
+            background: rgba(0,0,0,0.04); 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(0,0,0,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+        }
         .search-input::placeholder { color: var(--muted); }
         .search-input:focus {
-            background: rgba(255,255,255,0.12);
+            background: var(--surface2);
             border-color: var(--accent);
             width: 230px;
             box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
@@ -223,9 +251,10 @@
             cursor: pointer; z-index: 10000;
             transition: all .2s;
         }
+        body.light-theme .toggle-view-btn { background: rgba(255,255,255,0.8); }
         .toggle-view-btn:hover {
             transform: scale(1.1);
-            color: var(--text); border-color: rgba(255,255,255,0.25);
+            color: var(--text); border-color: var(--border2);
         }
 
         /* ══════════════════════════
@@ -330,7 +359,7 @@
             position: absolute; top: 80px; right: 16px;
             background: rgba(10,10,15,0.7);
             backdrop-filter: blur(8px);
-            color: var(--text); border: 1px solid rgba(255,255,255,0.12);
+            color: #fff; border: 1px solid rgba(255,255,255,0.12);
             width: 36px; height: 36px; border-radius: 50%;
             font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
             cursor: pointer; z-index: 10;
@@ -359,7 +388,7 @@
             font-size: 0.95rem; font-weight: 800; color: #fff;
             letter-spacing: -0.2px;
         }
-        .card__time { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+        .card__time { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 600; }
 
         .card__subject {
             display: inline-flex; align-items: center; gap: 5px;
@@ -369,6 +398,7 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.1);
             letter-spacing: 0.2px;
+            color: #fff;
         }
 
         .card__title {
@@ -390,6 +420,7 @@
             background: var(--accent); color: #0a0a0f;
             width: 100%; letter-spacing: -0.2px;
         }
+        body.light-theme .card__btn { color: #fff; }
         .card__btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(200,240,96,0.3);
@@ -414,6 +445,7 @@
             transition: transform .2s;
             border: 2px solid rgba(255,255,255,0.9);
             background: var(--surface2);
+            color: var(--accent);
         }
         .sidebar-avatar:hover { transform: scale(1.08); }
 
@@ -484,7 +516,7 @@
             border: 1px solid var(--border2);
             border-radius: 24px; padding: 36px;
             width: 100%; max-width: 500px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 24px 60px var(--shadow-color, rgba(0,0,0,0.6));
             animation: modalIn .3s cubic-bezier(.22,1,.36,1);
         }
         @keyframes modalIn {
@@ -531,7 +563,8 @@
             transition: all .2s; letter-spacing: -0.2px;
         }
         .modal__btn--accent { background: var(--accent); color: #0a0a0f; }
-        .modal__btn--accent:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,240,96,0.25); }
+        body.light-theme .modal__btn--accent { color: #fff; }
+        .modal__btn--accent:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-soft); }
         .modal__btn--ghost {
             background: var(--surface2); color: var(--text);
             border: 1px solid var(--border2);
@@ -550,7 +583,7 @@
         }
         .playlist-item:hover {
             border-color: var(--accent);
-            background: rgba(200,240,96,0.04);
+            background: var(--accent-soft);
             transform: translateX(4px);
         }
         .playlist-item-title { font-weight: 800; font-size: 0.95rem; }
@@ -568,9 +601,10 @@
             opacity: 0; transform: translateY(12px);
             transition: all .3s cubic-bezier(.22,1,.36,1);
             pointer-events: none; z-index: 9999;
-            box-shadow: 0 8px 24px rgba(200,240,96,0.2);
+            box-shadow: 0 8px 24px var(--shadow-color, rgba(200,240,96,0.2));
             letter-spacing: -0.2px;
         }
+        body.light-theme .toast { color: #fff; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
         /* ══════════════════════════
@@ -604,11 +638,13 @@
             .search-input:focus { width: 100%; }
         }
     </style>
+    <script>
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+    </script>
 </head>
-<body>
-
-<!-- ══ SIDEBAR NAV ══ -->
-<nav class="sidenav">
+<body class=""> <nav class="sidenav">
     <a href="index.html" class="sidenav__brand">
         <div class="sidenav__logo">
             <span></span><span></span><span></span>
@@ -662,10 +698,8 @@
     </a>
 </nav>
 
-<!-- ══ MAIN FEED ══ -->
 <div class="feed-wrapper">
 
-    <!-- Top filters + search -->
     <div class="top-bar">
         <div class="filter-bar" id="filterBar">
             <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">✦ Tutte</button>
@@ -690,7 +724,6 @@
         </div>
     </div>
 
-    <!-- Toggle visibilità UI -->
     <button class="toggle-view-btn" id="toggleViewBtn"
         onclick="toggleInterfaceVisibility()" title="Nascondi/Mostra interfaccia">
         👁️
@@ -704,7 +737,6 @@
     </div>
 </div>
 
-<!-- ══ MODAL UPLOAD ══ -->
 <div class="modal-overlay" id="modal">
     <div class="modal">
         <div class="modal__icon">✦</div>
@@ -755,7 +787,6 @@
     </div>
 </div>
 
-<!-- ══ MODAL PLAYLIST ══ -->
 <div class="modal-overlay" id="modalPlaylist">
     <div class="modal">
         <div class="modal__icon">📂</div>
@@ -776,10 +807,22 @@
     </div>
 </div>
 
-<!-- ══ TOAST ══ -->
 <div class="toast" id="toast"></div>
 
 <script>
+    // Recupero il tema anche nel body al caricamento per sicurezza
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+        
+        // Verifica login
+        if (document.cookie.includes('username=')) {
+            const loginBtn = document.getElementById('navLoginBtn');
+            if(loginBtn) loginBtn.style.display = 'none';
+        }
+    });
+
     function toggleInterfaceVisibility() {
         document.body.classList.toggle('clean-view');
         const btn = document.getElementById('toggleViewBtn');

@@ -3,101 +3,576 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilo Utente — Appunti</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Profilo — Appunti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a; --surface: #111111; --surface2: #181818;
-            --text: #f2f0ec; --muted: rgba(242,240,236,0.45);
-            --accent: #c8f060; --accent2: #ff4d6d; --nav-h: 62px;
-            --radius: 16px;
+            /* TEMA SCURO (DEFAULT) */
+            --bg:       #0a0a0f;
+            --surface:  #111118;
+            --surface2: #1a1a24;
+            --surface3: #22222e;
+            --text:     #f0ede8;
+            --muted:    rgba(240,237,232,0.42);
+            --accent:   #c8f060;
+            --accent2:  #ff4d6d;
+            --accent3:  #60b4f0;
+            --nav-h:    64px;
+            --radius:   16px;
+            --border:   rgba(255,255,255,0.05);
+            --border2:  rgba(255,255,255,0.11);
+            --shadow-color: rgba(200,240,96,0.15);
+            --stats-shadow: rgba(0,0,0,0.5);
+            --card-shadow: rgba(0,0,0,0.4);
+            --hero-bg-accent: rgba(200,240,96,0.06);
+            --hero-bg-accent2: rgba(96,180,240,0.05);
+            --hero-bg-accent3: rgba(255,77,109,0.04);
+            --audio-invert: invert(0);
         }
+
+        /* ─── VARIABILI TEMA CHIARO ─── */
+        body.light-theme {
+            --bg: #f8f9fa; 
+            --surface: #ffffff; 
+            --surface2: #f1f3f5;
+            --surface3: #e9ecef;
+            --text: #1a1a1a; 
+            --muted: rgba(0,0,0,0.55);
+            --accent: #a3cc2b;
+            --accent2: #e63950;
+            --accent3: #4a9bd6;
+            --border: rgba(0,0,0,0.08);
+            --border2: rgba(0,0,0,0.15);
+            --shadow-color: rgba(163,204,43,0.3);
+            --stats-shadow: rgba(0,0,0,0.05);
+            --card-shadow: rgba(0,0,0,0.08);
+            --hero-bg-accent: rgba(163,204,43,0.08);
+            --hero-bg-accent2: rgba(74,155,214,0.08);
+            --hero-bg-accent3: rgba(230,57,80,0.06);
+            --audio-invert: invert(0.9) hue-rotate(180deg);
+        }
+
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; min-height: 100vh; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ══════════════════════════
+           NAVBAR
+        ══════════════════════════ */
+        .topnav {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(var(--bg-rgb, 10,10,15), 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            display: flex; align-items: center; padding: 0 36px;
+            z-index: 1000; border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s;
+        }
+        body.light-theme .topnav { background: rgba(248, 249, 250, 0.9); }
+
+        .topnav__brand {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
+            color: var(--accent); text-decoration: none; margin-right: 32px;
+            letter-spacing: -0.4px;
+        }
+        .topnav__links {
+            list-style: none; display: flex; gap: 2px; flex: 1;
+        }
+        .topnav__links a {
+            color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            padding: 7px 14px; border-radius: 10px; transition: all .2s; display: block;
+        }
+        .topnav__links a:hover { color: var(--text); background: var(--surface2); }
+        .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
+        body.light-theme .topnav__links a.active { background: rgba(163,204,43,0.15); }
         
-        /* ─── NAVBAR ─── */
-        .topnav { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); display: flex; align-items: center; padding: 0 32px; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .topnav__brand { display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); text-decoration: none; margin-right: 30px; }
-        .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; margin: 0; padding: 0; }
-        .topnav__links a { color: var(--muted); text-decoration: none; font-size: 0.95rem; font-weight: 700; padding: 8px 16px; border-radius: 8px; transition: all .2s; }
-        .topnav__links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-        .topnav__links a.active { color: var(--accent); }
-        .topnav__login { background: var(--accent); color: #0a0a0a; padding: 8px 24px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 0.95rem; transition: transform .2s; margin-left: auto; }
-        .topnav__login:hover { transform: scale(1.05); }
+        .topnav__login {
+            background: var(--accent); color: #0a0a0f; padding: 8px 22px;
+            border-radius: 10px; text-decoration: none; font-weight: 800;
+            font-size: 0.9rem; transition: all .2s; margin-left: auto; letter-spacing: -0.2px;
+        }
+        body.light-theme .topnav__login { color: #fff; }
+        .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
         @media (max-width: 768px) { .topnav__links { display: none; } }
 
-        /* ─── PROFILO HEADER ─── */
-        .profile-header { margin-top: calc(var(--nav-h) + 40px); display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 20px; }
-        .avatar-wrapper { position: relative; margin-bottom: 16px; }
-        .avatar-preview { width: 120px; height: 120px; background: var(--surface2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--accent); overflow: hidden; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .avatar-preview:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(200,240,96,0.3); }
+        /* ══════════════════════════
+           PROFILE HERO
+        ══════════════════════════ */
+        .profile-hero {
+            margin-top: var(--nav-h);
+            position: relative;
+            padding: 56px 0 0;
+            overflow: hidden;
+        }
+
+        /* Animated mesh background */
+        .profile-hero__bg {
+            position: absolute; inset: 0; z-index: 0; pointer-events: none;
+        }
+        .profile-hero__bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 600px 400px at 15% 60%, var(--hero-bg-accent) 0%, transparent 60%),
+                radial-gradient(ellipse 500px 400px at 85% 20%, var(--hero-bg-accent2) 0%, transparent 60%),
+                radial-gradient(ellipse 400px 300px at 50% 90%, var(--hero-bg-accent3) 0%, transparent 60%);
+        }
+        .profile-hero__bg::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+        body.light-theme .profile-hero__bg::after { background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px); }
+
+        .profile-hero__inner {
+            position: relative; z-index: 1;
+            max-width: 900px; margin: 0 auto;
+            padding: 0 32px 48px;
+            display: flex; align-items: flex-end; gap: 28px;
+        }
+
+        /* Avatar */
+        .avatar-wrapper {
+            position: relative; flex-shrink: 0;
+        }
+        .avatar-preview {
+            width: 110px; height: 110px;
+            border-radius: 50%; overflow: hidden;
+            cursor: pointer;
+            background: var(--surface2);
+            border: 3px solid rgba(200,240,96,0.5);
+            display: flex; align-items: center; justify-content: center;
+            transition: all .25s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,240,96,0.15);
+        }
+        body.light-theme .avatar-preview { border-color: rgba(163,204,43,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 0 0 1px rgba(163,204,43,0.15); }
+        .avatar-preview:hover {
+            transform: scale(1.04);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 3px rgba(200,240,96,0.3);
+        }
+        body.light-theme .avatar-preview:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 3px rgba(163,204,43,0.3); }
+
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-preview span { font-size: 2.5rem; font-family: 'Fraunces', serif; color: var(--accent); }
-        .avatar-edit-icon { position: absolute; bottom: 0; right: 0; background: var(--accent); color: #000; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; border: 2px solid var(--bg); pointer-events: none; }
-        .profile-name { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; text-transform: capitalize; }
-        .profile-username { font-size: 1rem; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
-        .profile-school { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.7); background: var(--surface2); padding: 4px 12px; border-radius: 12px; display: inline-block; margin-bottom: 20px;}
+        .avatar-preview span {
+            font-size: 2.8rem;
+            font-family: 'Fraunces', serif;
+            color: var(--accent); font-weight: 900;
+        }
+        .avatar-edit-badge {
+            position: absolute; bottom: 2px; right: 2px;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--accent); color: #0a0a0f;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 900;
+            border: 2px solid var(--bg); pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: border-color 0.3s;
+        }
+        body.light-theme .avatar-edit-badge { color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-        /* Statistiche */
-        .profile-stats { display: flex; gap: 40px; margin-bottom: 30px; }
-        .stat-item { display: flex; flex-direction: column; align-items: center; }
-        .stat-num { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; }
-        .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        /* Profile meta */
+        .profile-meta { flex: 1; padding-bottom: 4px; }
+        .profile-name {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 900; letter-spacing: -1px; line-height: 1.1;
+            margin-bottom: 6px; text-transform: capitalize;
+        }
+        .profile-username {
+            font-size: 0.9rem; color: var(--muted); font-weight: 700; margin-bottom: 10px;
+        }
+        .profile-username span { color: var(--accent); }
+        .profile-school-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--surface2); border: 1px solid var(--border2);
+            color: var(--muted); font-size: 0.78rem; font-weight: 700;
+            padding: 5px 12px; border-radius: 30px;
+        }
+        body.light-theme .profile-school-tag { color: var(--text); }
 
-        /* ─── TABS ─── */
-        .tabs-container { max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 0 20px; margin-bottom: 30px; flex-wrap: wrap;}
-        .tab-btn { background: none; border: none; color: var(--muted); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 800; padding: 16px 0; cursor: pointer; position: relative; transition: color .2s; }
-        .tab-btn:hover { color: var(--text); }
-        .tab-btn.active { color: var(--text); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--accent); border-radius: 3px 3px 0 0; }
+        /* Stats row */
+        .profile-stats {
+            display: flex; gap: 0;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 16px; overflow: hidden;
+            max-width: 900px; margin: 0 auto 0;
+            position: relative; z-index: 1;
+            box-shadow: 0 10px 30px var(--stats-shadow);
+        }
+        .stat-item {
+            flex: 1; padding: 20px 24px; text-align: center;
+            position: relative;
+        }
+        .stat-item + .stat-item::before {
+            content: ''; position: absolute; left: 0; top: 20%; height: 60%;
+            width: 1px; background: var(--border2);
+        }
+        .stat-num {
+            display: block;
+            font-family: 'Fraunces', serif; font-size: 1.9rem; font-weight: 900;
+            color: var(--accent); line-height: 1; margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 0.68rem; font-weight: 800; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
 
-        /* ─── CONTENUTO DELLE SEZIONI ─── */
-        .tab-content { display: none; max-width: 900px; margin: 0 auto; padding: 0 20px; animation: fadeIn .3s ease; }
+        /* ══════════════════════════
+           TABS
+        ══════════════════════════ */
+        .tabs-wrapper {
+            max-width: 900px; margin: 40px auto 0;
+            padding: 0 32px;
+        }
+        .tabs-row {
+            display: flex; gap: 4px; overflow-x: auto;
+            background: var(--surface); border: 1px solid var(--border2);
+            border-radius: 14px; padding: 5px;
+            width: fit-content; max-width: 100%;
+            scrollbar-width: none;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .tabs-row::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: transparent; border: none;
+            color: var(--muted);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 800;
+            padding: 9px 18px; border-radius: 10px;
+            cursor: pointer; white-space: nowrap;
+            transition: all .2s; display: flex; align-items: center; gap: 6px;
+            letter-spacing: -0.1px;
+        }
+        .tab-btn:hover { color: var(--text); background: var(--surface2); }
+        .tab-btn.active {
+            background: rgba(200,240,96,0.12);
+            color: var(--accent);
+        }
+        body.light-theme .tab-btn.active { background: rgba(163,204,43,0.15); }
+
+        /* ══════════════════════════
+           TAB CONTENT
+        ══════════════════════════ */
+        .tabs-content {
+            max-width: 900px; margin: 28px auto 0;
+            padding: 0 32px;
+        }
+        .tab-content { display: none; animation: fadeIn .3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Griglia Appunti */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .note-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s, border-color .2s; }
-        .note-card:hover { transform: translateY(-4px); border-color: var(--border2); }
-        .note-thumb { height: 120px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .note-thumb img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2; }
-        .note-thumb-bg { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(circle at 50% 50%, var(--accent), transparent 70%); }
-        .note-info { padding: 16px; flex: 1; display: flex; flex-direction: column; }
-        .note-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
-        .note-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
-        .note-actions { display: flex; gap: 8px; margin-top: auto; }
-        .btn-small { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; text-decoration: none; cursor: pointer; border: none; }
-        .btn-open { background: rgba(200,240,96,0.15); color: var(--accent); }
-        .btn-open:hover { background: rgba(200,240,96,0.25); }
-        .btn-delete { background: rgba(255, 77, 109, 0.15); color: #ff4d6d; }
-        .btn-delete:hover { background: rgba(255, 77, 109, 0.3); }
+        /* ══════════════════════════
+           NOTES GRID
+        ══════════════════════════ */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 16px;
+        }
 
-        /* Form Pubblicazione */
-        .form-card { background: var(--surface); padding: 32px; border-radius: var(--radius); border: 1px solid var(--border); }
+        .note-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            display: flex; flex-direction: column;
+            transition: all .3s ease;
+        }
+        .note-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(200,240,96,0.2);
+            box-shadow: 0 16px 40px var(--card-shadow), 0 0 0 1px rgba(200,240,96,0.08);
+        }
+        body.light-theme .note-card:hover { border-color: var(--accent); box-shadow: 0 16px 40px var(--card-shadow), 0 0 0 1px rgba(163,204,43,0.2); }
+
+        .note-thumb {
+            height: 130px; background: var(--surface2);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        .note-thumb img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: relative; z-index: 2;
+            transition: transform .4s ease;
+        }
+        .note-card:hover .note-thumb img { transform: scale(1.05); }
+        .note-thumb-bg {
+            position: absolute; inset: 0; opacity: 0.2;
+            background: radial-gradient(circle at 40% 40%, var(--accent), transparent 70%);
+        }
+        body.light-theme .note-thumb-bg { opacity: 0.15; }
+
+        .note-info { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .note-title {
+            font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 800;
+            line-height: 1.25; color: var(--text);
+        }
+        .note-meta { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+
+        .note-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+        .btn-small {
+            flex: 1; text-align: center; padding: 8px 12px;
+            border-radius: 10px; font-size: 0.8rem; font-weight: 800;
+            text-decoration: none; cursor: pointer; border: none;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            transition: all .2s; letter-spacing: -0.1px;
+        }
+        .btn-open {
+            background: rgba(200,240,96,0.12);
+            color: var(--accent); border: 1px solid rgba(200,240,96,0.2);
+        }
+        body.light-theme .btn-open { background: rgba(163,204,43,0.12); border-color: rgba(163,204,43,0.2); }
+        .btn-open:hover { background: rgba(200,240,96,0.2); }
+        body.light-theme .btn-open:hover { background: rgba(163,204,43,0.2); }
+        
+        .btn-delete {
+            background: rgba(255,77,109,0.1);
+            color: var(--accent2); border: 1px solid rgba(255,77,109,0.2);
+        }
+        .btn-delete:hover { background: rgba(255,77,109,0.2); }
+
+        /* ══════════════════════════
+           SUB-TABS (Miei / Salvati)
+        ══════════════════════════ */
+        .subtab-row {
+            display: flex; gap: 8px; margin-bottom: 24px;
+            padding-bottom: 16px; border-bottom: 1px solid var(--border);
+        }
+        .subtab-btn {
+            padding: 7px 16px; border-radius: 30px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.8rem; font-weight: 800;
+            cursor: pointer; border: 1.5px solid var(--border2);
+            background: transparent; color: var(--muted);
+            transition: all .2s; letter-spacing: -0.1px;
+        }
+        .subtab-btn:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+        .subtab-btn.active {
+            background: rgba(200,240,96,0.1);
+            color: var(--accent); border-color: rgba(200,240,96,0.25);
+        }
+        body.light-theme .subtab-btn.active { background: rgba(163,204,43,0.1); border-color: rgba(163,204,43,0.3); }
+
+        /* ══════════════════════════
+           PUBLISH FORM
+        ══════════════════════════ */
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 20px; padding: 36px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .form-card__title {
+            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
+            margin-bottom: 4px; letter-spacing: -0.3px;
+        }
+        .form-card__sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 28px; }
+
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid var(--border2); background: var(--bg); color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .2s; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+        .form-group label {
+            display: block; font-size: 0.7rem; font-weight: 800;
+            margin-bottom: 8px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 1.2px;
+        }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%; padding: 12px 16px;
+            border-radius: 12px; border: 1.5px solid var(--border2);
+            background: var(--surface2); color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.9rem; font-weight: 600; outline: none;
+            transition: border-color .2s, box-shadow .2s, background-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
+        }
+        body.light-theme .form-group input:focus, 
+        body.light-theme .form-group textarea:focus, 
+        body.light-theme .form-group select:focus { box-shadow: 0 0 0 3px rgba(163,204,43,0.15); }
         
-        .file-input-wrapper { background: var(--surface2); border: 2px dashed var(--border2); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; position: relative; }
-        .file-input-wrapper:hover { border-color: var(--accent); }
-        .file-input-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        .file-label-text { font-size: 0.95rem; font-weight: 600; pointer-events: none; }
-        
-        .btn-save { width: 100%; background: var(--accent); color: #0a0a0a; border: none; padding: 16px; border-radius: 12px; font-weight: 900; font-family: 'Fraunces', serif; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,240,96,0.25); }
-        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .form-group select option { background: var(--surface2); }
 
-        /* Placeholder Sezioni Vuote */
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
-        .empty-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
-        .empty-text { font-size: 1rem; font-weight: 600; }
+        .file-input-wrapper {
+            background: var(--surface2);
+            border: 1.5px dashed var(--border2);
+            border-radius: 12px; padding: 20px;
+            text-align: center; cursor: pointer;
+            transition: all .2s; position: relative;
+        }
+        .file-input-wrapper:hover {
+            border-color: var(--accent);
+            background: rgba(200,240,96,0.03);
+        }
+        body.light-theme .file-input-wrapper:hover { background: rgba(163,204,43,0.05); }
+        .file-input-wrapper input[type="file"] {
+            position: absolute; inset: 0; opacity: 0;
+            cursor: pointer; width: 100%; height: 100%;
+        }
+        .file-label-text {
+            font-size: 0.88rem; font-weight: 600;
+            pointer-events: none; color: var(--muted);
+        }
+
+        .btn-save {
+            width: 100%;
+            background: var(--accent); color: #0a0a0f;
+            border: none; padding: 15px;
+            border-radius: 14px; font-weight: 900;
+            font-family: 'Fraunces', serif; font-size: 1.1rem;
+            cursor: pointer; transition: all .25s; margin-top: 8px;
+            letter-spacing: -0.3px;
+        }
+        body.light-theme .btn-save { color: #fff; }
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px var(--shadow-color);
+        }
+        .btn-save:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ══════════════════════════
+           PLAYLISTS
+        ══════════════════════════ */
+        .playlist-create-row {
+            display: flex; gap: 10px; margin-bottom: 24px;
+        }
+        .playlist-create-input {
+            flex: 1; padding: 11px 16px;
+            border-radius: 12px; border: 1.5px solid var(--border2);
+            background: var(--surface); color: var(--text);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.9rem; font-weight: 600; outline: none;
+            transition: border-color .2s;
+        }
+        .playlist-create-input:focus { border-color: var(--accent); }
+        .playlist-create-input::placeholder { color: var(--muted); }
+
+        .playlist-create-btn {
+            padding: 11px 22px; border-radius: 12px;
+            background: rgba(200,240,96,0.1); color: var(--accent);
+            border: 1.5px solid rgba(200,240,96,0.2);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.85rem; font-weight: 800;
+            cursor: pointer; white-space: nowrap; transition: all .2s;
+        }
+        body.light-theme .playlist-create-btn { background: rgba(163,204,43,0.1); border-color: rgba(163,204,43,0.25); }
+        .playlist-create-btn:hover { background: rgba(200,240,96,0.18); }
+        body.light-theme .playlist-create-btn:hover { background: rgba(163,204,43,0.2); }
+
+        .playlist-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            transition: all .3s; cursor: pointer;
+        }
+        .playlist-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(200,240,96,0.2);
+            box-shadow: 0 12px 30px var(--card-shadow);
+        }
+        body.light-theme .playlist-card:hover { border-color: var(--accent); }
+        .playlist-card__cover {
+            height: 90px;
+            background: linear-gradient(135deg, var(--surface2) 0%, var(--surface3) 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.8rem; position: relative; overflow: hidden;
+            transition: background 0.3s;
+        }
+        .playlist-card__cover::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(200,240,96,0.06), transparent 70%);
+        }
+        body.light-theme .playlist-card__cover::after { background: radial-gradient(circle at 30% 30%, rgba(163,204,43,0.1), transparent 70%); }
+        .playlist-card__body { padding: 14px 16px; }
+        .playlist-card__title {
+            font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 800;
+            margin-bottom: 4px; letter-spacing: -0.2px;
+        }
+        .playlist-card__count { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+        .playlist-card__btn {
+            display: block; width: 100%;
+            margin-top: 10px; padding: 8px;
+            text-align: center; border-radius: 8px;
+            background: rgba(200,240,96,0.1); color: var(--accent);
+            border: 1px solid rgba(200,240,96,0.2);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.78rem; font-weight: 800;
+            cursor: pointer; transition: background .2s;
+        }
+        body.light-theme .playlist-card__btn { background: rgba(163,204,43,0.1); border-color: rgba(163,204,43,0.25); }
+        .playlist-card__btn:hover { background: rgba(200,240,96,0.18); }
+        body.light-theme .playlist-card__btn:hover { background: rgba(163,204,43,0.18); }
+
+        /* Vista contenuto playlist */
+        .playlist-back-row {
+            display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+        }
+        .playlist-back-btn {
+            padding: 8px 16px; border-radius: 10px;
+            background: var(--surface2); color: var(--text);
+            border: 1px solid var(--border2);
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.82rem; font-weight: 800;
+            cursor: pointer; transition: background .2s;
+        }
+        .playlist-back-btn:hover { background: var(--surface3); }
+        .playlist-back-title {
+            font-family: 'Fraunces', serif; font-size: 1.4rem;
+            font-weight: 900; letter-spacing: -0.3px;
+        }
+
+        /* ══════════════════════════
+           EMPTY STATE
+        ══════════════════════════ */
+        .empty-state {
+            text-align: center; padding: 64px 24px;
+            color: var(--muted);
+        }
+        .empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.4; }
+        .empty-text {
+            font-size: 0.95rem; font-weight: 600; line-height: 1.5;
+        }
+
+        /* ══════════════════════════
+           RESPONSIVE
+        ══════════════════════════ */
+        @media (max-width: 768px) {
+            .topnav { padding: 0 20px; }
+            .profile-hero__inner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 0 20px 36px; }
+            .profile-stats { border-radius: 0; }
+            .tabs-wrapper, .tabs-content { padding: 0 16px; }
+            .notes-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .form-card { padding: 24px 20px; }
+        }
     </style>
+    <script>
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+    </script>
 </head>
-<body>
-
-<nav class="topnav">
+<body class=""> <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
@@ -110,21 +585,30 @@
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
-<div class="profile-header">
-    <div class="avatar-wrapper">
-        <div class="avatar-preview" onclick="document.getElementById('fileIn').click()" title="Cambia foto profilo">
-            <img id="avatarImg" style="display:none;">
-            <span id="avatarPh">?</span>
+<div class="profile-hero">
+    <div class="profile-hero__bg"></div>
+
+    <div class="profile-hero__inner">
+        <div class="avatar-wrapper">
+            <div class="avatar-preview"
+                onclick="document.getElementById('fileIn').click()"
+                title="Cambia foto profilo">
+                <img id="avatarImg" style="display:none;">
+                <span id="avatarPh">?</span>
+            </div>
+            <div class="avatar-edit-badge">+</div>
+            <input type="file" id="fileIn" hidden
+                onchange="uploadAvatar(event)" accept="image/*">
         </div>
-        <div class="avatar-edit-icon">+</div>
-        <input type="file" id="fileIn" hidden onchange="uploadAvatar(event)" accept="image/*">
+
+        <div class="profile-meta">
+            <h1 class="profile-name" id="valNome">Caricamento…</h1>
+            <div class="profile-username">@<span id="valUsername">utente</span></div>
+            <div class="profile-school-tag">🏫 <span id="valScuola">Scuola non impostata</span></div>
+        </div>
     </div>
 
-    <div class="profile-name" id="valNome">Caricamento...</div>
-    <div class="profile-username">@<span id="valUsername">utente</span></div>
-    <div class="profile-school" id="valScuola">Scuola non impostata</div>
-
-    <div class="profile-stats">
+    <div class="profile-stats" style="max-width:900px; margin:0 auto;">
         <div class="stat-item">
             <span class="stat-num" id="statAppunti">0</span>
             <span class="stat-label">Contenuti Pubblicati</span>
@@ -136,151 +620,191 @@
     </div>
 </div>
 
-<div class="tabs-container">
-    <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">I Miei Contenuti</button>
-    <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">Salvati ❤️</button>
-    <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">Playlists 📂</button>
-    <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">+ Pubblica Appunto</button>
-    <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">🎙️ Pubblica Podcast</button>
-</div>
-
-<div id="tab-miei-appunti" class="tab-content active">
-    <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
-        <button id="subBtnMieiAppunti" onclick="mostraSottoTabMiei('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
-        <button id="subBtnMieiPodcast" onclick="mostraSottoTabMiei('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
-    </div>
-    <div id="listaMieiAppunti" class="notes-grid"></div>
-    <div id="listaMieiPodcast" class="notes-grid" style="display: none;"></div>
-</div>
-
-<div id="tab-salvati" class="tab-content">
-    <div style="display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--surface2); padding-bottom: 15px;">
-        <button id="subBtnSalvatiAppunti" onclick="mostraSottoTabSalvati('appunti')" class="btn-small btn-open" style="max-width: 150px;">📄 Appunti</button>
-        <button id="subBtnSalvatiPodcast" onclick="mostraSottoTabSalvati('podcast')" class="btn-small" style="background: transparent; color: var(--muted); border: 1px solid var(--surface2); max-width: 150px;">🎙️ Podcast</button>
-    </div>
-    <div id="listaAppuntiSalvati" class="notes-grid"></div>
-    <div id="listaPodcastSalvati" class="notes-grid" style="display: none;"></div>
-</div>
-
-<div id="tab-playlists" class="tab-content">
-    
-    <div id="vistaElencoPlaylists">
-        <div style="display: flex; gap: 10px; margin-bottom: 30px;">
-            <input type="text" id="nuovaPlaylistTitolo" placeholder="Es: Analisi 1, Chimica Organica..." style="flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--surface2); background: var(--surface); color: var(--text); outline: none;">
-            <button class="btn-small btn-open" onclick="creaPlaylist()" style="padding: 0 24px;">+ Crea Raccolta</button>
-        </div>
-        <div id="listaPlaylists" class="notes-grid">
-            <p style="color:var(--muted)">Caricamento playlist...</p>
-        </div>
-    </div>
-
-    <div id="vistaContenutoPlaylist" style="display: none;">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
-            <button onclick="tornaAllePlaylists()" class="btn-small" style="background: var(--surface2); color: var(--text); max-width: max-content; padding: 8px 16px;">⬅️ Torna Indietro</button>
-            <h2 id="titoloPlaylistAttuale" style="font-family: 'Fraunces', serif; margin: 0;">Nome Playlist</h2>
-        </div>
-        
-        <div id="grigliaContenutoPlaylist" class="notes-grid">
-            </div>
-    </div>
-
-</div>
-
-<div id="tab-pubblica" class="tab-content">
-    <div class="form-card" id="sezionePubblica">
-        <div class="form-group">
-            <label>Titolo Appunto</label>
-            <input type="text" id="titoloAppunto" placeholder="Es: Formule di Trigonometria (Max voto!)">
-        </div>
-        <div class="form-group">
-            <label>Materia</label>
-            <select id="materiaAppunto">
-                <option>Matematica</option>
-                <option>Fisica</option>
-                <option>Scienze</option>
-                <option>Storia</option>
-                <option>Italiano</option>
-                <option>Inglese</option>
-                <option>Informatica</option>
-                <option>Altro</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Copertina (Opzionale, rende la card più bella)</label>
-            <div class="file-input-wrapper">
-                <span class="file-label-text" id="coverLabelText">📸 Clicca per selezionare l'immagine di copertina</span>
-                <input type="file" id="coverAppunto" accept="image/*" onchange="aggiornaTestoFile('coverAppunto', 'coverLabelText')">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Immagini Appunti (Seleziona una o più foto)</label>
-            <div class="file-input-wrapper">
-                <span class="file-label-text" id="fileLabelText">📸 Clicca per selezionare le foto</span>
-                <input type="file" id="fileAppunto" accept="image/*" multiple onchange="aggiornaTestoFile('fileAppunto', 'fileLabelText')">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Spiegazione Audio (Opzionale)</label>
-            <div class="file-input-wrapper">
-                <span class="file-label-text" id="audioLabelText">🎙️ Aggiungi un commento vocale</span>
-                <input type="file" id="audioAppunto" accept="audio/*" onchange="aggiornaTestoFile('audioAppunto', 'audioLabelText')">
-            </div>
-        </div>
-        <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">🚀 Condividi con tutti</button>
+<div class="tabs-wrapper">
+    <div class="tabs-row">
+        <button class="tab-btn active" onclick="cambiaTab('tab-miei-appunti', this)">
+            📄 I Miei Contenuti
+        </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-salvati', this)">
+            ❤️ Salvati
+        </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">
+            📂 Playlists
+        </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">
+            ✦ Pubblica Appunto
+        </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-pubblica-podcast', this)">
+            🎙️ Pubblica Podcast
+        </button>
     </div>
 </div>
 
-<div id="tab-pubblica-podcast" class="tab-content">
-    <div class="form-card" id="sezionePubblicaPodcast">
-        <div class="form-group">
-            <label>Titolo Podcast</label>
-            <input type="text" id="podTitolo" placeholder="Es: La Rivoluzione Francese in 10 minuti">
-        </div>
-        <div class="form-group">
-            <label>Categoria</label>
-            <select id="podCategoria">
-                <option>Storia</option>
-                <option>Scienze</option>
-                <option>Letteratura</option>
-                <option>Filosofia</option>
-                <option>Motivazionale</option>
-                <option>Altro</option>
-            </select>
-        </div>
+<div class="tabs-content">
 
-        <div class="form-group">
-            <label>Scuola dell'Utente (Opzionale)</label>
-            <input type="text" id="podScuola" placeholder="Es: Liceo Scientifico Galilei">
+    <div id="tab-miei-appunti" class="tab-content active">
+        <div class="subtab-row">
+            <button id="subBtnMieiAppunti" class="subtab-btn active"
+                onclick="mostraSottoTabMiei('appunti')">📄 Appunti</button>
+            <button id="subBtnMieiPodcast" class="subtab-btn"
+                onclick="mostraSottoTabMiei('podcast')">🎙️ Podcast</button>
         </div>
-        <div class="form-group">
-            <label>Libro di testo / Fonti (Opzionale)</label>
-            <input type="text" id="podFonti" placeholder="Es: Il manuale di Storia vol. 2">
-        </div>
-
-        <div class="form-group">
-            <label>Descrizione Breve</label>
-            <textarea id="podDesc" rows="3" placeholder="Di cosa parla questo episodio?"></textarea>
-        </div>
-        <div class="form-group">
-            <label>File Audio (MP3, WAV)</label>
-            <div class="file-input-wrapper">
-                <span class="file-label-text" id="podAudioLabelText">🎵 Clicca per selezionare l'audio</span>
-                <input type="file" id="podAudio" accept="audio/*" onchange="aggiornaTestoFile('podAudio', 'podAudioLabelText')">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Copertina (Opzionale)</label>
-            <div class="file-input-wrapper">
-                <span class="file-label-text" id="podCoverLabelText">📸 Clicca per selezionare l'immagine</span>
-                <input type="file" id="podCover" accept="image/*" onchange="aggiornaTestoFile('podCover', 'podCoverLabelText')">
-            </div>
-        </div>
-        <button class="btn-save" id="btnPubblicaPod" onclick="pubblicaPodcast()">🚀 Pubblica Podcast</button>
+        <div id="listaMieiAppunti" class="notes-grid"></div>
+        <div id="listaMieiPodcast" class="notes-grid" style="display:none;"></div>
     </div>
-</div>
 
-<script>
-    // ── HELPER E GESTIONE MENU ──
+    <div id="tab-salvati" class="tab-content">
+        <div class="subtab-row">
+            <button id="subBtnSalvatiAppunti" class="subtab-btn active"
+                onclick="mostraSottoTabSalvati('appunti')">📄 Appunti</button>
+            <button id="subBtnSalvatiPodcast" class="subtab-btn"
+                onclick="mostraSottoTabSalvati('podcast')">🎙️ Podcast</button>
+        </div>
+        <div id="listaAppuntiSalvati" class="notes-grid"></div>
+        <div id="listaPodcastSalvati" class="notes-grid" style="display:none;"></div>
+    </div>
+
+    <div id="tab-playlists" class="tab-content">
+
+        <div id="vistaElencoPlaylists">
+            <div class="playlist-create-row">
+                <input type="text" id="nuovaPlaylistTitolo"
+                    class="playlist-create-input"
+                    placeholder="Es: Analisi 1, Chimica Organica…">
+                <button class="playlist-create-btn" onclick="creaPlaylist()">
+                    + Crea Raccolta
+                </button>
+            </div>
+            <div id="listaPlaylists" class="notes-grid">
+                <p style="color:var(--muted); font-size:0.9rem;">Caricamento…</p>
+            </div>
+        </div>
+
+        <div id="vistaContenutoPlaylist" style="display:none;">
+            <div class="playlist-back-row">
+                <button class="playlist-back-btn" onclick="tornaAllePlaylists()">
+                    ← Indietro
+                </button>
+                <h2 class="playlist-back-title" id="titoloPlaylistAttuale"></h2>
+            </div>
+            <div id="grigliaContenutoPlaylist" class="notes-grid"></div>
+        </div>
+
+    </div>
+
+    <div id="tab-pubblica" class="tab-content">
+        <div class="form-card" id="sezionePubblica">
+            <div class="form-card__title">Nuovo Appunto</div>
+            <div class="form-card__sub">Condividi i tuoi appunti con la community di studenti</div>
+
+            <div class="form-group">
+                <label>Titolo Appunto</label>
+                <input type="text" id="titoloAppunto"
+                    placeholder="Es: Formule di Trigonometria (Max voto!)">
+            </div>
+            <div class="form-group">
+                <label>Materia</label>
+                <select id="materiaAppunto">
+                    <option>Matematica</option><option>Fisica</option>
+                    <option>Scienze</option><option>Storia</option>
+                    <option>Italiano</option><option>Inglese</option>
+                    <option>Informatica</option><option>Altro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Copertina (Opzionale)</label>
+                <div class="file-input-wrapper">
+                    <span class="file-label-text" id="coverLabelText">📸 Clicca per selezionare l'immagine di copertina</span>
+                    <input type="file" id="coverAppunto" accept="image/*"
+                        onchange="aggiornaTestoFile('coverAppunto','coverLabelText')">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Immagini Appunti</label>
+                <div class="file-input-wrapper">
+                    <span class="file-label-text" id="fileLabelText">📸 Clicca per selezionare le foto</span>
+                    <input type="file" id="fileAppunto" accept="image/*" multiple
+                        onchange="aggiornaTestoFile('fileAppunto','fileLabelText')">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Spiegazione Audio (Opzionale)</label>
+                <div class="file-input-wrapper">
+                    <span class="file-label-text" id="audioLabelText">🎙️ Aggiungi un commento vocale</span>
+                    <input type="file" id="audioAppunto" accept="audio/*"
+                        onchange="aggiornaTestoFile('audioAppunto','audioLabelText')">
+                </div>
+            </div>
+            <button class="btn-save" id="btnPubblica" onclick="pubblicaAppunto()">
+                🚀 Condividi con tutti
+            </button>
+        </div>
+    </div>
+
+    <div id="tab-pubblica-podcast" class="tab-content">
+        <div class="form-card" id="sezionePubblicaPodcast">
+            <div class="form-card__title">Nuovo Podcast</div>
+            <div class="form-card__sub">Registra una spiegazione vocale e condividila con la community</div>
+
+            <div class="form-group">
+                <label>Titolo Podcast</label>
+                <input type="text" id="podTitolo"
+                    placeholder="Es: La Rivoluzione Francese in 10 minuti">
+            </div>
+            <div class="form-group">
+                <label>Categoria</label>
+                <select id="podCategoria">
+                    <option>Storia</option><option>Scienze</option>
+                    <option>Letteratura</option><option>Filosofia</option>
+                    <option>Motivazionale</option><option>Altro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Scuola (Opzionale)</label>
+                <input type="text" id="podScuola"
+                    placeholder="Es: Liceo Scientifico Galilei">
+            </div>
+            <div class="form-group">
+                <label>Fonti / Libro di testo (Opzionale)</label>
+                <input type="text" id="podFonti"
+                    placeholder="Es: Il manuale di Storia vol. 2">
+            </div>
+            <div class="form-group">
+                <label>Descrizione</label>
+                <textarea id="podDesc" rows="3"
+                    placeholder="Di cosa parla questo episodio?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>File Audio (MP3, WAV)</label>
+                <div class="file-input-wrapper">
+                    <span class="file-label-text" id="podAudioLabelText">🎵 Clicca per selezionare l'audio</span>
+                    <input type="file" id="podAudio" accept="audio/*"
+                        onchange="aggiornaTestoFile('podAudio','podAudioLabelText')">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Copertina (Opzionale)</label>
+                <div class="file-input-wrapper">
+                    <span class="file-label-text" id="podCoverLabelText">📸 Clicca per selezionare l'immagine</span>
+                    <input type="file" id="podCover" accept="image/*"
+                        onchange="aggiornaTestoFile('podCover','podCoverLabelText')">
+                </div>
+            </div>
+            <button class="btn-save" id="btnPubblicaPod" onclick="pubblicaPodcast()">
+                🚀 Pubblica Podcast
+            </button>
+        </div>
+    </div>
+
+</div><script>
+    // Applico il tema al body a caricamento DOM
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+    });
+
+    // ── HELPER COOKIE ──
     function getCookieSafe(name) {
         let value = `; ${document.cookie}`;
         let parts = value.split(`; ${name}=`);
@@ -288,93 +812,83 @@
         return null;
     }
 
+    // ── FILE LABEL ──
     function aggiornaTestoFile(inputId, labelId) {
         const input = document.getElementById(inputId);
         const label = document.getElementById(labelId);
         if (input.files && input.files.length > 0) {
-            let labelText = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
-            if (input.files.length > 1) labelText = `✅ Selezionati: <strong>${input.files.length} file</strong>`;
-            label.innerHTML = labelText;
-            label.style.color = "var(--accent)";
+            let txt = `✅ Selezionato: <strong>${input.files[0].name}</strong>`;
+            if (input.files.length > 1) txt = `✅ Selezionati: <strong>${input.files.length} file</strong>`;
+            label.innerHTML = txt;
+            label.style.color = 'var(--accent)';
         } else {
-            if(inputId === 'coverAppunto') label.innerHTML = "📸 Clicca per selezionare l'immagine di copertina";
-            if(inputId === 'fileAppunto') label.innerHTML = "📸 Clicca per selezionare le foto";
-            if(inputId === 'audioAppunto') label.innerHTML = "🎙️ Aggiungi un commento vocale";
-            if(inputId === 'podAudio') label.innerHTML = "🎵 Clicca per selezionare l'audio";
-            if(inputId === 'podCover') label.innerHTML = "📸 Clicca per selezionare l'immagine";
-            label.style.color = "var(--text)";
+            const defaults = {
+                coverAppunto: "📸 Clicca per selezionare l'immagine di copertina",
+                fileAppunto:  "📸 Clicca per selezionare le foto",
+                audioAppunto: "🎙️ Aggiungi un commento vocale",
+                podAudio:     "🎵 Clicca per selezionare l'audio",
+                podCover:     "📸 Clicca per selezionare l'immagine",
+            };
+            label.innerHTML = defaults[inputId] || '📎 Seleziona file';
+            label.style.color = 'var(--muted)';
         }
     }
 
+    // ── TABS ──
     window.cambiaTab = function(tabId, btnElement) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
     }
 
-    // ── FUNZIONI SOTTO-MENU ──
+    // ── SUB-TABS ──
+    function aggiornaSubTab(tipoAttivo, btnAttivo, btnInattivo, divAttivo, divInattivo) {
+        divAttivo.style.display = 'grid'; divInattivo.style.display = 'none';
+        btnAttivo.classList.add('active'); btnInattivo.classList.remove('active');
+    }
     window.mostraSottoTabMiei = function(tipo) {
-        const divAppunti = document.getElementById('listaMieiAppunti');
-        const divPodcast = document.getElementById('listaMieiPodcast');
-        const btnAppunti = document.getElementById('subBtnMieiAppunti');
-        const btnPodcast = document.getElementById('subBtnMieiPodcast');
-
-        if (tipo === 'appunti') {
-            divAppunti.style.display = 'grid'; divPodcast.style.display = 'none';
-            btnAppunti.className = 'btn-small btn-open'; btnAppunti.style.background = 'rgba(200,240,96,0.15)'; btnAppunti.style.color = 'var(--accent)'; btnAppunti.style.border = 'none';
-            btnPodcast.className = 'btn-small'; btnPodcast.style.background = 'transparent'; btnPodcast.style.color = 'var(--muted)'; btnPodcast.style.border = '1px solid var(--surface2)';
-        } else {
-            divAppunti.style.display = 'none'; divPodcast.style.display = 'grid';
-            btnPodcast.className = 'btn-small btn-open'; btnPodcast.style.background = 'rgba(200,240,96,0.15)'; btnPodcast.style.color = 'var(--accent)'; btnPodcast.style.border = 'none';
-            btnAppunti.className = 'btn-small'; btnAppunti.style.background = 'transparent'; btnAppunti.style.color = 'var(--muted)'; btnAppunti.style.border = '1px solid var(--surface2)';
-        }
+        const dA = document.getElementById('listaMieiAppunti');
+        const dP = document.getElementById('listaMieiPodcast');
+        const bA = document.getElementById('subBtnMieiAppunti');
+        const bP = document.getElementById('subBtnMieiPodcast');
+        if (tipo === 'appunti') aggiornaSubTab(tipo, bA, bP, dA, dP);
+        else                    aggiornaSubTab(tipo, bP, bA, dP, dA);
     }
-
     window.mostraSottoTabSalvati = function(tipo) {
-        const divAppunti = document.getElementById('listaAppuntiSalvati');
-        const divPodcast = document.getElementById('listaPodcastSalvati');
-        const btnAppunti = document.getElementById('subBtnSalvatiAppunti');
-        const btnPodcast = document.getElementById('subBtnSalvatiPodcast');
-
-        if (tipo === 'appunti') {
-            divAppunti.style.display = 'grid'; divPodcast.style.display = 'none';
-            btnAppunti.className = 'btn-small btn-open'; btnAppunti.style.background = 'rgba(200,240,96,0.15)'; btnAppunti.style.color = 'var(--accent)'; btnAppunti.style.border = 'none';
-            btnPodcast.className = 'btn-small'; btnPodcast.style.background = 'transparent'; btnPodcast.style.color = 'var(--muted)'; btnPodcast.style.border = '1px solid var(--surface2)';
-        } else {
-            divAppunti.style.display = 'none'; divPodcast.style.display = 'grid';
-            btnPodcast.className = 'btn-small btn-open'; btnPodcast.style.background = 'rgba(200,240,96,0.15)'; btnPodcast.style.color = 'var(--accent)'; btnPodcast.style.border = 'none';
-            btnAppunti.className = 'btn-small'; btnAppunti.style.background = 'transparent'; btnAppunti.style.color = 'var(--muted)'; btnAppunti.style.border = '1px solid var(--surface2)';
-        }
+        const dA = document.getElementById('listaAppuntiSalvati');
+        const dP = document.getElementById('listaPodcastSalvati');
+        const bA = document.getElementById('subBtnSalvatiAppunti');
+        const bP = document.getElementById('subBtnSalvatiPodcast');
+        if (tipo === 'appunti') aggiornaSubTab(tipo, bA, bP, dA, dP);
+        else                    aggiornaSubTab(tipo, bP, bA, dP, dA);
     }
 
-    // ── PROFILO E AVATAR ──
+    // ── PROFILO HEADER ──
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
-        let utenteId = getCookieSafe('utente_id');
-        
-        if(!usernameLoggato) {
-            document.getElementById('valNome').textContent = "Ospite";
-            document.getElementById('valUsername').textContent = "effettua_login";
-            document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
-            document.getElementById('sezionePubblicaPodcast').innerHTML = "<div class='empty-state'>Devi accedere per pubblicare.</div>";
+        let utenteId        = getCookieSafe('utente_id');
+
+        if (!usernameLoggato) {
+            document.getElementById('valNome').textContent = 'Ospite';
+            document.getElementById('valUsername').textContent = 'effettua_login';
+            document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi accedere per pubblicare.</div></div>";
+            document.getElementById('sezionePubblicaPodcast').innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi accedere per pubblicare.</div></div>";
             return;
         }
 
         document.getElementById('valUsername').textContent = usernameLoggato;
-        document.getElementById('statAppunti').textContent = "0";
 
         try {
             const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
             if (res.ok) {
                 const user = await res.json();
-                let nomeCompleto = [];
-                if (user.nome && user.nome.trim() !== '') nomeCompleto.push(user.nome.trim());
-                if (user.cognome && user.cognome.trim() !== '') nomeCompleto.push(user.cognome.trim());
-                
-                document.getElementById('valNome').textContent = nomeCompleto.length > 0 ? nomeCompleto.join(' ') : usernameLoggato;
+                let nomi = [];
+                if (user.nome && user.nome.trim())    nomi.push(user.nome.trim());
+                if (user.cognome && user.cognome.trim()) nomi.push(user.cognome.trim());
+                document.getElementById('valNome').textContent = nomi.length ? nomi.join(' ') : usernameLoggato;
                 document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
-                
+
                 if (user.foto_profilo_url) {
                     const img = document.getElementById('avatarImg');
                     img.src = user.foto_profilo_url;
@@ -384,146 +898,121 @@
                     document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
                 }
             }
-
             if (utenteId) {
-                const resLikes = await fetch(`/api/likes?autore_id=${utenteId}`);
-                if (resLikes.ok) {
-                    const dataLikes = await resLikes.json();
-                    document.getElementById('statLikesRicevuti').textContent = dataLikes.total;
+                const resL = await fetch(`/api/likes?autore_id=${utenteId}`);
+                if (resL.ok) {
+                    const dL = await resL.json();
+                    document.getElementById('statLikesRicevuti').textContent = dL.total;
                 }
             }
-        } catch (e) {
-            console.error("Errore nel recuperare i dati dell'utente:", e);
-        }
+        } catch (e) { console.error(e); }
     }
 
+    // ── UPLOAD AVATAR ──
     window.uploadAvatar = async function(event) {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi essere loggato!");
+        if (!utenteId) return alert('Devi essere loggato!');
         const file = event.target.files[0];
         if (!file) return;
-
         const ph = document.getElementById('avatarPh');
         const img = document.getElementById('avatarImg');
         ph.textContent = '⏳'; ph.style.display = 'block'; img.style.display = 'none';
-
         try {
-            const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
-            if (!resBlob.ok) throw new Error("Errore Blob");
-            const blob = await resBlob.json();
-
-            const resDb = await fetch('/api/aggiorna-profilo', {
+            const rB = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
+            if (!rB.ok) throw new Error('Errore Blob');
+            const blob = await rB.json();
+            await fetch('/api/aggiorna-profilo', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: utenteId, foto_profilo_url: blob.url })
             });
-            if (!resDb.ok) throw new Error("Errore DB");
-
             img.src = blob.url; img.style.display = 'block'; ph.style.display = 'none';
-        } catch (error) {
-            alert("❌ Impossibile caricare la foto."); ph.textContent = '?';
-        }
+        } catch (err) { alert('❌ Impossibile caricare la foto.'); ph.textContent = '?'; }
     }
 
-    // ── PUBBLICAZIONI ──
+    // ── PUBBLICA APPUNTO ──
     window.pubblicaAppunto = async function() {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi effettuare il login!");
-
+        if (!utenteId) return alert('Effettua il login!');
         const filesIn = document.getElementById('fileAppunto');
         const coverIn = document.getElementById('coverAppunto');
         const audioIn = document.getElementById('audioAppunto');
-        const titolo = document.getElementById('titoloAppunto').value.trim();
+        const titolo  = document.getElementById('titoloAppunto').value.trim();
         const materia = document.getElementById('materiaAppunto').value;
-
-        if (!titolo) return alert("Inserisci un titolo!");
-        if (!filesIn.files || filesIn.files.length === 0) return alert("Seleziona il documento!");
-
+        if (!titolo) return alert('Inserisci un titolo!');
+        if (!filesIn.files || filesIn.files.length === 0) return alert('Seleziona il documento!');
         const btn = document.getElementById('btnPubblica');
-        btn.textContent = "⏳ Caricamento..."; btn.disabled = true;
-
+        btn.textContent = '⏳ Caricamento…'; btn.disabled = true;
         try {
             let fileUrls = [];
-            for (let file of filesIn.files) {
-                const res = await fetch(`/api/upload?filename=page_${Date.now()}`, { method: 'POST', body: file });
-                const data = await res.json(); fileUrls.push(data.url);
+            for (let f of filesIn.files) {
+                const r = await fetch(`/api/upload?filename=page_${Date.now()}`, { method: 'POST', body: f });
+                const d = await r.json(); fileUrls.push(d.url);
             }
-
             let audioUrl = null;
             if (audioIn.files.length > 0) {
-                const resA = await fetch(`/api/upload?filename=audio_${Date.now()}`, { method: 'POST', body: audioIn.files[0] });
-                const datA = await resA.json(); audioUrl = datA.url;
+                const rA = await fetch(`/api/upload?filename=audio_${Date.now()}`, { method: 'POST', body: audioIn.files[0] });
+                const dA = await rA.json(); audioUrl = dA.url;
             }
-
             let coverUrl = fileUrls[0];
             if (coverIn.files.length > 0) {
-                const resC = await fetch(`/api/upload?filename=cover_${Date.now()}`, { method: 'POST', body: coverIn.files[0] });
-                const datC = await resC.json(); coverUrl = datC.url;
+                const rC = await fetch(`/api/upload?filename=cover_${Date.now()}`, { method: 'POST', body: coverIn.files[0] });
+                const dC = await rC.json(); coverUrl = dC.url;
             }
-
             await fetch('/api/appunti', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, materia: materia, file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl })
+                body: JSON.stringify({ utente_id: utenteId, titolo, materia, file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl })
             });
-
-            alert("✅ Appunto pubblicato!"); window.location.reload();
-        } catch (err) { alert("❌ Errore durante il caricamento."); } 
-        finally { btn.textContent = "🚀 Condividi"; btn.disabled = false; }
+            alert('✅ Appunto pubblicato!'); window.location.reload();
+        } catch { alert('❌ Errore durante il caricamento.'); }
+        finally { btn.textContent = '🚀 Condividi con tutti'; btn.disabled = false; }
     }
 
+    // ── PUBBLICA PODCAST ──
     window.pubblicaPodcast = async function() {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert("Devi effettuare il login!");
-
-        const titolo = document.getElementById('podTitolo').value.trim();
-        const desc = document.getElementById('podDesc').value.trim();
-        const categoria = document.getElementById('podCategoria').value;
-        const scuola = document.getElementById('podScuola').value.trim();
-        const fonti = document.getElementById('podFonti').value.trim();
-        const audioIn = document.getElementById('podAudio').files[0];
-        const coverIn = document.getElementById('podCover').files[0];
-        
-        const btn = document.getElementById('btnPubblicaPod');
-        if (!titolo || !audioIn) return alert("Mancano titolo o audio!");
-
-        btn.textContent = "⏳ Caricamento..."; btn.disabled = true;
-
+        if (!utenteId) return alert('Effettua il login!');
+        const titolo   = document.getElementById('podTitolo').value.trim();
+        const desc     = document.getElementById('podDesc').value.trim();
+        const categoria= document.getElementById('podCategoria').value;
+        const scuola   = document.getElementById('podScuola').value.trim();
+        const fonti    = document.getElementById('podFonti').value.trim();
+        const audioIn  = document.getElementById('podAudio').files[0];
+        const coverIn  = document.getElementById('podCover').files[0];
+        const btn      = document.getElementById('btnPubblicaPod');
+        if (!titolo || !audioIn) return alert('Mancano titolo o audio!');
+        btn.textContent = '⏳ Caricamento…'; btn.disabled = true;
         try {
-            const resA = await fetch(`/api/upload?filename=pod_${Date.now()}`, { method: 'POST', body: audioIn });
-            const datA = await resA.json();
-
+            const rA = await fetch(`/api/upload?filename=pod_${Date.now()}`, { method: 'POST', body: audioIn });
+            const dA = await rA.json();
             let coverUrl = null;
             if (coverIn) {
-                const resC = await fetch(`/api/upload?filename=podcov_${Date.now()}`, { method: 'POST', body: coverIn });
-                const datC = await resC.json(); coverUrl = datC.url;
+                const rC = await fetch(`/api/upload?filename=podcov_${Date.now()}`, { method: 'POST', body: coverIn });
+                const dC = await rC.json(); coverUrl = dC.url;
             }
-
             await fetch('/api/podcast', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ utente_id: utenteId, titolo: titolo, descrizione: desc, categoria: categoria, scuola: scuola, fonti: fonti, audio_url: datA.url, cover_url: coverUrl })
+                body: JSON.stringify({ utente_id: utenteId, titolo, descrizione: desc, categoria, scuola, fonti, audio_url: dA.url, cover_url: coverUrl })
             });
-
-            alert("🎙️ Podcast pubblicato!"); window.location.href = "podcast.html";
-        } catch (err) { alert("❌ Errore."); } 
-        finally { btn.textContent = "🚀 Pubblica Podcast"; btn.disabled = false; }
+            alert('🎙️ Podcast pubblicato!'); window.location.href = 'podcast.html';
+        } catch { alert('❌ Errore.'); }
+        finally { btn.textContent = '🚀 Pubblica Podcast'; btn.disabled = false; }
     }
 
-    // ── CARICAMENTI GRID ──
+    // ── CARICA MIEI APPUNTI ──
     async function caricaMieiAppunti() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
         if (!utenteId) return;
-
         try {
             const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
             const appunti = await res.json();
-            
-            let count = parseInt(document.getElementById('statAppunti').textContent) || 0;
-            document.getElementById('statAppunti').textContent = count + appunti.length;
-
-            if (appunti.length === 0) return container.innerHTML = "<div class='empty-state'>Nessun appunto.</div>";
-
+            let cnt = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = cnt + appunti.length;
+            if (appunti.length === 0) return container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Nessun appunto pubblicato.</div></div>";
             container.innerHTML = appunti.map(a => {
-                const cover = a.cover_url ? `<img src="${a.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+                const cover = a.cover_url
+                    ? `<img src="${a.cover_url}" alt="Cover">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`;
                 return `
                 <div class="note-card" id="nota-${a.id}">
                     <div class="note-thumb">${cover}</div>
@@ -537,32 +1026,31 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch (err) {}
+        } catch {}
     }
 
+    // ── CARICA MIEI PODCAST ──
     async function caricaMieiPodcast() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiPodcast');
-        if (!utenteId) return; 
-
+        if (!utenteId) return;
         try {
             const res = await fetch(`/api/podcast?utente_id=${utenteId}`);
             const podcast = await res.json();
-            
-            let count = parseInt(document.getElementById('statAppunti').textContent) || 0;
-            document.getElementById('statAppunti').textContent = count + podcast.length;
-
-            if (podcast.length === 0) return container.innerHTML = "<div class='empty-state'>Nessun podcast.</div>";
-
+            let cnt = parseInt(document.getElementById('statAppunti').textContent) || 0;
+            document.getElementById('statAppunti').textContent = cnt + podcast.length;
+            if (podcast.length === 0) return container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🎙️</div><div class='empty-text'>Nessun podcast pubblicato.</div></div>";
             container.innerHTML = podcast.map(p => {
-                const cover = p.cover_url ? `<img src="${p.cover_url}" alt="Cover">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">🎙️</span>`;
+                const cover = p.cover_url
+                    ? `<img src="${p.cover_url}" alt="Cover">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">🎙️</span>`;
                 return `
                 <div class="note-card" id="mio-podcast-${p.id}">
                     <div class="note-thumb">${cover}</div>
                     <div class="note-info">
                         <div class="note-title">${p.titolo}</div>
                         <div class="note-meta">${p.categoria}</div>
-                        <audio controls style="width:100%; height:35px; margin-top:10px; margin-bottom: 10px;">
+                        <audio controls style="width:100%; height:32px; margin: 8px 0; accent-color: var(--accent); filter: var(--audio-invert);">
                             <source src="${p.audio_url}" type="audio/mpeg">
                         </audio>
                         <div class="note-actions">
@@ -571,160 +1059,154 @@
                     </div>
                 </div>`;
             }).join('');
-        } catch (err) {}
+        } catch {}
     }
 
+    // ── CARICA SALVATI ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
         const contA = document.getElementById('listaAppuntiSalvati');
         const contP = document.getElementById('listaPodcastSalvati');
         if (!utenteId) return;
-
         try {
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
             const salvati = await res.json();
-
-            if (salvati.appunti.length > 0) {
+            if (salvati.appunti && salvati.appunti.length > 0) {
                 contA.innerHTML = salvati.appunti.map(a => `
                     <div class="note-card">
-                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '📄'}</div>
+                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '<span style="font-size:2.5rem">📄</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${a.titolo}</div>
-                            <div class="note-meta">${a.materia} • @${a.username || 'Anonimo'}</div>
+                            <div class="note-meta">${a.materia} · @${a.username || 'Anonimo'}</div>
                             <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
                         </div>
                     </div>`).join('');
-            } else { contA.innerHTML = "<div class='empty-state'>Nessun appunto salvato.</div>"; }
-
-            if (salvati.podcast.length > 0) {
+            } else {
+                contA.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Nessun appunto salvato.</div></div>";
+            }
+            if (salvati.podcast && salvati.podcast.length > 0) {
                 contP.innerHTML = salvati.podcast.map(p => `
                     <div class="note-card">
-                        <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '🎙️'}</div>
+                        <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '<span style="font-size:2.5rem">🎙️</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${p.titolo}</div>
-                            <div class="note-meta">${p.categoria} • @${p.username || 'Anonimo'}</div>
-                            <audio controls style="width:100%; height:35px; margin-top:10px;"><source src="${p.audio_url}" type="audio/mpeg"></audio>
+                            <div class="note-meta">${p.categoria} · @${p.username || 'Anonimo'}</div>
+                            <audio controls style="width:100%; height:32px; margin-top:8px; accent-color: var(--accent); filter: var(--audio-invert);">
+                                <source src="${p.audio_url}" type="audio/mpeg">
+                            </audio>
                         </div>
                     </div>`).join('');
-            } else { contP.innerHTML = "<div class='empty-state'>Nessun podcast salvato.</div>"; }
-
-        } catch (err) {}
+            } else {
+                contP.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Nessun podcast salvato.</div></div>";
+            }
+        } catch {}
     }
 
-    // ── GESTIONE PLAYLIST ──
+    // ── PLAYLISTS ──
     window.caricaPlaylists = async function() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaPlaylists');
-        if (!utenteId) return container.innerHTML = "<div class='empty-state'>Effettua il login per le playlist.</div>";
-
+        if (!utenteId) return container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login.</div></div>";
         try {
             const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
             const playlists = await res.json();
-
-            if (playlists.length === 0) return container.innerHTML = "<div class='empty-state'>Nessuna raccolta creata.</div>";
-
+            if (playlists.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📂</div><div class='empty-text'>Nessuna raccolta creata.</div></div>";
+                return;
+            }
             container.innerHTML = playlists.map(pl => `
-                <div class="note-card" style="padding: 20px; text-align: center; justify-content: center; background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">📂</div>
-                    <div class="note-title" style="font-size: 1.3rem;">${pl.titolo}</div>
-                    <div class="note-meta">${pl.numero_appunti || 0} elementi</div>
-                    <button class="btn-small btn-open" style="margin-top: 15px; width: 100%;" onclick="apriContenutoPlaylist(${pl.id}, '${pl.titolo.replace(/'/g, "\\'")}')">Vedi Contenuto</button>
-                </div>
-            `).join('');
-        } catch (err) { container.innerHTML = "<div class='empty-state'>Errore caricamento.</div>"; }
+                <div class="playlist-card">
+                    <div class="playlist-card__cover">📂</div>
+                    <div class="playlist-card__body">
+                        <div class="playlist-card__title">${pl.titolo}</div>
+                        <div class="playlist-card__count">${pl.numero_appunti || 0} elementi</div>
+                        <button class="playlist-card__btn"
+                            onclick="apriContenutoPlaylist(${pl.id}, '${pl.titolo.replace(/'/g, "\\'")}')">
+                            Vedi contenuto →
+                        </button>
+                    </div>
+                </div>`).join('');
+        } catch { container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore caricamento.</div></div>"; }
     }
 
     window.creaPlaylist = async function() {
         let utenteId = getCookieSafe('utente_id');
-        const inputTitolo = document.getElementById('nuovaPlaylistTitolo');
-        const titolo = inputTitolo.value.trim();
-
-        if (!utenteId) return alert("Devi essere loggato!");
-        if (!titolo) return alert("Inserisci un nome!");
-
+        const inputEl = document.getElementById('nuovaPlaylistTitolo');
+        const titolo  = inputEl.value.trim();
+        if (!utenteId) return alert('Devi essere loggato!');
+        if (!titolo)   return alert('Inserisci un nome!');
         try {
             const res = await fetch('/api/playlists', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ utente_id: utenteId, titolo: titolo })
+                body: JSON.stringify({ utente_id: utenteId, titolo })
             });
-            if (res.ok) { inputTitolo.value = ""; caricaPlaylists(); }
-        } catch (err) { console.error(err); }
+            if (res.ok) { inputEl.value = ''; caricaPlaylists(); }
+        } catch {}
     }
 
-    // ── APRI IL CONTENUTO DI UNA PLAYLIST ──
     window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
         document.getElementById('vistaElencoPlaylists').style.display = 'none';
         document.getElementById('vistaContenutoPlaylist').style.display = 'block';
         document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
-        
         const container = document.getElementById('grigliaContenutoPlaylist');
-        container.innerHTML = "<p style='color:var(--muted);'>Caricamento in corso...</p>";
-
+        container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
         try {
             const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
-            if (!res.ok) throw new Error("Errore API");
+            if (!res.ok) throw new Error();
             const appunti = await res.json();
-
             if (appunti.length === 0) {
-                container.innerHTML = "<div class='empty-state'>Questa cartella è vuota. Trova appunti in Esplora per aggiungerli!</div>";
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Questa cartella è vuota.</div></div>";
                 return;
             }
-
-            container.innerHTML = appunti.map(a => {
-                const cover = a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
-                return `
+            container.innerHTML = appunti.map(a => `
                 <div class="note-card">
-                    <div class="note-thumb">${cover}</div>
+                    <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`}</div>
                     <div class="note-info">
                         <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia} • @${a.username || 'Anonimo'}</div>
-                        <div class="note-actions">
-                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
-                        </div>
+                        <div class="note-meta">${a.materia} · @${a.username || 'Anonimo'}</div>
+                        <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
                     </div>
-                </div>`;
-            }).join('');
-
-        } catch (err) {
-            console.error(err);
-            container.innerHTML = "<div class='empty-state'>Errore nel caricamento degli appunti.</div>";
-        }
+                </div>`).join('');
+        } catch { container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore.</div></div>"; }
     }
 
     window.tornaAllePlaylists = function() {
         document.getElementById('vistaContenutoPlaylist').style.display = 'none';
         document.getElementById('vistaElencoPlaylists').style.display = 'block';
-        caricaPlaylists(); // Aggiorna i contatori
+        caricaPlaylists();
     }
 
-    // ── ELIMINA SINGOLI (MIEI) ──
+    // ── ELIMINA ──
     window.eliminaAppunto = async function(id) {
-        if (!confirm("Sei sicuro?")) return;
+        if (!confirm('Sei sicuro?')) return;
         try {
             await fetch(`/api/appunti?id=${id}`, { method: 'DELETE' });
-            document.getElementById(`nota-${id}`).remove();
-        } catch (e) {}
+            const el = document.getElementById(`nota-${id}`);
+            if (el) el.remove();
+        } catch {}
     }
     window.eliminaPodcast = async function(id) {
-        if (!confirm("Sei sicuro?")) return;
+        if (!confirm('Sei sicuro?')) return;
         try {
             await fetch(`/api/podcast?id=${id}`, { method: 'DELETE' });
-            document.getElementById(`mio-podcast-${id}`).remove();
-        } catch (e) {}
+            const el = document.getElementById(`mio-podcast-${id}`);
+            if (el) el.remove();
+        } catch {}
     }
 
     // ── AVVIO ──
     document.addEventListener('DOMContentLoaded', async () => {
         const btnLogin = document.getElementById('navLoginBtn');
         if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
-
         await aggiornaHeaderProfilo();
         caricaMieiAppunti();
         caricaMieiPodcast();
-        caricaAppuntiSalvati(); 
-        caricaPlaylists(); 
+        caricaAppuntiSalvati();
+        caricaPlaylists();
     });
 </script>
 
 </body>
 </html>
+
+vorrei che in utente.html, visto che avevi aggiunto dei podcast fittizi perchè non li trovava li andasse a prendere da quelli effettivamente scritti nel backend cosi non ho pèiu i podcast di un altro utente ma quelli giusti perche qui hai fatto la stessa cosa, invece devi far ein modo che da utente si va a prendere nel backend cosi se lui ne pubblica due si vedono  2 ecc capito? e poi perche quando imposto dal sito da impostazioni su utente e home non si attiva e resta scuro invece negli altri è perfetto?

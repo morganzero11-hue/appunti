@@ -7,13 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* TEMA SCURO (DEFAULT) */
             --bg: #0a0a0a; 
             --surface: #111111; 
             --surface2: #181818;
             --surface3: #222222;
             --text: #f2f0ec; 
             --muted: rgba(242,240,236,0.45);
-            --accent: #c8f060; /* Verde acido coerente */
+            --accent: #c8f060; 
             --accent-soft: rgba(200,240,96,0.1);
             --red: #ff4d6d;
             --nav-h: 62px;
@@ -21,6 +22,22 @@
             --radius: 16px;
             --border: rgba(255,255,255,0.05);
             --border2: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+
+        /* ─── VARIABILI TEMA CHIARO ─── */
+        body.light-theme {
+            --bg: #f8f9fa; 
+            --surface: #ffffff; 
+            --surface2: #f1f3f5;
+            --surface3: #e9ecef;
+            --text: #1a1a1a; 
+            --muted: rgba(0,0,0,0.55);
+            --accent: #a3cc2b; /* Verde leggermente più scuro per contrasto sul bianco */
+            --accent-soft: rgba(163,204,43,0.15);
+            --border: rgba(0,0,0,0.08);
+            --border2: rgba(0,0,0,0.15);
+            --shadow-color: rgba(0,0,0,0.08);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,15 +48,20 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s; /* Transizione fluida */
         }
 
         /* ─── NAVBAR UNIFICATA ─── */
         .topnav { 
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); 
-            background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); 
+            background: rgba(var(--bg-rgb, 10,10,10), 0.95); backdrop-filter: blur(10px); 
             display: flex; align-items: center; padding: 0 32px; z-index: 1000; 
             border-bottom: 1px solid var(--border); 
+            transition: background-color 0.3s;
         }
+        /* Fix speciale per la navbar nel tema chiaro */
+        body.light-theme .topnav { background: rgba(248, 249, 250, 0.95); }
+
         .topnav__brand { 
             display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; 
             font-size: 1.5rem; font-weight: 900; color: var(--accent); text-decoration: none; margin-right: 30px; 
@@ -49,12 +71,14 @@
             color: var(--muted); text-decoration: none; font-size: 0.95rem; font-weight: 700; 
             padding: 8px 16px; border-radius: 8px; transition: all .2s; 
         }
-        .topnav__links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .topnav__links a:hover { color: var(--text); background: var(--surface2); }
         .topnav__links a.active { color: var(--accent); background: var(--accent-soft); }
         .topnav__login { 
-            background: var(--accent); color: #0a0a0a; padding: 8px 24px; border-radius: 8px; 
+            background: var(--accent); color: #fff; padding: 8px 24px; border-radius: 8px; 
             text-decoration: none; font-weight: 800; font-size: 0.95rem; transition: transform .2s; margin-left: auto; 
         }
+        /* Fix colore testo bottone accedi in chiaro per contrasto */
+        body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: scale(1.05); }
 
         /* ─── LAYOUT ─── */
@@ -72,6 +96,7 @@
             padding: 40px 16px;
             position: sticky; top: var(--nav-h);
             height: calc(100vh - var(--nav-h));
+            transition: background-color 0.3s;
         }
         .sidebar__label {
             font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
@@ -99,7 +124,7 @@
         .section__sub { color: var(--muted); margin-bottom: 40px; font-size: 1rem; }
 
         /* ─── SETTINGS COMPONENTS ─── */
-        .settings-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 30px; }
+        .settings-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 30px; transition: background-color 0.3s, border-color 0.3s; }
         
         .setting-row {
             display: flex; align-items: center; padding: 24px; gap: 20px;
@@ -109,6 +134,7 @@
         .setting-row__icon { 
             width: 44px; height: 44px; background: var(--surface2); border-radius: 12px;
             display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--border2);
+            transition: background-color 0.3s;
         }
         .setting-row__info { flex: 1; }
         .setting-row__label { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
@@ -118,13 +144,14 @@
         .setting-input {
             width: 100%; background: var(--bg); border: 1px solid var(--border2);
             padding: 12px 16px; border-radius: 10px; color: var(--text);
-            font-family: inherit; font-weight: 600; margin-top: 12px; outline: none; transition: border-color .2s;
+            font-family: inherit; font-weight: 600; margin-top: 12px; outline: none; transition: border-color .2s, background-color 0.3s;
         }
         .setting-input:focus { border-color: var(--accent); }
 
         .setting-select {
             background: var(--surface2); border: 1px solid var(--border2);
             color: var(--text); padding: 8px 16px; border-radius: 10px; font-weight: 700; outline: none;
+            transition: background-color 0.3s;
         }
 
         /* Toggle */
@@ -145,7 +172,7 @@
         .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
         .theme-card {
             border: 2px solid var(--border); border-radius: 14px; padding: 20px;
-            cursor: pointer; transition: all .2s; text-align: center;
+            cursor: pointer; transition: all .2s; text-align: center; background: var(--surface2);
         }
         .theme-card:hover { border-color: var(--border2); transform: translateY(-3px); }
         .theme-card.active { border-color: var(--accent); background: var(--accent-soft); }
@@ -156,15 +183,15 @@
             padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer;
             font-family: inherit; transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
         }
-        .btn--accent { background: var(--accent); color: #0a0a0a; }
-        .btn--accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(200,240,96,0.2); }
+        .btn--accent { background: var(--accent); color: #fff; }
+        .btn--accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--accent-soft); }
         .btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
         .btn--danger { background: rgba(255, 77, 109, 0.1); color: var(--red); }
 
         /* Toast */
         .toast {
-            position: fixed; bottom: 32px; right: 32px; background: var(--accent);
-            color: #0a0a0a; padding: 16px 24px; border-radius: 12px;
+            position: fixed; bottom: 32px; right: 32px; background: var(--text);
+            color: var(--bg); padding: 16px 24px; border-radius: 12px;
             font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.95rem;
             transform: translateY(100px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
         }
@@ -177,10 +204,14 @@
             .topnav__links { display: none; }
         }
     </style>
+    <script>
+        const currentTheme = localStorage.getItem('appuntiTheme');
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-theme'); // Aggiungiamo a html/body
+        }
+    </script>
 </head>
-<body>
-
-<nav class="topnav">
+<body class=""> <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
@@ -270,12 +301,12 @@
                 <div class="setting-row" style="display: block;">
                     <div class="setting-row__label">Tema dell'app</div>
                     <div class="theme-grid">
-                        <div class="theme-card active" onclick="setTema('scuro', this)">
+                        <div class="theme-card" id="card-scuro" onclick="setTema('dark')">
                             <span class="theme-card__icon">🌑</span>
                             <div style="font-weight: 800;">Scuro</div>
                             <div style="font-size: 0.8rem; color: var(--muted);">Ideale per la notte</div>
                         </div>
-                        <div class="theme-card" onclick="setTema('chiaro', this)">
+                        <div class="theme-card" id="card-chiaro" onclick="setTema('light')">
                             <span class="theme-card__icon">☀️</span>
                             <div style="font-weight: 800;">Chiaro</div>
                             <div style="font-size: 0.8rem; color: var(--muted);">Massima luminosità</div>
@@ -342,10 +373,31 @@
         } catch (e) { console.error(e); }
     }
 
-    function setTema(t, el) {
+    // GESTIONE TEMA LATO UI
+    function initTema() {
+        const savedTheme = localStorage.getItem('appuntiTheme') || 'dark';
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('card-chiaro').classList.add('active');
+        } else {
+            document.getElementById('card-scuro').classList.add('active');
+        }
+    }
+
+    function setTema(themeName) {
         document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        salva("Tema aggiornato!");
+        
+        if (themeName === 'light') {
+            document.body.classList.add('light-theme');
+            localStorage.setItem('appuntiTheme', 'light');
+            document.getElementById('card-chiaro').classList.add('active');
+        } else {
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('appuntiTheme', 'dark');
+            document.getElementById('card-scuro').classList.add('active');
+        }
+        
+        salva(`Tema ${themeName === 'light' ? 'Chiaro' : 'Scuro'} applicato!`);
     }
 
     function salva(msg) {
@@ -362,8 +414,14 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        initTema(); // Inizializza i bottoni grafici in base alla scelta salvata
         caricaDatiAccount();
-        if (getCookieSafe('username')) document.getElementById('navLoginBtn').style.display = 'none';
+        
+        // Verifica login per l'header (uguale in tutte le pagine)
+        if (document.cookie.includes('username=')) {
+            const loginBtn = document.getElementById('navLoginBtn');
+            if(loginBtn) loginBtn.style.display = 'none';
+        }
     });
 </script>
 
