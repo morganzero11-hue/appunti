@@ -49,7 +49,7 @@
             --hero-grad-accent: rgba(163,204,43,0.08);
             --hero-grad-accent2: rgba(230,57,80,0.06);
             --hero-grad-accent3: rgba(74,155,214,0.06);
-            --audio-invert: invert(0.9) hue-rotate(180deg); /* Trucco per fare i player audio scuri su sfondo chiaro */
+            --audio-invert: invert(0.9) hue-rotate(180deg);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -406,12 +406,12 @@
             background: var(--surface3);
         }
 
-        /* Like button */
+        /* Like & Playlist row */
         .like-row {
-            display: flex; align-items: center; gap: 10px; margin-top: auto;
+            display: flex; align-items: center; gap: 8px; margin-top: auto;
         }
 
-        .btn-like {
+        .btn-like, .btn-playlist {
             display: inline-flex; align-items: center; gap: 7px;
             background: var(--surface2);
             border: 1px solid var(--border2);
@@ -420,12 +420,21 @@
             cursor: pointer; font-weight: 800; font-size: 0.85rem;
             font-family: 'Cabinet Grotesk', sans-serif;
             transition: all .2s;
+            flex: 1;
+            justify-content: center;
         }
 
         .btn-like:hover {
             background: rgba(255,77,109,0.12);
             border-color: rgba(255,77,109,0.3);
             color: var(--accent2);
+            transform: translateY(-1px);
+        }
+
+        .btn-playlist:hover {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
             transform: translateY(-1px);
         }
 
@@ -456,6 +465,54 @@
             border: none; border-top: 1px solid var(--border);
             margin: 0 0 60px;
         }
+
+        /* ─── PLAYLIST MODAL ─── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px); z-index: 2000; display: none;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface); border: 1px solid var(--border2);
+            border-radius: 20px; padding: 32px; width: 520px; max-width: 95vw;
+            animation: modalIn .3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity:0; transform: scale(.95) translateY(12px); }
+            to { opacity:1; transform: none; }
+        }
+        .modal__title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
+        .modal__sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 24px; }
+        
+        .playlist-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; border-radius: 12px; background: var(--surface2);
+            margin-bottom: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
+        }
+        .playlist-item:hover { border-color: var(--accent); background: var(--accent-glow); }
+        .playlist-item-title { font-weight: 700; font-size: 1rem; color: var(--text); }
+        .playlist-item-count { font-size: 0.8rem; color: var(--muted); }
+        
+        .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
+        .modal__btn {
+            flex: 1; padding: 11px; border-radius: 11px;
+            font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 800;
+            cursor: pointer; border: none; transition: transform .2s, box-shadow .2s;
+            text-align: center; text-decoration: none; line-height: normal; display: block;
+        }
+        .modal__btn--accent { background: var(--accent); color: #0a0a0f; }
+        body.light-theme .modal__btn--accent { color: #fff; }
+        .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: #fff;
+            padding: 12px 24px; border-radius: 12px; font-weight: 800;
+            opacity: 0; transform: translateY(20px); transition: all .3s; z-index: 9999;
+        }
+        body:not(.light-theme) .toast { color: #000; }
+        .toast.show { opacity: 1; transform: translateY(0); }
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 768px) {
@@ -557,8 +614,26 @@
 
 </main>
 
+<div class="modal-overlay" id="modalPlaylist">
+    <div class="modal">
+        <div class="modal__title">📂 Salva in una Playlist</div>
+        <div class="modal__sub">Scegli dove vuoi salvare questo podcast</div>
+        
+        <div id="elencoPlaylistsModale" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
+            <p style="color:var(--muted); font-size:0.9rem; text-align:center;">Caricamento...</p>
+        </div>
+
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--ghost" onclick="chiudiModalPlaylist()">Annulla</button>
+            <a href="profilo.html" class="modal__btn modal__btn--accent">+ Nuova Playlist</a>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-    /* ── Recupero il tema anche nel body al caricamento per sicurezza ── */
+    /* ── Recupero il tema e controlli login all'avvio ── */
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
             document.body.classList.add('light-theme');
@@ -583,12 +658,20 @@
             w.appendChild(bar);
         });
     })();
+
+    /* ── Toast Utility ── */
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
 </script>
 
 <script>
-    /* ── Override creaCardHTML per il nuovo design ──
-       Questa funzione sovrascrive quella in podcast.js,
-       mantenendo TUTTA la logica (like, filtri, ecc.) invariata. */
+    /* ── Override creaCardHTML per aggiungere il tasto Playlist ── */
+    let podcastAttualeSelezionato = null; // Variabile globale per ricordare quale podcast stiamo salvando
+
     function creaCardHTML(p, isFeatured) {
         const hasCover = p.cover_url;
         const coverStyle = hasCover
@@ -601,7 +684,8 @@
             ? `<div class="pod-fonti">📚 ${p.fonti}</div>`
             : '';
 
-        const isLiked = mieiLikesPodcast.includes(p.id);
+        // Controlla se 'mieiLikesPodcast' esiste (viene gestita dentro podcast.js)
+        const isLiked = typeof mieiLikesPodcast !== 'undefined' ? mieiLikesPodcast.includes(p.id) : false;
         const iconaCuore = isLiked ? '❤️' : '🤍';
         const stileBottone = isLiked ? 'background:rgba(255,77,109,0.12);border-color:rgba(255,77,109,0.3);color:var(--accent2);' : '';
 
@@ -623,6 +707,7 @@
                    ${waveHTML}
                </div>`;
 
+        // AGGIUNTO: Tasto per le playlist
         return `
         <div class="${cardClass}">
             ${coverContent}
@@ -640,9 +725,92 @@
                     <button id="${btnId}" class="btn-like" style="${stileBottone}" onclick="mettiMiPiace(${p.id}, '${btnId}')">
                         ${iconaCuore} Mi piace
                     </button>
+                    <button class="btn-playlist" onclick="apriModalePlaylist(${p.id})">
+                        [+] Salva
+                    </button>
                 </div>
             </div>
         </div>`;
+    }
+
+    /* ── LOGICA MODALE PLAYLIST (Integrata per la pagina Podcast) ── */
+    function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    async function apriModalePlaylist(podcastId) {
+        const utenteId = getCookie('utente_id');
+        if (!utenteId) {
+            alert('Devi effettuare l\'accesso per salvare in una playlist.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        podcastAttualeSelezionato = podcastId;
+        const modale = document.getElementById('modalPlaylist');
+        const container = document.getElementById('elencoPlaylistsModale');
+        
+        modale.classList.add('open');
+        container.innerHTML = '<p style="color:var(--muted); font-size:0.9rem; text-align:center;">Caricamento playlists...</p>';
+
+        try {
+            const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error('Errore di rete');
+            const playlists = await res.json();
+            
+            if (playlists.length === 0) {
+                container.innerHTML = '<p style="color:var(--muted); font-size:0.9rem; text-align:center;">Non hai ancora creato nessuna playlist.</p>';
+                return;
+            }
+
+            container.innerHTML = playlists.map(pl => `
+                <div class="playlist-item" onclick="salvaInPlaylistSelezionata(${pl.id})">
+                    <div class="playlist-item-title">📂 ${pl.titolo}</div>
+                    <div class="playlist-item-count">${pl.numero_appunti || 0} elementi</div>
+                </div>
+            `).join('');
+
+        } catch (error) {
+            container.innerHTML = '<p style="color:var(--red); font-size:0.9rem; text-align:center;">Impossibile caricare le playlist.</p>';
+        }
+    }
+
+    function chiudiModalPlaylist() {
+        document.getElementById('modalPlaylist').classList.remove('open');
+        podcastAttualeSelezionato = null;
+    }
+
+    async function salvaInPlaylistSelezionata(playlistId) {
+        if (!podcastAttualeSelezionato) return;
+
+        try {
+            const res = await fetch('/api/playlists/aggiungi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    playlist_id: playlistId,
+                    appunto_id: podcastAttualeSelezionato // Il backend dovrà supportare il salvataggio dei podcast nelle playlist
+                })
+            });
+
+            if (res.ok) {
+                showToast("✅ Salvato nella playlist con successo!");
+            } else {
+                const data = await res.json();
+                if (data.error && data.error.includes("già presente")) {
+                    showToast("⚠️ Questo podcast è già nella playlist.");
+                } else {
+                    showToast("❌ Errore durante il salvataggio.");
+                }
+            }
+        } catch (e) {
+            showToast("❌ Si è verificato un errore di connessione.");
+        } finally {
+            chiudiModalPlaylist();
+        }
     }
 </script>
 <script src="/js/podcast.js"></script>
