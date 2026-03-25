@@ -367,11 +367,9 @@
 
     // --- SWITCH TABS ---
     function showTab(tabName) {
-        // Nascondi le sezioni
         document.getElementById('section-appunti').classList.remove('active');
         document.getElementById('section-podcast').classList.remove('active');
         
-        // Disattiva i bottoni
         document.getElementById('btn-tab-appunti').classList.remove('active');
         document.getElementById('btn-tab-podcast').classList.remove('active', 'active-podcast');
         
@@ -399,10 +397,14 @@
             const u = await resU.json();
             document.title = `${u.nome} ${u.cognome} (@${u.username}) — Appunti`;
 
-            const appunti = resA.ok ? await resA.json() : [];
-            const podcast = resP.ok ? await resP.json() : []; 
+            const allAppunti = resA.ok ? await resA.json() : [];
+            const allPodcast = resP.ok ? await resP.json() : []; 
 
-            renderProfiloHtml(u, appunti, podcast);
+            // FILTRO FORZATO LATO FRONTEND PER RISOLVERE IL PROBLEMA DELL'API
+            const appuntiFiltrati = allAppunti.filter(a => a.username === u.username);
+            const podcastFiltrati = allPodcast.filter(p => p.username === u.username);
+
+            renderProfiloHtml(u, appuntiFiltrati, podcastFiltrati);
         } catch (e) { mostraNotFound(); }
     }
 
@@ -439,8 +441,8 @@
                 </div>
                 
                 <div class="tabs-container">
-                    <button class="tab-btn active" id="btn-tab-appunti" onclick="showTab('appunti')">📄 Appunti</button>
-                    <button class="tab-btn" id="btn-tab-podcast" onclick="showTab('podcast')">🎙️ Podcast</button>
+                    <button class="tab-btn active" id="btn-tab-appunti" onclick="showTab('appunti')">📄 Appunti (${appunti.length})</button>
+                    <button class="tab-btn" id="btn-tab-podcast" onclick="showTab('podcast')">🎙️ Podcast (${podcast.length})</button>
                 </div>
 
                 <div id="section-appunti" class="content-section active">
