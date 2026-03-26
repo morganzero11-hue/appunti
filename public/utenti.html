@@ -163,7 +163,7 @@
         .user-result__photo img { width: 100%; height: 100%; object-fit: cover; }
         .user-result__name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; }
 
-        /* ─── PROFILO UTENTE ─── */
+        /* ─── PROFILO UTENTE E BOTTONE FOLLOW ─── */
         .cover { height: 220px; background: linear-gradient(135deg, #111 0%, #1c1c1c 100%); margin-top: var(--nav-h); position: relative; overflow: hidden; }
         body.light-theme .cover { background: linear-gradient(135deg, #e9ecef 0%, #f1f3f5 100%); }
         .cover__pattern { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 24px 24px; }
@@ -184,19 +184,31 @@
         .profile-name { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; line-height: 1.1; }
         .profile-username-sub { font-size: 1rem; color: var(--muted); font-weight: 700; margin-top: 4px; }
 
-        .profile-actions { padding-bottom: 12px; }
+        .profile-actions { padding-bottom: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-share { padding: 10px 20px; background: var(--surface2); color: var(--text); border: 1px solid var(--border2); border-radius: 12px; font-weight: 800; cursor: pointer; transition: all .2s; }
         .btn-share:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
         body:not(.light-theme) .btn-share:hover { color: #000; }
+        
+        /* Stili dinamici per il tasto Segui / Smetti di seguire */
+        .btn-follow { background: var(--accent); color: #0a0a0f; border-color: var(--accent); width: 160px; text-align: center; }
+        body.light-theme .btn-follow { color: #fff; }
+        .btn-follow.following { background: transparent; color: var(--text); border-color: var(--border2); }
+        body.light-theme .btn-follow.following { color: var(--text); border-color: var(--border2); }
+        
+        /* Effetto hover rosso quando segui già */
+        .btn-follow.following:hover { background: rgba(255,77,109,0.1); color: var(--accent2); border-color: rgba(255,77,109,0.3); }
 
         .main { max-width: 900px; margin: 40px auto; padding: 0 32px 80px; }
 
-        .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 40px; }
+        /* GRID A 4 COLONNE PER LE STATISTICHE */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+        @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+        
         .stat-card { background: var(--surface); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 10px 30px var(--stats-shadow); }
         .stat-card__n { display: block; font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 6px; }
         .stat-card__l { font-size: 0.75rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
 
-        /* ─── TABS SWITCH ─── */
+        /* ─── TABS SWITCH E GRIGLIA ─── */
         .tabs-container {
             display: flex; gap: 10px; margin-bottom: 24px;
             background: var(--surface); padding: 6px; border-radius: 12px;
@@ -213,7 +225,6 @@
         body.light-theme .tab-btn.active { background: rgba(163,204,43,0.15); }
         .tab-btn.active-podcast { background: rgba(255,77,109,0.1); color: var(--accent2); }
         
-        /* ─── GRIGLIA APPUNTI & PODCAST E PLAYLISTS ─── */
         .content-section { display: none; }
         .content-section.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -233,69 +244,23 @@
         .note-card__meta { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
 
         /* ─── PLAYLISTS STYLES ─── */
-        .playlist-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius); overflow: hidden;
-            transition: all .3s; cursor: pointer;
-        }
-        .playlist-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(200,240,96,0.2);
-            box-shadow: 0 12px 30px var(--card-shadow);
-        }
+        .playlist-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all .3s; cursor: pointer; }
+        .playlist-card:hover { transform: translateY(-4px); border-color: rgba(200,240,96,0.2); box-shadow: 0 12px 30px var(--card-shadow); }
         body.light-theme .playlist-card:hover { border-color: var(--accent); }
-        
-        .playlist-card__cover {
-            height: 100px;
-            background: linear-gradient(135deg, var(--surface2) 0%, var(--surface3) 100%);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.8rem; position: relative; overflow: hidden;
-            transition: background 0.3s;
-        }
-        .playlist-card__cover::after {
-            content: '';
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(200,240,96,0.06), transparent 70%);
-        }
+        .playlist-card__cover { height: 100px; background: linear-gradient(135deg, var(--surface2) 0%, var(--surface3) 100%); display: flex; align-items: center; justify-content: center; font-size: 2.8rem; position: relative; overflow: hidden; transition: background 0.3s; }
+        .playlist-card__cover::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(200,240,96,0.06), transparent 70%); }
         body.light-theme .playlist-card__cover::after { background: radial-gradient(circle at 30% 30%, rgba(163,204,43,0.1), transparent 70%); }
-        
         .playlist-card__body { padding: 14px 16px; }
-        .playlist-card__title {
-            font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800;
-            margin-bottom: 4px; letter-spacing: -0.2px;
-        }
+        .playlist-card__title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.2px; }
         .playlist-card__count { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
-        .playlist-card__btn {
-            display: block; width: 100%;
-            margin-top: 10px; padding: 8px;
-            text-align: center; border-radius: 8px;
-            background: rgba(200,240,96,0.1); color: var(--accent);
-            border: 1px solid rgba(200,240,96,0.2);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.8rem; font-weight: 800;
-            cursor: pointer; transition: background .2s;
-        }
+        .playlist-card__btn { display: block; width: 100%; margin-top: 10px; padding: 8px; text-align: center; border-radius: 8px; background: rgba(200,240,96,0.1); color: var(--accent); border: 1px solid rgba(200,240,96,0.2); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: background .2s; }
         body.light-theme .playlist-card__btn { background: rgba(163,204,43,0.1); border-color: rgba(163,204,43,0.25); }
         .playlist-card__btn:hover { background: rgba(200,240,96,0.18); }
         body.light-theme .playlist-card__btn:hover { background: rgba(163,204,43,0.18); }
-
-        .playlist-back-row {
-            display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-        }
-        .playlist-back-btn {
-            padding: 8px 16px; border-radius: 10px;
-            background: var(--surface2); color: var(--text);
-            border: 1px solid var(--border2);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.85rem; font-weight: 800;
-            cursor: pointer; transition: background .2s;
-        }
+        .playlist-back-row { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .playlist-back-btn { padding: 8px 16px; border-radius: 10px; background: var(--surface2); color: var(--text); border: 1px solid var(--border2); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: background .2s; }
         .playlist-back-btn:hover { background: var(--surface3); }
-        .playlist-back-title {
-            font-family: 'Fraunces', serif; font-size: 1.4rem;
-            font-weight: 900; letter-spacing: -0.3px;
-        }
+        .playlist-back-title { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.3px; }
 
         /* Feedback */
         .loading { display: flex; justify-content: center; padding: 100px 0; }
@@ -306,11 +271,6 @@
         body:not(.light-theme) .toast { color: #000; }
         .toast.show { opacity: 1; transform: translateY(0); }
     </style>
-    <script>
-        if (localStorage.getItem('appuntiTheme') === 'light') {
-            document.documentElement.classList.add('light-theme');
-        }
-    </script>
 </head>
 <body class=""> 
 
@@ -391,7 +351,6 @@
 
     function generaHtmlUtente(u, isHistory = false) {
         const onclickAttr = `onclick="aggiungiACronologia({username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
-        
         return `
             <a class="${isHistory ? 'history-result' : 'user-result'}" href="utenti.html?user=${u.username}" ${onclickAttr}>
                 ${isHistory ? '<div class="history-icon">🕒</div>' : `
@@ -424,7 +383,6 @@
                 </div>
             </div>`;
         
-        // Fix colore icona SVG in tema scuro
         if(localStorage.getItem('appuntiTheme') !== 'light'){
             document.querySelector('.search-box__btn svg').setAttribute('stroke', '#000');
         }
@@ -438,7 +396,6 @@
     function gestisciInput(inputEl) {
         const val = inputEl.value.trim();
         clearTimeout(timer);
-        
         if (val.length === 0) {
             mostraSuggerimenti();
             return;
@@ -465,10 +422,7 @@
 
     async function eseguiRicerca(q) {
         const box = document.getElementById('risultati');
-        if (!q.trim()) {
-            mostraSuggerimenti();
-            return;
-        }
+        if (!q.trim()) { mostraSuggerimenti(); return; }
 
         box.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
         try {
@@ -481,9 +435,7 @@
             }
             box.innerHTML = `<div class="results-header"><h3 class="results-label">Risultati della ricerca</h3></div>` 
                             + utenti.map(u => generaHtmlUtente(u, false)).join('');
-        } catch (e) { 
-            box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; 
-        }
+        } catch (e) { box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; }
     }
 
     // --- SWITCH TABS ---
@@ -508,6 +460,76 @@
         }
     }
 
+    // --- GESTIONE FOLLOW (NUOVA FUNZIONALITÀ AGGIORNATA) ---
+    window.toggleFollow = async function(targetId) {
+        const myId = getCookieSafe('utente_id');
+        if (!myId) {
+            alert("Devi effettuare l'accesso per poter seguire gli utenti!");
+            window.location.href = "login.html";
+            return;
+        }
+        
+        const btn = document.getElementById('btnFollow');
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch('/api/follow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ follower_id: myId, seguito_id: targetId })
+            });
+            const data = await res.json();
+            
+            const statFollowers = document.getElementById('statFollowers');
+            let count = parseInt(statFollowers.innerText) || 0;
+
+            if (data.action === 'followed') {
+                btn.classList.add('following');
+                btn.innerHTML = 'Smetti di seguire'; // <-- MODIFICA QUI
+                statFollowers.innerText = count + 1;
+            } else if (data.action === 'unfollowed') {
+                btn.classList.remove('following');
+                btn.innerHTML = 'Segui'; // <-- TORNA NORMALE
+                statFollowers.innerText = Math.max(0, count - 1);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Errore di connessione");
+        }
+        btn.disabled = false;
+    }
+
+    async function initFollowData(targetId) {
+        const myId = getCookieSafe('utente_id');
+        const btn = document.getElementById('btnFollow');
+
+        try {
+            const resStats = await fetch(`/api/follow?utente_id=${targetId}`);
+            if (resStats.ok) {
+                const stats = await resStats.json();
+                document.getElementById('statFollowers').innerText = stats.followers || 0;
+                document.getElementById('statFollowing').innerText = stats.following || 0;
+            }
+        } catch(e) { console.error(e) }
+
+        if (myId !== targetId) {
+            btn.style.display = 'block';
+            
+            if (myId) {
+                try {
+                    const resCheck = await fetch(`/api/follow?utente_id=${myId}&target_id=${targetId}&check_status=true`);
+                    if (resCheck.ok) {
+                        const check = await resCheck.json();
+                        if (check.isFollowing) {
+                            btn.classList.add('following');
+                            btn.innerHTML = 'Smetti di seguire'; // <-- MODIFICA QUI
+                        }
+                    }
+                } catch(e) {}
+            }
+        }
+    }
+
     // --- MODALITÀ: PROFILO ---
     async function caricaProfilo() {
         document.getElementById('navBack').style.display = 'flex';
@@ -526,14 +548,13 @@
             const allAppunti = resA.ok ? await resA.json() : [];
             const allPodcast = resP.ok ? await resP.json() : []; 
 
-            // Filtro frontend
             const appuntiFiltrati = allAppunti.filter(a => a.username === u.username);
             const podcastFiltrati = allPodcast.filter(p => p.username === u.username);
 
             renderProfiloHtml(u, appuntiFiltrati, podcastFiltrati);
             
-            // Carica asincronamente le playlist
             caricaPlaylistsUtente(u.id);
+            initFollowData(u.id);
 
         } catch (e) { mostraNotFound(); }
     }
@@ -555,6 +576,7 @@
                     <div class="profile-username-sub">Iscritto il ${data}</div>
                 </div>
                 <div class="profile-actions">
+                    <button class="btn-share btn-follow" id="btnFollow" onclick="toggleFollow('${u.id}')" style="display:none;">Segui</button>
                     <button class="btn-share" onclick="condividi('${u.username.replace(/'/g, "\\'")}')">↗ Condividi</button>
                 </div>
             </div>
@@ -562,7 +584,15 @@
                 <div class="stats-row">
                     <div class="stat-card">
                         <span class="stat-card__n">${appunti.length + podcast.length}</span>
-                        <span class="stat-card__l">Contenuti totali</span>
+                        <span class="stat-card__l">Contenuti</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__n" id="statFollowers">0</span>
+                        <span class="stat-card__l">Followers</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__n" id="statFollowing">0</span>
+                        <span class="stat-card__l">Seguiti</span>
                     </div>
                     <div class="stat-card">
                         <span class="stat-card__n" style="font-size: 1.25rem; word-break: break-word;">${u.scuola || 'Nessuna'}</span>
@@ -601,7 +631,7 @@
                 <div id="section-podcast" class="content-section">
                     <div class="notes-grid">
                         ${podcast.map(p => `
-                            <a href="podcast.html?id=${p.id}" class="note-card podcast-card">
+                            <a href="podcast.html?focus=${p.id}" class="note-card podcast-card">
                                 <div class="note-card__thumb" style="background: var(--surface2);">
                                     <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
                                     <div class="note-card__thumb-icon">🎙️</div>
@@ -626,15 +656,12 @@
                     
                     <div id="vistaContenutoPlaylist" style="display:none;">
                         <div class="playlist-back-row">
-                            <button class="playlist-back-btn" onclick="tornaAllePlaylists()">
-                                ← Indietro
-                            </button>
+                            <button class="playlist-back-btn" onclick="tornaAllePlaylists()">← Indietro</button>
                             <h2 class="playlist-back-title" id="titoloPlaylistAttuale"></h2>
                         </div>
                         <div id="grigliaContenutoPlaylist" class="notes-grid"></div>
                     </div>
                 </div>
-
             </div>`;
     }
 
@@ -674,6 +701,7 @@
         document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
         const container = document.getElementById('grigliaContenutoPlaylist');
         container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
+        
         try {
             const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
             if (!res.ok) throw new Error();
@@ -682,17 +710,23 @@
                 container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Questa raccolta è vuota.</div>";
                 return;
             }
-            container.innerHTML = appunti.map(a => `
+            container.innerHTML = appunti.map(a => {
+                const isPodcast = a.tipo === 'podcast';
+                const icona = isPodcast ? '🎙️' : '📄';
+                const link = isPodcast ? `podcast.html?focus=${a.id}` : `esplora.html?focus=${a.id}`;
+                const label = isPodcast ? 'Ascolta' : 'Apri Appunto';
+                return `
                 <div class="note-card">
-                    <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`}</div>
+                    <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">${icona}</span>`}</div>
                     <div class="note-info">
                         <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia} · @${a.username || 'Anonimo'}</div>
+                        <div class="note-meta">${a.materia || a.categoria || 'Contenuto'} · @${a.username || 'Anonimo'}</div>
                         <div style="margin-top:auto; padding-top:10px;">
-                            <a href="esplora.html?focus=${a.id}" class="btn-small btn-open" style="display:block;">Apri Appunto</a>
+                            <a href="${link}" class="btn-small btn-open" style="display:block;">${label}</a>
                         </div>
                     </div>
-                </div>`).join('');
+                </div>`
+            }).join('');
         } catch { container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Errore di connessione.</div>"; }
     }
 
