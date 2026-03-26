@@ -1062,35 +1062,52 @@
         } catch {}
     }
 
-    // ── CARICA SALVATI ──
+    // ── CARICA SALVATI (AGGIORNATO) ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
         const contA = document.getElementById('listaAppuntiSalvati');
         const contP = document.getElementById('listaPodcastSalvati');
         if (!utenteId) return;
+        
         try {
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
-            const salvati = await res.json();
-            if (salvati.appunti && salvati.appunti.length > 0) {
-                contA.innerHTML = salvati.appunti.map(a => `
+            if (!res.ok) throw new Error(`Errore API: ${res.status}`);
+            const dati = await res.json();
+            console.log("📥 Dati Likes Ricevuti:", dati);
+
+            // Cerca le chiavi specifiche, oppure un array vuoto
+            let appuntiSalvati = dati.appunti || [];
+            let podcastSalvati = dati.podcast || [];
+
+            // Se l'API restituisce un unico array misto, proviamo a dividerlo noi
+            if (Array.isArray(dati)) {
+                appuntiSalvati = dati.filter(item => item.file_url || item.materia);
+                podcastSalvati = dati.filter(item => item.audio_url || item.categoria);
+            }
+
+            // --- Render Appunti ---
+            if (appuntiSalvati.length > 0) {
+                contA.innerHTML = appuntiSalvati.map(a => `
                     <div class="note-card">
                         <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '<span style="font-size:2.5rem">📄</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${a.titolo}</div>
-                            <div class="note-meta">${a.materia} · @${a.username || 'Anonimo'}</div>
+                            <div class="note-meta">${a.materia || 'Appunto'} · @${a.username || 'Anonimo'}</div>
                             <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
                         </div>
                     </div>`).join('');
             } else {
                 contA.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Nessun appunto salvato.</div></div>";
             }
-            if (salvati.podcast && salvati.podcast.length > 0) {
-                contP.innerHTML = salvati.podcast.map(p => `
+
+            // --- Render Podcast ---
+            if (podcastSalvati.length > 0) {
+                contP.innerHTML = podcastSalvati.map(p => `
                     <div class="note-card">
                         <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '<span style="font-size:2.5rem">🎙️</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${p.titolo}</div>
-                            <div class="note-meta">${p.categoria} · @${p.username || 'Anonimo'}</div>
+                            <div class="note-meta">${p.categoria || 'Podcast'} · @${p.username || 'Anonimo'}</div>
                             <audio controls style="width:100%; height:32px; margin-top:8px; accent-color: var(--accent); filter: var(--audio-invert);">
                                 <source src="${p.audio_url}" type="audio/mpeg">
                             </audio>
@@ -1099,10 +1116,14 @@
             } else {
                 contP.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Nessun podcast salvato.</div></div>";
             }
-        } catch {}
+        } catch (error) {
+            console.error("❌ Errore caricamento salvati:", error);
+            contA.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Controlla la console.</div></div>";
+            contP.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Controlla la console.</div></div>";
+        }
     }
 
-    // ── PLAYLISTS ──
+    // ── PLAYLISTS (AGGIORNATO) ──
     window.caricaPlaylists = async function() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaPlaylists');
@@ -1129,45 +1150,67 @@
         } catch { container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore caricamento.</div></div>"; }
     }
 
+    // ── CREA PLAYLIST (AGGIORNATO) ──
     window.creaPlaylist = async function() {
         let utenteId = getCookieSafe('utente_id');
         const inputEl = document.getElementById('nuovaPlaylistTitolo');
         const titolo  = inputEl.value.trim();
+        
         if (!utenteId) return alert('Devi essere loggato!');
-        if (!titolo)   return alert('Inserisci un nome!');
+        if (!titolo)   return alert('Inserisci un nome per la playlist!');
+        
         try {
             const res = await fetch('/api/playlists', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo })
             });
-            if (res.ok) { inputEl.value = ''; caricaPlaylists(); }
-        } catch {}
+            
+            if (!res.ok) throw new Error("Errore durante la creazione API");
+            
+            inputEl.value = ''; 
+            caricaPlaylists(); // Ricarica la lista per mostrare la nuova
+            
+        } catch (error) {
+            console.error("❌ Errore creazione playlist:", error);
+            alert("Errore durante la creazione della playlist. Controlla la console.");
+        }
     }
 
+    // ── APRI CONTENUTO PLAYLIST (AGGIORNATO) ──
     window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
         document.getElementById('vistaElencoPlaylists').style.display = 'none';
         document.getElementById('vistaContenutoPlaylist').style.display = 'block';
         document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
         const container = document.getElementById('grigliaContenutoPlaylist');
         container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
+        
         try {
             const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
-            if (!res.ok) throw new Error();
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            
             const appunti = await res.json();
+            console.log("📥 Elementi trovati nella playlist:", appunti);
+            
             if (appunti.length === 0) {
                 container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Questa cartella è vuota.</div></div>";
                 return;
             }
+            
             container.innerHTML = appunti.map(a => `
                 <div class="note-card">
                     <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`}</div>
                     <div class="note-info">
                         <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia} · @${a.username || 'Anonimo'}</div>
+                        <div class="note-meta">${a.materia || 'Contenuto'} · @${a.username || 'Anonimo'}</div>
                         <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
                     </div>
                 </div>`).join('');
-        } catch { container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore.</div></div>"; }
+                
+        } catch (error) { 
+            console.error("❌ Errore caricamento contenuto playlist:", error);
+            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore. Controlla la console del browser (F12).</div></div>"; 
+        }
     }
 
     window.tornaAllePlaylists = function() {
@@ -1208,4 +1251,3 @@
 
 </body>
 </html>
-
