@@ -635,6 +635,12 @@
         <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">
             📂 Playlists
         </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-playlists', this)">
+    📂 Playlists
+        </button>
+        <button class="tab-btn" onclick="cambiaTab('tab-amici', this); caricaAmici();">
+    👥 Amici
+        </button>
         <button class="tab-btn" onclick="cambiaTab('tab-pubblica', this)">
             ✦ Pubblica Appunto
         </button>
@@ -694,6 +700,16 @@
             <div id="grigliaContenutoPlaylist" class="notes-grid"></div>
         </div>
 
+    </div>
+
+        <div id="tab-amici" class="tab-content">
+     <div style="margin-bottom: 24px;">
+            <input type="text" id="searchAmici" placeholder="Cerca tra i tuoi amici per nome o scuola..." 
+                 oninput="filtraAmici()" 
+                 style="width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border2); background: var(--surface2); color: var(--text); font-family: inherit; font-weight: 600; outline: none;">
+        </div>
+        <div id="listaAmici" class="notes-grid">
+         </div>
     </div>
 
     <div id="tab-pubblica" class="tab-content">
@@ -1053,6 +1069,62 @@
         } catch { alert('❌ Errore.'); }
         finally { btn.textContent = '🚀 Pubblica Podcast'; btn.disabled = false; }
     }
+
+    // ── FILTRA AMICI ──
+    let listaAmiciOriginale = []; // Variabile globale per la ricerca
+
+// ── FUNZIONE PER CARICARE GLI AMICI ──
+window.caricaAmici = async function() {
+    let utenteId = getCookieSafe('utente_id');
+    const container = document.getElementById('listaAmici');
+    if (!utenteId) return;
+
+    container.innerHTML = "<div class='empty-state'>Caricamento amici...</div>";
+
+    try {
+        const res = await fetch(`/api/follow?utente_id=${utenteId}&elenco_seguiti=true`);
+        if (!res.ok) throw new Error();
+        listaAmiciOriginale = await res.json();
+        renderAmici(listaAmiciOriginale);
+    } catch (err) {
+        container.innerHTML = "<div class='empty-state'>Errore nel caricamento degli amici.</div>";
+    }
+};
+
+// ── FUNZIONE PER DISEGNARE LE CARD DEGLI AMICI ──
+function renderAmici(lista) {
+    const container = document.getElementById('listaAmici');
+    if (lista.length === 0) {
+        container.innerHTML = "<div class='empty-state'><div class='empty-icon'>👥</div><div class='empty-text'>Non segui ancora nessuno.</div></div>";
+        return;
+    }
+
+    container.innerHTML = lista.map(u => `
+        <a href="utenti.html?user=${u.username}" class="note-card" style="text-decoration:none; color:inherit;">
+            <div class="note-thumb">
+                ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">${u.username.charAt(0).toUpperCase()}</span>`}
+            </div>
+            <div class="note-info">
+                <div class="note-title">@${u.username}</div>
+                <div class="note-meta">${u.scuola || 'Studente'}</div>
+                <div class="note-actions">
+                    <span class="btn-small btn-open" style="display:block; width:100%">Vedi Profilo</span>
+                </div>
+            </div>
+        </a>
+    `).join('');
+}
+
+// ── FUNZIONE DI RICERCA IMMEDIATA ──
+window.filtraAmici = function() {
+    const query = document.getElementById('searchAmici').value.toLowerCase().trim();
+    const filtrati = listaAmiciOriginale.filter(u => 
+        u.username.toLowerCase().includes(query) || 
+        (u.scuola && u.scuola.toLowerCase().includes(query))
+    );
+    renderAmici(filtrati);
+};
+
 
     // ── CARICAMENTO LISTA APPUNTI PUBBLICATI ──
     async function caricaMieiAppunti() {

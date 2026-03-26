@@ -2,12 +2,25 @@ const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
 export default async function handler(req, res) {
-    // GET: Recupera il numero di follower o controlla se lo segui già
+    // ─── GET: RECUPERA CONTEGGI, STATO o ELENCO AMICI ───
     if (req.method === 'GET') {
-        const { utente_id, target_id, check_status } = req.query;
+        const { utente_id, target_id, check_status, elenco_seguiti } = req.query;
 
         try {
-            // Se chiediamo check_status, controlla se utente_id segue target_id
+            // Caso 1: Recupera l'elenco dettagliato degli utenti seguiti (AMICI)
+            if (elenco_seguiti && utente_id) {
+                const result = await pool.query(
+                    `SELECT u.id, u.username, u.foto_profilo_url, u.scuola 
+                     FROM followers f
+                     JOIN utenti u ON f.seguito_id = u.id
+                     WHERE f.follower_id = $1
+                     ORDER BY f.data_creazione DESC`,
+                    [utente_id]
+                );
+                return res.status(200).json(result.rows);
+            }
+
+            // Caso 2: Controlla se utente_id segue target_id (per il tasto Segui/Smetti)
             if (check_status && utente_id && target_id) {
                 const check = await pool.query(
                     'SELECT * FROM followers WHERE follower_id = $1 AND seguito_id = $2',
@@ -16,7 +29,7 @@ export default async function handler(req, res) {
                 return res.status(200).json({ isFollowing: check.rows.length > 0 });
             }
 
-            // Altrimenti restituisce il conteggio (Quanti follower ha? Quanti ne segue?)
+            // Caso 3: Restituisce solo i conteggi numerici
             if (utente_id) {
                 const followers = await pool.query('SELECT COUNT(*) FROM followers WHERE seguito_id = $1', [utente_id]);
                 const following = await pool.query('SELECT COUNT(*) FROM followers WHERE follower_id = $1', [utente_id]);
@@ -32,7 +45,7 @@ export default async function handler(req, res) {
         }
     }
 
-    // POST: Metti "Segui" o togli "Segui"
+    // ─── POST: METTI O TOGLI IL "SEGUI" ───
     if (req.method === 'POST') {
         const { follower_id, seguito_id } = req.body;
         
@@ -40,15 +53,24 @@ export default async function handler(req, res) {
         if (follower_id === seguito_id) return res.status(400).json({ error: "Non puoi seguire te stesso" });
 
         try {
-            const check = await pool.query('SELECT * FROM followers WHERE follower_id = $1 AND seguito_id = $2', [follower_id, seguito_id]);
+            const check = await pool.query(
+                'SELECT * FROM followers WHERE follower_id = $1 AND seguito_id = $2', 
+                [follower_id, seguito_id]
+            );
             
             if (check.rows.length > 0) {
-                // Se lo segui già -> Togli il segui (Unfollow)
-                await pool.query('DELETE FROM followers WHERE follower_id = $1 AND seguito_id = $2', [follower_id, seguito_id]);
+                // Se lo segui già -> Unfollow
+                await pool.query(
+                    'DELETE FROM followers WHERE follower_id = $1 AND seguito_id = $2', 
+                    [follower_id, seguito_id]
+                );
                 return res.status(200).json({ action: 'unfollowed' });
             } else {
-                // Se non lo segui -> Metti il segui (Follow)
-                await pool.query('INSERT INTO followers (follower_id, seguito_id) VALUES ($1, $2)', [follower_id, seguito_id]);
+                // Se non lo segui -> Follow
+                await pool.query(
+                    'INSERT INTO followers (follower_id, seguito_id) VALUES ($1, $2)', 
+                    [follower_id, seguito_id]
+                );
                 return res.status(201).json({ action: 'followed' });
             }
         } catch (err) {
