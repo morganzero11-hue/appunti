@@ -796,7 +796,9 @@
         </div>
     </div>
 
-</div><script>
+</div>
+
+<script>
     // Applico il tema al body a caricamento DOM
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
@@ -812,7 +814,7 @@
         return null;
     }
 
-    // ── FILE LABEL ──
+    // ── AGGIORNA TESTO QUANDO SI SELEZIONA UN FILE ──
     function aggiornaTestoFile(inputId, labelId) {
         const input = document.getElementById(inputId);
         const label = document.getElementById(labelId);
@@ -834,10 +836,11 @@
         }
     }
 
-    // ── TABS ──
+    // ── GESTIONE TABS ──
     window.cambiaTab = function(tabId, btnElement) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
         document.getElementById(tabId).classList.add('active');
         btnElement.classList.add('active');
     }
@@ -864,14 +867,14 @@
         else                    aggiornaSubTab(tipo, bP, bA, dP, dA);
     }
 
-    // ── PROFILO HEADER ──
+    // ── CARICAMENTO DATI PROFILO HEADER ──
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
-        let utenteId        = getCookieSafe('utente_id');
-
-        if (!usernameLoggato) {
-            document.getElementById('valNome').textContent = 'Ospite';
-            document.getElementById('valUsername').textContent = 'effettua_login';
+        let utenteId = getCookieSafe('utente_id');
+        
+        if(!usernameLoggato) {
+            document.getElementById('valNome').textContent = "Ospite";
+            document.getElementById('valUsername').textContent = "effettua_login";
             document.getElementById('sezionePubblica').innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi accedere per pubblicare.</div></div>";
             document.getElementById('sezionePubblicaPodcast').innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Devi accedere per pubblicare.</div></div>";
             return;
@@ -883,12 +886,14 @@
             const res = await fetch(`/api/utente?username=${encodeURIComponent(usernameLoggato)}`);
             if (res.ok) {
                 const user = await res.json();
-                let nomi = [];
-                if (user.nome && user.nome.trim())    nomi.push(user.nome.trim());
-                if (user.cognome && user.cognome.trim()) nomi.push(user.cognome.trim());
-                document.getElementById('valNome').textContent = nomi.length ? nomi.join(' ') : usernameLoggato;
+                
+                let nomeCompleto = [];
+                if (user.nome && user.nome.trim() !== '') nomeCompleto.push(user.nome.trim());
+                if (user.cognome && user.cognome.trim() !== '') nomeCompleto.push(user.cognome.trim());
+                
+                document.getElementById('valNome').textContent = nomeCompleto.length > 0 ? nomeCompleto.join(' ') : usernameLoggato;
                 document.getElementById('valScuola').textContent = user.scuola || 'Scuola non impostata';
-
+                
                 if (user.foto_profilo_url) {
                     const img = document.getElementById('avatarImg');
                     img.src = user.foto_profilo_url;
@@ -898,73 +903,107 @@
                     document.getElementById('avatarPh').textContent = user.nome.charAt(0).toUpperCase();
                 }
             }
+
             if (utenteId) {
-                const resL = await fetch(`/api/likes?autore_id=${utenteId}`);
-                if (resL.ok) {
-                    const dL = await resL.json();
-                    document.getElementById('statLikesRicevuti').textContent = dL.total;
+                const resLikes = await fetch(`/api/likes?autore_id=${utenteId}`);
+                if (resLikes.ok) {
+                    const dataLikes = await resLikes.json();
+                    const contatore = document.getElementById('statLikesRicevuti');
+                    if(contatore) contatore.textContent = dataLikes.total;
                 }
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Errore nel recuperare i dati dell'utente:", e); }
     }
 
-    // ── UPLOAD AVATAR ──
+    // ── UPLOAD FOTO PROFILO ──
     window.uploadAvatar = async function(event) {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert('Devi essere loggato!');
+        if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
+
         const file = event.target.files[0];
         if (!file) return;
+
         const ph = document.getElementById('avatarPh');
         const img = document.getElementById('avatarImg');
+        
         ph.textContent = '⏳'; ph.style.display = 'block'; img.style.display = 'none';
+
         try {
-            const rB = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
-            if (!rB.ok) throw new Error('Errore Blob');
-            const blob = await rB.json();
-            await fetch('/api/aggiorna-profilo', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+            const resBlob = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
+            if (!resBlob.ok) throw new Error("Errore Blob");
+            const blob = await resBlob.json();
+
+            const resDb = await fetch('/api/aggiorna-profilo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: utenteId, foto_profilo_url: blob.url })
             });
+            if (!resDb.ok) throw new Error("Errore DB");
+
             img.src = blob.url; img.style.display = 'block'; ph.style.display = 'none';
-        } catch (err) { alert('❌ Impossibile caricare la foto.'); ph.textContent = '?'; }
+            alert("✅ Foto profilo aggiornata!");
+        } catch (error) {
+            console.error("Errore upload avatar:", error);
+            alert("❌ Impossibile caricare la foto.");
+            ph.textContent = '?';
+        }
     }
 
-    // ── PUBBLICA APPUNTO ──
+    // ── PUBBLICAZIONE NUOVO APPUNTO ──
     window.pubblicaAppunto = async function() {
         let utenteId = getCookieSafe('utente_id');
-        if (!utenteId) return alert('Effettua il login!');
-        const filesIn = document.getElementById('fileAppunto');
+        if (!utenteId) return alert("Devi effettuare il login per pubblicare un appunto!");
+
+        const fileIn = document.getElementById('fileAppunto');
         const coverIn = document.getElementById('coverAppunto');
         const audioIn = document.getElementById('audioAppunto');
-        const titolo  = document.getElementById('titoloAppunto').value.trim();
+        const titolo = document.getElementById('titoloAppunto').value.trim();
         const materia = document.getElementById('materiaAppunto').value;
-        if (!titolo) return alert('Inserisci un titolo!');
-        if (!filesIn.files || filesIn.files.length === 0) return alert('Seleziona il documento!');
+
+        if (!titolo) return alert("Inserisci un titolo!");
+        if (!fileIn.files || fileIn.files.length === 0) return alert("Seleziona il file dei tuoi appunti!");
+
         const btn = document.getElementById('btnPubblica');
-        btn.textContent = '⏳ Caricamento…'; btn.disabled = true;
+        btn.textContent = "⏳ Caricamento in corso..."; btn.disabled = true;
+
+        let success = false;
         try {
             let fileUrls = [];
-            for (let f of filesIn.files) {
+            for (let f of fileIn.files) {
                 const r = await fetch(`/api/upload?filename=page_${Date.now()}`, { method: 'POST', body: f });
                 const d = await r.json(); fileUrls.push(d.url);
             }
+            
             let audioUrl = null;
             if (audioIn.files.length > 0) {
                 const rA = await fetch(`/api/upload?filename=audio_${Date.now()}`, { method: 'POST', body: audioIn.files[0] });
                 const dA = await rA.json(); audioUrl = dA.url;
             }
+            
             let coverUrl = fileUrls[0];
             if (coverIn.files.length > 0) {
-                const rC = await fetch(`/api/upload?filename=cover_${Date.now()}`, { method: 'POST', body: coverIn.files[0] });
-                const dC = await rC.json(); coverUrl = dC.url;
+                btn.textContent = "⏳ Caricamento Copertina...";
+                const resCover = await fetch(`/api/upload?filename=cover_${Date.now()}`, { method: 'POST', body: coverIn.files[0] });
+                const coverBlob = await resCover.json();
+                coverUrl = coverBlob.url;
             }
-            await fetch('/api/appunti', {
+
+            btn.textContent = "⏳ Salvataggio...";
+            const resDb = await fetch('/api/appunti', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo, materia, file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl })
             });
-            alert('✅ Appunto pubblicato!'); window.location.reload();
-        } catch { alert('❌ Errore durante il caricamento.'); }
-        finally { btn.textContent = '🚀 Condividi con tutti'; btn.disabled = false; }
+            if (!resDb.ok) throw new Error("Errore salvataggio DB");
+
+            success = true;
+        } catch (err) {
+            console.error("Errore pubblicazione:", err);
+            alert("❌ C'è stato un problema durante il caricamento.");
+        } finally {
+            btn.textContent = "🚀 Condividi con tutti"; btn.disabled = false;
+        }
+
+        if (success) { alert("✅ Appunto pubblicato con successo!"); window.location.reload(); }
     }
 
     // ── PUBBLICA PODCAST ──
@@ -979,54 +1018,74 @@
         const audioIn  = document.getElementById('podAudio').files[0];
         const coverIn  = document.getElementById('podCover').files[0];
         const btn      = document.getElementById('btnPubblicaPod');
+        
         if (!titolo || !audioIn) return alert('Mancano titolo o audio!');
         btn.textContent = '⏳ Caricamento…'; btn.disabled = true;
+        
         try {
             const rA = await fetch(`/api/upload?filename=pod_${Date.now()}`, { method: 'POST', body: audioIn });
             const dA = await rA.json();
+            
             let coverUrl = null;
             if (coverIn) {
                 const rC = await fetch(`/api/upload?filename=podcov_${Date.now()}`, { method: 'POST', body: coverIn });
                 const dC = await rC.json(); coverUrl = dC.url;
             }
+            
             await fetch('/api/podcast', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo, descrizione: desc, categoria, scuola, fonti, audio_url: dA.url, cover_url: coverUrl })
             });
-            alert('🎙️ Podcast pubblicato!'); window.location.href = 'podcast.html';
+            alert('🎙️ Podcast pubblicato!'); window.location.reload();
         } catch { alert('❌ Errore.'); }
         finally { btn.textContent = '🚀 Pubblica Podcast'; btn.disabled = false; }
     }
 
-    // ── CARICA MIEI APPUNTI ──
+    // ── CARICAMENTO LISTA APPUNTI PUBBLICATI ──
     async function caricaMieiAppunti() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaMieiAppunti');
-        if (!utenteId) return;
+        
+        if (!utenteId) {
+            container.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi appunti.</div></div>";
+            return;
+        }
+
         try {
             const res = await fetch(`/api/appunti?utente_id=${utenteId}`);
+            if (!res.ok) throw new Error("Errore chiamata API appunti");
             const appunti = await res.json();
+
             let cnt = parseInt(document.getElementById('statAppunti').textContent) || 0;
             document.getElementById('statAppunti').textContent = cnt + appunti.length;
-            if (appunti.length === 0) return container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Nessun appunto pubblicato.</div></div>";
+
+            if (appunti.length === 0) {
+                container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Non hai ancora pubblicato nulla.</div></div>";
+                return;
+            }
+
             container.innerHTML = appunti.map(a => {
-                const cover = a.cover_url
-                    ? `<img src="${a.cover_url}" alt="Cover">`
-                    : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`;
+                const coverHTML = a.cover_url 
+                    ? `<img src="${a.cover_url}" alt="Cover Appunto">`
+                    : `<div class="note-thumb-bg"></div><span style="font-size:3rem; position:relative; z-index:1;">📄</span>`;
+
                 return `
                 <div class="note-card" id="nota-${a.id}">
-                    <div class="note-thumb">${cover}</div>
+                    <div class="note-thumb">${coverHTML}</div>
                     <div class="note-info">
                         <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia}</div>
+                        <div class="note-meta">${a.materia} • ${new Date(a.data_caricamento).toLocaleDateString('it-IT', {day:'2-digit', month:'short'})}</div>
                         <div class="note-actions">
                             <a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaAppunto(${a.id})">Elimina</button>
                         </div>
                     </div>
-                </div>`;
+                </div>`
             }).join('');
-        } catch {}
+        } catch (err) {
+            console.error("Errore caricamento tuoi appunti:", err);
+            container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
+        }
     }
 
     // ── CARICA MIEI PODCAST ──
@@ -1054,6 +1113,7 @@
                             <source src="${p.audio_url}" type="audio/mpeg">
                         </audio>
                         <div class="note-actions">
+                            <a href="podcast.html?focus=${p.id}" class="btn-small btn-open">Apri</a>
                             <button class="btn-small btn-delete" onclick="eliminaPodcast(${p.id})">Elimina</button>
                         </div>
                     </div>
@@ -1062,24 +1122,26 @@
         } catch {}
     }
 
-    // ── CARICA SALVATI (AGGIORNATO) ──
+    // ── CARICAMENTO LISTA APPUNTI SALVATI (MI PIACE) ──
     async function caricaAppuntiSalvati() {
         let utenteId = getCookieSafe('utente_id');
         const contA = document.getElementById('listaAppuntiSalvati');
         const contP = document.getElementById('listaPodcastSalvati');
-        if (!utenteId) return;
         
+        if (!utenteId) {
+            if(contA) contA.innerHTML = "<div class='empty-state'><div class='empty-icon'>🔒</div><div class='empty-text'>Effettua il login per vedere i tuoi salvataggi.</div></div>";
+            return;
+        }
+
         try {
             const res = await fetch(`/api/likes?utente_id=${utenteId}`);
-            if (!res.ok) throw new Error(`Errore API: ${res.status}`);
+            if (!res.ok) throw new Error("Errore chiamata API likes");
+            
             const dati = await res.json();
-            console.log("📥 Dati Likes Ricevuti:", dati);
-
-            // Cerca le chiavi specifiche, oppure un array vuoto
+            
             let appuntiSalvati = dati.appunti || [];
             let podcastSalvati = dati.podcast || [];
 
-            // Se l'API restituisce un unico array misto, proviamo a dividerlo noi
             if (Array.isArray(dati)) {
                 appuntiSalvati = dati.filter(item => item.file_url || item.materia);
                 podcastSalvati = dati.filter(item => item.audio_url || item.categoria);
@@ -1089,7 +1151,7 @@
             if (appuntiSalvati.length > 0) {
                 contA.innerHTML = appuntiSalvati.map(a => `
                     <div class="note-card">
-                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '<span style="font-size:2.5rem">📄</span>'}</div>
+                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : '<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${a.titolo}</div>
                             <div class="note-meta">${a.materia || 'Appunto'} · @${a.username || 'Anonimo'}</div>
@@ -1104,26 +1166,28 @@
             if (podcastSalvati.length > 0) {
                 contP.innerHTML = podcastSalvati.map(p => `
                     <div class="note-card">
-                        <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '<span style="font-size:2.5rem">🎙️</span>'}</div>
+                        <div class="note-thumb">${p.cover_url ? `<img src="${p.cover_url}">` : '<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">🎙️</span>'}</div>
                         <div class="note-info">
                             <div class="note-title">${p.titolo}</div>
                             <div class="note-meta">${p.categoria || 'Podcast'} · @${p.username || 'Anonimo'}</div>
                             <audio controls style="width:100%; height:32px; margin-top:8px; accent-color: var(--accent); filter: var(--audio-invert);">
                                 <source src="${p.audio_url}" type="audio/mpeg">
                             </audio>
+                            <div class="note-actions">
+                                <a href="podcast.html?focus=${p.id}" class="btn-small btn-open">Apri</a>
+                            </div>
                         </div>
                     </div>`).join('');
             } else {
                 contP.innerHTML = "<div class='empty-state'><div class='empty-icon'>💔</div><div class='empty-text'>Nessun podcast salvato.</div></div>";
             }
-        } catch (error) {
-            console.error("❌ Errore caricamento salvati:", error);
-            contA.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Controlla la console.</div></div>";
-            contP.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Controlla la console.</div></div>";
+        } catch (err) {
+            console.error("Errore caricamento salvati:", err);
+            if(contA) contA.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore di caricamento. Riprova.</div></div>";
         }
     }
 
-    // ── PLAYLISTS (AGGIORNATO) ──
+    // ── PLAYLISTS ──
     window.caricaPlaylists = async function() {
         let utenteId = getCookieSafe('utente_id');
         const container = document.getElementById('listaPlaylists');
@@ -1150,38 +1214,33 @@
         } catch { container.innerHTML = "<div class='empty-state'><div class='empty-text'>Errore caricamento.</div></div>"; }
     }
 
-    // ── CREA PLAYLIST (AGGIORNATO) ──
     window.creaPlaylist = async function() {
         let utenteId = getCookieSafe('utente_id');
         const inputEl = document.getElementById('nuovaPlaylistTitolo');
         const titolo  = inputEl.value.trim();
-        
         if (!utenteId) return alert('Devi essere loggato!');
         if (!titolo)   return alert('Inserisci un nome per la playlist!');
         
         try {
             const res = await fetch('/api/playlists', {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ utente_id: utenteId, titolo })
             });
-            
             if (!res.ok) throw new Error("Errore durante la creazione API");
-            
             inputEl.value = ''; 
-            caricaPlaylists(); // Ricarica la lista per mostrare la nuova
-            
+            caricaPlaylists();
         } catch (error) {
             console.error("❌ Errore creazione playlist:", error);
-            alert("Errore durante la creazione della playlist. Controlla la console.");
+            alert("Errore durante la creazione della playlist.");
         }
     }
 
-    // ── APRI CONTENUTO PLAYLIST (AGGIORNATO) ──
+    // ── APRI CONTENUTO PLAYLIST (AGGIORNATO CON PODCAST E TASTO APRI) ──
     window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
         document.getElementById('vistaElencoPlaylists').style.display = 'none';
         document.getElementById('vistaContenutoPlaylist').style.display = 'block';
         document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
+        
         const container = document.getElementById('grigliaContenutoPlaylist');
         container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
         
@@ -1189,23 +1248,52 @@
             const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             
-            const appunti = await res.json();
-            console.log("📥 Elementi trovati nella playlist:", appunti);
+            const elementi = await res.json();
             
-            if (appunti.length === 0) {
+            if (elementi.length === 0) {
                 container.innerHTML = "<div class='empty-state'><div class='empty-icon'>📭</div><div class='empty-text'>Questa cartella è vuota.</div></div>";
                 return;
             }
             
-            container.innerHTML = appunti.map(a => `
+            container.innerHTML = elementi.map(el => {
+                const isPodcast = el.tipo === 'podcast';
+                
+                const icona = isPodcast ? '🎙️' : '📄';
+                const coverThumb = el.cover_url 
+                    ? `<img src="${el.cover_url}">` 
+                    : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">${icona}</span>`;
+                
+                const metaText = isPodcast ? el.categoria || 'Podcast' : el.materia || 'Appunto';
+                const autore = el.username ? `@${el.username}` : 'Anonimo';
+                
+                let actionHTML = '';
+                if (isPodcast) {
+                    actionHTML = `
+                        <audio controls style="width:100%; height:32px; margin-top:8px; accent-color: var(--accent); filter: var(--audio-invert);">
+                            <source src="${el.audio_url}" type="audio/mpeg">
+                        </audio>
+                        <div class="note-actions">
+                            <a href="podcast.html?focus=${el.id}" class="btn-small btn-open">Apri</a>
+                        </div>
+                    `;
+                } else {
+                    actionHTML = `
+                        <div class="note-actions">
+                            <a href="esplora.html?focus=${el.id}" class="btn-small btn-open">Apri</a>
+                        </div>
+                    `;
+                }
+
+                return `
                 <div class="note-card">
-                    <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">📄</span>`}</div>
+                    <div class="note-thumb">${coverThumb}</div>
                     <div class="note-info">
-                        <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia || 'Contenuto'} · @${a.username || 'Anonimo'}</div>
-                        <div class="note-actions"><a href="esplora.html?focus=${a.id}" class="btn-small btn-open">Apri</a></div>
+                        <div class="note-title">${el.titolo}</div>
+                        <div class="note-meta">${metaText} · ${autore}</div>
+                        ${actionHTML}
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('');
                 
         } catch (error) { 
             console.error("❌ Errore caricamento contenuto playlist:", error);
@@ -1219,14 +1307,16 @@
         caricaPlaylists();
     }
 
-    // ── ELIMINA ──
-    window.eliminaAppunto = async function(id) {
-        if (!confirm('Sei sicuro?')) return;
+    // ── ELIMINAZIONE ──
+    window.eliminaAppunto = async function(appuntoId) {
+        if (!confirm("Sei sicuro di voler eliminare questo appunto?")) return;
         try {
-            await fetch(`/api/appunti?id=${id}`, { method: 'DELETE' });
-            const el = document.getElementById(`nota-${id}`);
-            if (el) el.remove();
-        } catch {}
+            const res = await fetch(`/api/appunti?id=${appuntoId}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error();
+            const notaCard = document.getElementById(`nota-${appuntoId}`);
+            if (notaCard) notaCard.remove();
+            caricaMieiAppunti();
+        } catch (err) { alert("❌ Non è stato possibile eliminare l'appunto."); }
     }
     window.eliminaPodcast = async function(id) {
         if (!confirm('Sei sicuro?')) return;
@@ -1234,14 +1324,19 @@
             await fetch(`/api/podcast?id=${id}`, { method: 'DELETE' });
             const el = document.getElementById(`mio-podcast-${id}`);
             if (el) el.remove();
+            caricaMieiPodcast();
         } catch {}
     }
 
     // ── AVVIO ──
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
         const btnLogin = document.getElementById('navLoginBtn');
-        if (btnLogin && getCookieSafe('username')) btnLogin.style.display = 'none';
-        await aggiornaHeaderProfilo();
+        if (btnLogin) {
+            const loggato = getCookieSafe('username') !== null;
+            if (loggato) btnLogin.style.display = 'none';
+        }
+
+        aggiornaHeaderProfilo();
         caricaMieiAppunti();
         caricaMieiPodcast();
         caricaAppuntiSalvati();
