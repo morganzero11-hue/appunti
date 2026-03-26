@@ -614,6 +614,10 @@
             <span class="stat-label">Contenuti Pubblicati</span>
         </div>
         <div class="stat-item">
+            <span class="stat-num" id="statFollowers">0</span>
+            <span class="stat-label">Followers</span>
+        </div>
+        <div class="stat-item">
             <span class="stat-num" id="statLikesRicevuti">0</span>
             <span class="stat-label">Mi Piace Ricevuti</span>
         </div>
@@ -867,7 +871,7 @@
         else                    aggiornaSubTab(tipo, bP, bA, dP, dA);
     }
 
-    // ── CARICAMENTO DATI PROFILO HEADER ──
+    // ── CARICAMENTO DATI PROFILO HEADER (CON FOLLOWERS) ──
     async function aggiornaHeaderProfilo() {
         let usernameLoggato = getCookieSafe('username');
         let utenteId = getCookieSafe('utente_id');
@@ -905,17 +909,26 @@
             }
 
             if (utenteId) {
+                // Recupera Likes
                 const resLikes = await fetch(`/api/likes?autore_id=${utenteId}`);
                 if (resLikes.ok) {
                     const dataLikes = await resLikes.json();
                     const contatore = document.getElementById('statLikesRicevuti');
                     if(contatore) contatore.textContent = dataLikes.total;
                 }
+
+                // Recupera Followers
+                const resFollow = await fetch(`/api/follow?utente_id=${utenteId}`);
+                if (resFollow.ok) {
+                    const dataFollow = await resFollow.json();
+                    const statFollowers = document.getElementById('statFollowers');
+                    if(statFollowers) statFollowers.textContent = dataFollow.followers || 0;
+                }
             }
         } catch (e) { console.error("Errore nel recuperare i dati dell'utente:", e); }
     }
 
-    // ── UPLOAD FOTO PROFILO ──
+    // ── UPLOAD FOTO PROFILO (PUNTA ALLA NUOVA API) ──
     window.uploadAvatar = async function(event) {
         let utenteId = getCookieSafe('utente_id');
         if (!utenteId) return alert("Devi essere loggato per cambiare la foto profilo!");
@@ -933,7 +946,7 @@
             if (!resBlob.ok) throw new Error("Errore Blob");
             const blob = await resBlob.json();
 
-            const resDb = await fetch('/api/aggiorna-profilo', {
+            const resDb = await fetch('/api/utente', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: utenteId, foto_profilo_url: blob.url })
@@ -1235,7 +1248,6 @@
         }
     }
 
-    // ── APRI CONTENUTO PLAYLIST (AGGIORNATO CON PODCAST E TASTO APRI) ──
     window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
         document.getElementById('vistaElencoPlaylists').style.display = 'none';
         document.getElementById('vistaContenutoPlaylist').style.display = 'block';
