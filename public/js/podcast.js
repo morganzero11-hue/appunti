@@ -29,6 +29,32 @@ async function initPodcast() {
 
         mostraInEvidenza();
         applicaFiltri(); 
+
+        // ─── NOVITÀ: CONTROLLA SE C'È UN FOCUS NELL'URL ───
+        setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const focusId = urlParams.get('focus');
+            
+            if (focusId) {
+                const targetCard = document.getElementById(`podcast-card-${focusId}`);
+                if (targetCard) {
+                    // Scrolla dolcemente fino alla card
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Crea un effetto di "illuminazione" per farti notare quale ha aperto
+                    targetCard.style.transition = 'box-shadow 0.4s ease, transform 0.4s ease';
+                    targetCard.style.boxShadow = '0 0 0 4px var(--accent), 0 20px 50px rgba(0,0,0,0.5)';
+                    targetCard.style.transform = 'scale(1.03)';
+                    
+                    // Rimuove l'illuminazione dopo 2.5 secondi
+                    setTimeout(() => {
+                        targetCard.style.boxShadow = '';
+                        targetCard.style.transform = '';
+                    }, 2500);
+                }
+            }
+        }, 300); // Aspetta un attimo che la grafica sia caricata
+
     } catch (err) {
         console.error(err);
         const feed = document.getElementById('podcastFeed');
@@ -107,8 +133,9 @@ window.creaCardHTML = function(p, isFeatured) {
         ? `<div class="pod-cover" style="${coverStyle}">${badgeHTML}${waveHTML}</div>`
         : `<div class="pod-cover pod-cover--empty">${badgeHTML}<span class="pod-cover--empty-icon">🎙️</span>${waveHTML}</div>`;
 
+    // ─── NOVITÀ: HO AGGIUNTO id="podcast-card-${p.id}" ALLA CARD ───
     return `
-    <div class="${cardClass}">
+    <div class="${cardClass}" id="podcast-card-${p.id}">
         ${coverContent}
         <div class="pod-info">
             <div class="pod-category">${p.categoria || 'Generale'}</div>
