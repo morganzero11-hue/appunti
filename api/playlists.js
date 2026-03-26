@@ -7,13 +7,24 @@ export default async function handler(req, res) {
         const { utente_id, playlist_id } = req.query;
 
         try {
-            // CASO A: Se passi playlist_id, restituisce gli APPUNTI DENTRO quella playlist
+            // CASO A: Se passi playlist_id, restituisce SIA gli Appunti SIA i Podcast
             if (playlist_id) {
                 const query = `
-                    SELECT a.*, u.username, u.nome, u.cognome, u.foto_profilo_url, pe.id as collegamento_id
+                    SELECT 
+                        pe.id as collegamento_id,
+                        pe.tipo,
+                        COALESCE(a.id, p.id) AS id,
+                        COALESCE(a.titolo, p.titolo) AS titolo,
+                        a.materia,
+                        p.categoria,
+                        COALESCE(a.cover_url, p.cover_url) AS cover_url,
+                        p.audio_url,
+                        a.file_url,
+                        u.username
                     FROM playlist_elementi pe
-                    JOIN appunti a ON pe.appunto_id = a.id
-                    LEFT JOIN utenti u ON a.utente_id::text = u.id::text
+                    LEFT JOIN appunti a ON pe.appunto_id = a.id
+                    LEFT JOIN podcast p ON pe.podcast_id = p.id
+                    LEFT JOIN utenti u ON COALESCE(a.utente_id, p.utente_id)::text = u.id::text
                     WHERE pe.playlist_id = $1
                     ORDER BY pe.id DESC
                 `;
@@ -44,10 +55,9 @@ export default async function handler(req, res) {
 
     // POST: Crea o Aggiunge elementi
     if (req.method === 'POST') {
-        // Ho aggiunto podcast_id e tipo qui per comodità
         const { utente_id, titolo, playlist_id, appunto_id, podcast_id, tipo } = req.body;
 
-        // Aggiungi un appunto o un podcast alla playlist (Nuovo blocco)
+        // Aggiungi un appunto o un podcast alla playlist
         if (playlist_id && (appunto_id || podcast_id)) {
             const elementoId = appunto_id || podcast_id;
             const tipoElemento = tipo || 'appunto'; 
