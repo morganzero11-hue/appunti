@@ -187,5 +187,86 @@ window.mettiMiPiace = async function(podcastId, btnIdToUpdate) {
     }
 };
 
+// ── MODALE PLAYLIST PER PODCAST ──
+let currentPodcastPerPlaylist = null;
+
+window.apriModalePlaylist = async function(podcastId) {
+    const utenteId = getCookieSafe('utente_id');
+    if (!utenteId) return alert('Devi fare il login per usare le playlist!');
+
+    currentPodcastPerPlaylist = podcastId;
+
+    // Crea il modale se non esiste
+    let modale = document.getElementById('modalPlaylistPodcast');
+    if (!modale) {
+        modale = document.createElement('div');
+        modale.id = 'modalPlaylistPodcast';
+        modale.style.cssText = `
+            position:fixed; inset:0; background:rgba(0,0,0,0.7);
+            display:flex; align-items:center; justify-content:center; z-index:9999;
+        `;
+        modale.innerHTML = `
+            <div style="background:var(--surface, #1a1a1a); border-radius:16px; padding:24px; width:90%; max-width:380px;">
+                <h3 style="margin:0 0 16px; color:var(--text, #fff);">📂 Salva in playlist</h3>
+                <div id="elencoPlaylistsPodcast">Caricamento...</div>
+                <button onclick="document.getElementById('modalPlaylistPodcast').style.display='none'" 
+                    style="margin-top:16px; width:100%; padding:10px; border-radius:8px;
+                           background:transparent; border:1px solid #444; color:#aaa; cursor:pointer;">
+                    Annulla
+                </button>
+            </div>
+        `;
+        document.body.appendChild(modale);
+    } else {
+        modale.style.display = 'flex';
+    }
+
+    const container = document.getElementById('elencoPlaylistsPodcast');
+
+    try {
+        const res = await fetch(`/api/playlists?utente_id=${utenteId}`);
+        const playlists = await res.json();
+
+        if (!playlists.length) {
+            container.innerHTML = '<p style="color:#888; text-align:center;">Nessuna playlist trovata. Creane una dal tuo profilo!</p>';
+            return;
+        }
+
+        container.innerHTML = playlists.map(pl => `
+            <div onclick="salvaPodcastInPlaylist(${pl.id})" style="
+                padding:12px 16px; border-radius:10px; margin-bottom:8px;
+                background:#ffffff0d; cursor:pointer; display:flex;
+                justify-content:space-between; align-items:center;
+                border:1px solid #ffffff11;
+            ">
+                <span style="color:var(--text,#fff)">📂 ${pl.titolo}</span>
+                <span style="color:#888; font-size:0.8rem">${pl.numero_appunti || 0}</span>
+            </div>
+        `).join('');
+    } catch (err) {
+        container.innerHTML = '<p style="color:#888;">Errore nel caricamento.</p>';
+    }
+};
+
+window.salvaPodcastInPlaylist = async function(playlistId) {
+    if (!currentPodcastPerPlaylist) return;
+    try {
+        const res = await fetch('/api/playlists', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                playlist_id: playlistId,
+                podcast_id: currentPodcastPerPlaylist,
+                tipo: 'podcast'
+            })
+        });
+        const data = await res.json();
+        document.getElementById('modalPlaylistPodcast').style.display = 'none'; // Nascondo invece di rimuovere per riutilizzarlo
+        alert(res.ok ? '✅ Podcast salvato nella playlist!' : `⚠️ ${data.error}`);
+    } catch (err) {
+        alert('❌ Errore di connessione.');
+    }
+};
+
 // Avvia tutto quando il DOM è pronto
 document.addEventListener('DOMContentLoaded', initPodcast);

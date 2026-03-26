@@ -44,15 +44,33 @@ export default async function handler(req, res) {
 
     // POST: Crea o Aggiunge elementi
     if (req.method === 'POST') {
-        const { utente_id, titolo, playlist_id, appunto_id } = req.body;
+        // Ho aggiunto podcast_id e tipo qui per comodità
+        const { utente_id, titolo, playlist_id, appunto_id, podcast_id, tipo } = req.body;
 
-        // Aggiungi un appunto alla playlist
-        if (playlist_id && appunto_id) {
+        // Aggiungi un appunto o un podcast alla playlist (Nuovo blocco)
+        if (playlist_id && (appunto_id || podcast_id)) {
+            const elementoId = appunto_id || podcast_id;
+            const tipoElemento = tipo || 'appunto'; 
+            
             try {
-                const check = await pool.query('SELECT * FROM playlist_elementi WHERE playlist_id = $1 AND appunto_id = $2', [playlist_id, appunto_id]);
+                const check = await pool.query(
+                    'SELECT * FROM playlist_elementi WHERE playlist_id = $1 AND (appunto_id = $2 OR podcast_id = $2) AND tipo = $3',
+                    [playlist_id, elementoId, tipoElemento]
+                );
+                
                 if (check.rows.length > 0) return res.status(400).json({ error: "Già presente nella playlist!" });
 
-                await pool.query('INSERT INTO playlist_elementi (playlist_id, appunto_id) VALUES ($1, $2)', [playlist_id, appunto_id]);
+                if (tipoElemento === 'podcast') {
+                    await pool.query(
+                        'INSERT INTO playlist_elementi (playlist_id, podcast_id, tipo) VALUES ($1, $2, $3)',
+                        [playlist_id, elementoId, tipoElemento]
+                    );
+                } else {
+                    await pool.query(
+                        'INSERT INTO playlist_elementi (playlist_id, appunto_id, tipo) VALUES ($1, $2, $3)',
+                        [playlist_id, elementoId, tipoElemento]
+                    );
+                }
                 return res.status(201).json({ success: true });
             } catch (err) {
                 return res.status(500).json({ error: err.message });
