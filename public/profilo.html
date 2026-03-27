@@ -230,18 +230,32 @@
         }
 
         /* ══════════════════════════
-           TABS - MODIFICATO PER RISOLVERE IL PROBLEMA DI SCORRIMENTO
+           TABS - AGGIORNATO (TUTTO SU UNA RIGA)
         ══════════════════════════ */
         .tabs-wrapper {
-            max-width: 900px; margin: 40px auto 0;
+            max-width: 1050px; /* Allargato per contenere tutto su PC */
+            margin: 40px auto 0;
             padding: 0 32px;
         }
         .tabs-row {
-            display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-start;
-            background: var(--surface); border: 1px solid var(--border2);
-            border-radius: 14px; padding: 8px;
-            width: 100%;
+            display: flex;
+            flex-wrap: nowrap; /* Mantiene tutto su una singola riga */
+            gap: 8px;
+            justify-content: flex-start;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 14px;
+            padding: 8px;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 auto; /* Centra il rettangolo intero */
+            overflow-x: auto; /* Scroll orizzontale se lo schermo è piccolo */
+            scrollbar-width: none; /* Nasconde scrollbar Firefox */
+            box-sizing: border-box;
             transition: background-color 0.3s, border-color 0.3s;
+        }
+        .tabs-row::-webkit-scrollbar {
+            display: none; /* Nasconde scrollbar Chrome/Safari/Edge */
         }
 
         .tab-btn {
@@ -250,7 +264,9 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 0.85rem; font-weight: 800;
             padding: 9px 18px; border-radius: 10px;
-            cursor: pointer; white-space: nowrap;
+            cursor: pointer;
+            white-space: nowrap; /* Il testo non va MAI a capo */
+            flex-shrink: 0; /* Il bottone non si schiaccia */
             transition: all .2s; display: flex; align-items: center; gap: 6px;
             letter-spacing: -0.1px;
         }
@@ -265,7 +281,8 @@
            TAB CONTENT
         ══════════════════════════ */
         .tabs-content {
-            max-width: 900px; margin: 28px auto 0;
+            max-width: 1050px;
+            margin: 28px auto 0;
             padding: 0 32px;
         }
         .tab-content { display: none; animation: fadeIn .3s ease; }
@@ -375,6 +392,8 @@
             border: 1px solid var(--border2);
             border-radius: 20px; padding: 36px;
             transition: background-color 0.3s, border-color 0.3s;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .form-card__title {
