@@ -60,7 +60,7 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 80px; /* Spazio per bottom nav */
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -252,7 +252,7 @@
         }
 
         /* ══════════════════════════
-           TABS
+           TABS SECTIONS
         ══════════════════════════ */
         .tabs-wrapper {
             max-width: 1050px; 
@@ -271,13 +271,8 @@
             width: fit-content;
             max-width: 100%;
             margin: 0 auto; 
-            overflow-x: auto; 
-            scrollbar-width: none; 
             box-sizing: border-box;
             transition: background-color 0.3s, border-color 0.3s;
-        }
-        .tabs-row::-webkit-scrollbar {
-            display: none; 
         }
 
         .tab-btn {
@@ -634,23 +629,54 @@
             .stat-num { font-size: 1.4rem; }
             .stat-label { font-size: 0.55rem; }
 
-            /* 5. Griglie e Tabs: Mettiamo le card su una singola colonna per leggerle meglio */
-            .tabs-wrapper, .tabs-content { padding: 0 16px; margin-top: 20px; }
-            
-            /* TAB HEADER - Permette lo scroll orizzontale */
+            /* 5. TABS: Griglia a 2 colonne per mostrare tutto chiaramente su mobile */
+            .tabs-wrapper { padding: 0 16px; margin-top: 20px; }
             .tabs-row { 
-                justify-content: flex-start; 
-                margin: 0; 
-                padding: 8px; 
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* 2 Colonne! */
+                gap: 8px; 
+                width: 100%;
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+            
+            /* Stile dei bottoni quando sono in griglia su mobile */
+            .tab-btn { 
+                width: 100%;
+                justify-content: center;
+                padding: 14px 8px;
+                flex-direction: column; /* Icona sopra, testo sotto */
+                gap: 8px;
+                background: var(--surface);
+                border: 1px solid var(--border2);
+                border-radius: 12px;
+                font-size: 0.8rem;
+                white-space: normal; /* Permette al testo di andare a capo */
+                text-align: center;
+            }
+            
+            /* Modifica la grandezza dell'emoji per la vista a griglia */
+            .tab-btn::first-letter {
+                font-size: 1.4rem;
+                display: block;
+                margin-bottom: 2px;
             }
 
+            .tab-btn.active {
+                background: rgba(200,240,96,0.12);
+                border-color: rgba(200,240,96,0.3);
+            }
+
+            /* 6. Griglie Contenuti: 1 colonna a larghezza intera */
+            .tabs-content { padding: 0 16px; }
             .notes-grid { 
-                grid-template-columns: 1fr; /* 1 card per riga, a larghezza intera */
+                grid-template-columns: 1fr; 
                 gap: 12px; 
             }
-            .note-thumb { height: 160px; /* Immagini un po' più alte sul telefono */ }
+            .note-thumb { height: 160px; }
 
-            /* 6. Sub-tabs (Appunti/Podcast) scrollabili */
+            /* 7. Sub-tabs (Appunti/Podcast) scrollabili */
             .subtab-row { 
                 overflow-x: auto; 
                 scrollbar-width: none; 
@@ -658,7 +684,7 @@
             .subtab-row::-webkit-scrollbar { display: none; }
             .subtab-btn { white-space: nowrap; }
 
-            /* 7. Form di Pubblicazione e Playlist: diamo respiro */
+            /* 8. Form di Pubblicazione e Playlist: diamo respiro */
             .form-card { padding: 24px 16px; border-radius: 16px; }
             .btn-save { padding: 12px; font-size: 1rem; }
             .playlist-create-row { flex-direction: column; }
