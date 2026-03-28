@@ -99,24 +99,26 @@
            BOTTOM NAV (SOLO SMARTPHONE)
         ════════════════════════════ */
         .bottom-nav {
-            display: none; /* Nascosto di default su PC */
+            display: none; 
             position: fixed; bottom: 0; left: 0; right: 0;
             height: 64px;
             background: rgba(10,10,15, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            z-index: 1000;
+            z-index: 10000; /* Z-index altissimo per essere sempre cliccabile */
             justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); /* Fix per la barra di iOS */
+            padding-bottom: env(safe-area-inset-bottom); 
         }
         body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
         
-        .bottom-nav a {
+        .bottom-nav div {
             color: var(--muted); text-decoration: none;
             font-size: 1.4rem; padding: 10px; border-radius: 12px;
             transition: all .2s; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; /* Cambiato a cursore interattivo */
+            -webkit-tap-highlight-color: transparent;
         }
-        .bottom-nav a.active { color: var(--accent); }
+        .bottom-nav div.active { color: var(--accent); }
 
         /* ─── HERO PODCAST ─── */
         .hero {
@@ -503,10 +505,10 @@
     </nav>
 
     <nav class="bottom-nav">
-        <a href="index.html">🏠</a>
-        <a href="esplora.html">🧭</a>
-        <a href="podcast.html" class="active">🎙️</a>
-        <a href="profilo.html">👤</a>
+        <div onclick="window.location.href='index.html'">🏠</div>
+        <div onclick="window.location.href='esplora.html'">🧭</div>
+        <div onclick="window.location.href='podcast.html'" class="active">🎙️</div>
+        <div onclick="window.location.href='profilo.html'">👤</div>
     </nav>
 
     <header class="hero">
