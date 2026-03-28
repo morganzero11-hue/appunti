@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Podcast — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -60,12 +60,12 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 80px; /* Spazio per footer/bottom nav */
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ─── NAVBAR ─── */
+        /* ─── NAVBAR (PC) ─── */
         .topnav {
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
             background: rgba(var(--bg-rgb, 10,10,10), 0.92); backdrop-filter: blur(20px);
@@ -95,6 +95,29 @@
         body:not(.light-theme) .topnav__login { color: #0a0a0a; }
         .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
         
+        /* ════════════════════════════
+           BOTTOM NAV (SOLO SMARTPHONE)
+        ════════════════════════════ */
+        .bottom-nav {
+            display: none; /* Nascosto di default su PC */
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10,10,15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* Fix per la barra di iOS */
+        }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
+
         /* ─── HERO PODCAST ─── */
         .hero {
             margin-top: var(--nav-h);
@@ -437,167 +460,163 @@
 
         /* ─── RESPONSIVE (SMARTPHONE) ─── */
         @media (max-width: 768px) {
-            /* Navbar orizzontale scrollabile */
+            /* 1. Navbar orizzontale in alto (mostra solo Logo e Accedi) */
             .topnav { 
                 height: auto; 
                 padding: 12px 16px; 
-                flex-wrap: wrap; 
-                gap: 12px;
+                justify-content: space-between; 
             }
-            .topnav__brand { margin-right: auto; }
-            .topnav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
-            .topnav__links { 
-                display: flex; 
-                width: 100%; 
-                overflow-x: auto; 
-                scrollbar-width: none; 
-                gap: 8px;
-            }
-            .topnav__links::-webkit-scrollbar { display: none; }
-            .topnav__links a { white-space: nowrap; padding: 6px 12px; }
+            .topnav__links { display: none; } 
+            .topnav__brand { margin-right: 0; }
+            .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
+            
+            /* 2. Mostra la bottom nav per scorrere tra le pagine */
+            .bottom-nav { display: flex; }
 
-            /* Aggiustamenti Hero */
-            .hero { padding: 120px 20px 50px; } /* Più margine in alto per la navbar alta */
+            /* 3. Aggiustamenti Hero */
+            .hero { padding: 120px 20px 50px; } /* Più margine in alto per la navbar */
             .hero__title { font-size: 2.8rem; }
             
-            /* Main Content e Griglie */
+            /* 4. Main Content e Griglie */
             .main-content { padding: 0 16px; }
             .featured-grid, .pod-grid { grid-template-columns: 1fr; }
             
-            /* Filtri su colonna singola per facilitare i tap */
+            /* 5. Filtri su colonna singola per facilitare i tap */
             .filters-card { flex-direction: column; padding: 16px; gap: 10px; }
             .filter-group { min-width: 100%; width: 100%; }
         }
     </style>
-    <script>
-        if (localStorage.getItem('appuntiTheme') === 'light') {
-            document.documentElement.classList.add('light-theme');
-        }
-    </script>
 </head>
 <body class=""> 
 
-<nav class="topnav">
-    <a href="index.html" class="topnav__brand">📚 Appunti</a>
-    <ul class="topnav__links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="esplora.html">Esplora</a></li>
-        <li><a href="profilo.html">Profilo</a></li>
-        <li><a href="utenti.html">Utenti</a></li>
-        <li><a href="podcast.html" class="active">Podcast</a></li>
-        <li><a href="impostazioni.html">Impostazioni</a></li>
-    </ul>
-    <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
-</nav>
+    <nav class="topnav">
+        <a href="index.html" class="topnav__brand">📚 Appunti</a>
+        <ul class="topnav__links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="esplora.html">Esplora</a></li>
+            <li><a href="profilo.html">Profilo</a></li>
+            <li><a href="utenti.html">Utenti</a></li>
+            <li><a href="podcast.html" class="active">Podcast</a></li>
+            <li><a href="impostazioni.html">Impostazioni</a></li>
+        </ul>
+        <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+    </nav>
 
-<header class="hero">
-    <div class="hero__inner">
-        <div class="hero__eyebrow">✦ Ascolta e impara</div>
-        <h1 class="hero__title">Libreria<br><em>Podcast</em></h1>
-        <p class="hero__sub">Spiegazioni vocali create da studenti come te. Ascolta mentre sei in giro, in treno, ovunque.</p>
-        <div class="hero__wave" id="heroWave"></div>
+    <nav class="bottom-nav">
+        <a href="index.html">🏠</a>
+        <a href="esplora.html">🧭</a>
+        <a href="podcast.html" class="active">🎙️</a>
+        <a href="profilo.html">👤</a>
+    </nav>
+
+    <header class="hero">
+        <div class="hero__inner">
+            <div class="hero__eyebrow">✦ Ascolta e impara</div>
+            <h1 class="hero__title">Libreria<br><em>Podcast</em></h1>
+            <p class="hero__sub">Spiegazioni vocali create da studenti come te. Ascolta mentre sei in giro, in treno, ovunque.</p>
+            <div class="hero__wave" id="heroWave"></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="featured-section" id="featuredSection">
+            <div class="section-header">
+                <div class="section-label">
+                    <span class="section-eyebrow">Classifica</span>
+                    <h2 class="section-title">I più amati 🔥</h2>
+                </div>
+            </div>
+            <div class="featured-grid" id="featuredFeed"></div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section class="filters-section">
+            <div class="section-header" style="margin-bottom:20px;">
+                <div class="section-label">
+                    <span class="section-eyebrow">Libreria</span>
+                    <h2 class="section-title">Esplora tutti 🎧</h2>
+                </div>
+            </div>
+            <div class="filters-card">
+                <div class="filter-group">
+                    <span class="filter-icon">🔍</span>
+                    <input type="text" id="searchTitolo" placeholder="Cerca titolo o descrizione..." oninput="applicaFiltri()">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-icon">🏷️</span>
+                    <select id="filterCategoria" onchange="applicaFiltri()" style="padding-left:38px">
+                        <option value="">Tutte le categorie</option>
+                        <option value="Storia">Storia</option>
+                        <option value="Scienze">Scienze</option>
+                        <option value="Letteratura">Letteratura</option>
+                        <option value="Filosofia">Filosofia</option>
+                        <option value="Motivazionale">Motivazionale</option>
+                        <option value="Altro">Altro</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-icon">🏫</span>
+                    <input type="text" id="filterScuola" placeholder="Cerca per scuola..." oninput="applicaFiltri()">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-icon">📚</span>
+                    <input type="text" id="filterFonti" placeholder="Cerca fonte / libro..." oninput="applicaFiltri()">
+                </div>
+            </div>
+        </section>
+
+        <div class="pod-grid" id="podcastFeed">
+            <div class="empty-state">
+                <div class="empty-state__icon">🎙️</div>
+                <h3>Caricamento podcast...</h3>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modalPlaylist">
+        <div class="modal">
+            <div class="modal__title">📂 Salva in una Playlist</div>
+            <div class="modal__sub">Scegli dove vuoi salvare questo podcast</div>
+            
+            <div id="elencoPlaylistsModale" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
+                <p style="color:var(--muted); font-size:0.9rem; text-align:center;">Caricamento...</p>
+            </div>
+
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--ghost" onclick="chiudiModalPlaylist()">Annulla</button>
+                <a href="profilo.html" class="modal__btn modal__btn--accent">+ Nuova Playlist</a>
+            </div>
+        </div>
     </div>
-</header>
 
-<main class="main-content">
-    <section class="featured-section" id="featuredSection">
-        <div class="section-header">
-            <div class="section-label">
-                <span class="section-eyebrow">Classifica</span>
-                <h2 class="section-title">I più amati 🔥</h2>
-            </div>
-        </div>
-        <div class="featured-grid" id="featuredFeed"></div>
-    </section>
+    <div class="toast" id="toast"></div>
 
-    <hr class="section-divider">
+    <script src="/js/podcast.js"></script>
 
-    <section class="filters-section">
-        <div class="section-header" style="margin-bottom:20px;">
-            <div class="section-label">
-                <span class="section-eyebrow">Libreria</span>
-                <h2 class="section-title">Esplora tutti 🎧</h2>
-            </div>
-        </div>
-        <div class="filters-card">
-            <div class="filter-group">
-                <span class="filter-icon">🔍</span>
-                <input type="text" id="searchTitolo" placeholder="Cerca titolo o descrizione..." oninput="applicaFiltri()">
-            </div>
-            <div class="filter-group">
-                <span class="filter-icon">🏷️</span>
-                <select id="filterCategoria" onchange="applicaFiltri()" style="padding-left:38px">
-                    <option value="">Tutte le categorie</option>
-                    <option value="Storia">Storia</option>
-                    <option value="Scienze">Scienze</option>
-                    <option value="Letteratura">Letteratura</option>
-                    <option value="Filosofia">Filosofia</option>
-                    <option value="Motivazionale">Motivazionale</option>
-                    <option value="Altro">Altro</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <span class="filter-icon">🏫</span>
-                <input type="text" id="filterScuola" placeholder="Cerca per scuola..." oninput="applicaFiltri()">
-            </div>
-            <div class="filter-group">
-                <span class="filter-icon">📚</span>
-                <input type="text" id="filterFonti" placeholder="Cerca fonte / libro..." oninput="applicaFiltri()">
-            </div>
-        </div>
-    </section>
-
-    <div class="pod-grid" id="podcastFeed">
-        <div class="empty-state">
-            <div class="empty-state__icon">🎙️</div>
-            <h3>Caricamento podcast...</h3>
-        </div>
-    </div>
-</main>
-
-<div class="modal-overlay" id="modalPlaylist">
-    <div class="modal">
-        <div class="modal__title">📂 Salva in una Playlist</div>
-        <div class="modal__sub">Scegli dove vuoi salvare questo podcast</div>
-        
-        <div id="elencoPlaylistsModale" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-            <p style="color:var(--muted); font-size:0.9rem; text-align:center;">Caricamento...</p>
-        </div>
-
-        <div class="modal__actions">
-            <button class="modal__btn modal__btn--ghost" onclick="chiudiModalPlaylist()">Annulla</button>
-            <a href="profilo.html" class="modal__btn modal__btn--accent">+ Nuova Playlist</a>
-        </div>
-    </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="/js/podcast.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('appuntiTheme') === 'light') {
-            document.body.classList.add('light-theme');
-        }
-        if (document.cookie.includes('username=')) {
-            const loginBtn = document.getElementById('navLoginBtn');
-            if(loginBtn) loginBtn.style.display = 'none';
-        }
-    });
-
-    (function buildWave() {
-        const w = document.getElementById('heroWave');
-        const heights = [12,22,34,28,16,40,32,18,44,26,14,38,30,20,42,24,16,36,28,12,40];
-        heights.forEach((h, i) => {
-            const bar = document.createElement('div');
-            bar.className = 'hero__wave-bar';
-            bar.style.setProperty('--dur', (0.9 + Math.random() * 0.8).toFixed(2) + 's');
-            bar.style.setProperty('--del', (i * 0.06).toFixed(2) + 's');
-            bar.style.height = h + 'px';
-            w.appendChild(bar);
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('appuntiTheme') === 'light') {
+                document.body.classList.add('light-theme');
+            }
+            if (document.cookie.includes('username=')) {
+                const loginBtn = document.getElementById('navLoginBtn');
+                if(loginBtn) loginBtn.style.display = 'none';
+            }
         });
-    })();
-</script>
+
+        (function buildWave() {
+            const w = document.getElementById('heroWave');
+            const heights = [12,22,34,28,16,40,32,18,44,26,14,38,30,20,42,24,16,36,28,12,40];
+            heights.forEach((h, i) => {
+                const bar = document.createElement('div');
+                bar.className = 'hero__wave-bar';
+                bar.style.setProperty('--dur', (0.9 + Math.random() * 0.8).toFixed(2) + 's');
+                bar.style.setProperty('--del', (i * 0.06).toFixed(2) + 's');
+                bar.style.height = h + 'px';
+                w.appendChild(bar);
+            });
+        })();
+    </script>
 </body>
 </html>

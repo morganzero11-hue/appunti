@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Profilo — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -66,7 +66,7 @@
         }
 
         /* ══════════════════════════
-           NAVBAR
+           NAVBAR (PC)
         ══════════════════════════ */
         .topnav {
             position: fixed; top: 0; left: 0; right: 0;
@@ -103,7 +103,29 @@
         }
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
-        @media (max-width: 768px) { .topnav__links { display: none; } }
+
+        /* ════════════════════════════
+           BOTTOM NAV (SOLO SMARTPHONE)
+        ════════════════════════════ */
+        .bottom-nav {
+            display: none; 
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10,10,15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); 
+        }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
 
         /* ══════════════════════════
            PROFILE HERO
@@ -230,16 +252,16 @@
         }
 
         /* ══════════════════════════
-           TABS - AGGIORNATO (TUTTO SU UNA RIGA)
+           TABS
         ══════════════════════════ */
         .tabs-wrapper {
-            max-width: 1050px; /* Allargato per contenere tutto su PC */
+            max-width: 1050px; 
             margin: 40px auto 0;
             padding: 0 32px;
         }
         .tabs-row {
             display: flex;
-            flex-wrap: nowrap; /* Mantiene tutto su una singola riga */
+            flex-wrap: nowrap; 
             gap: 8px;
             justify-content: flex-start;
             background: var(--surface);
@@ -248,14 +270,14 @@
             padding: 8px;
             width: fit-content;
             max-width: 100%;
-            margin: 0 auto; /* Centra il rettangolo intero */
-            overflow-x: auto; /* Scroll orizzontale se lo schermo è piccolo */
-            scrollbar-width: none; /* Nasconde scrollbar Firefox */
+            margin: 0 auto; 
+            overflow-x: auto; 
+            scrollbar-width: none; 
             box-sizing: border-box;
             transition: background-color 0.3s, border-color 0.3s;
         }
         .tabs-row::-webkit-scrollbar {
-            display: none; /* Nasconde scrollbar Chrome/Safari/Edge */
+            display: none; 
         }
 
         .tab-btn {
@@ -265,8 +287,8 @@
             font-size: 0.85rem; font-weight: 800;
             padding: 9px 18px; border-radius: 10px;
             cursor: pointer;
-            white-space: nowrap; /* Il testo non va MAI a capo */
-            flex-shrink: 0; /* Il bottone non si schiaccia */
+            white-space: nowrap; 
+            flex-shrink: 0; 
             transition: all .2s; display: flex; align-items: center; gap: 6px;
             letter-spacing: -0.1px;
         }
@@ -572,15 +594,75 @@
         }
 
         /* ══════════════════════════
-           RESPONSIVE
+           RESPONSIVE (SMARTPHONE)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            .topnav { padding: 0 20px; }
-            .profile-hero__inner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 0 20px 36px; }
-            .profile-stats { border-radius: 0; }
-            .tabs-wrapper, .tabs-content { padding: 0 16px; }
-            .notes-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-            .form-card { padding: 24px 20px; }
+            /* 1. Navbar superiore limitata a Logo e Login */
+            .topnav { 
+                height: auto; 
+                padding: 12px 16px; 
+                justify-content: space-between;
+            }
+            .topnav__links { display: none; }
+            .topnav__brand { margin-right: 0; }
+            .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
+
+            /* 2. Mostra la Bottom Nav */
+            .bottom-nav { display: flex; }
+
+            /* 3. Hero: Centriamo l'immagine profilo e il testo */
+            .profile-hero { 
+                margin-top: 80px; /* Spazio extra per la navbar più alta */
+                padding: 30px 0 0; 
+            }
+            .profile-hero__inner { 
+                flex-direction: column; /* Impila immagine e testo */
+                align-items: center; 
+                text-align: center;
+                padding: 0 20px 24px; 
+                gap: 16px;
+            }
+            .profile-meta { display: flex; flex-direction: column; align-items: center; }
+            .profile-name { font-size: 2rem; }
+
+            /* 4. Statistiche: Adattiamo lo spazio */
+            .profile-stats { 
+                margin: 0 16px; 
+                border-radius: 12px; 
+            }
+            .stat-item { padding: 12px 8px; }
+            .stat-num { font-size: 1.4rem; }
+            .stat-label { font-size: 0.55rem; }
+
+            /* 5. Griglie e Tabs: Mettiamo le card su una singola colonna per leggerle meglio */
+            .tabs-wrapper, .tabs-content { padding: 0 16px; margin-top: 20px; }
+            
+            /* TAB HEADER - Permette lo scroll orizzontale */
+            .tabs-row { 
+                justify-content: flex-start; 
+                margin: 0; 
+                padding: 8px; 
+            }
+
+            .notes-grid { 
+                grid-template-columns: 1fr; /* 1 card per riga, a larghezza intera */
+                gap: 12px; 
+            }
+            .note-thumb { height: 160px; /* Immagini un po' più alte sul telefono */ }
+
+            /* 6. Sub-tabs (Appunti/Podcast) scrollabili */
+            .subtab-row { 
+                overflow-x: auto; 
+                scrollbar-width: none; 
+            }
+            .subtab-row::-webkit-scrollbar { display: none; }
+            .subtab-btn { white-space: nowrap; }
+
+            /* 7. Form di Pubblicazione e Playlist: diamo respiro */
+            .form-card { padding: 24px 16px; border-radius: 16px; }
+            .btn-save { padding: 12px; font-size: 1rem; }
+            .playlist-create-row { flex-direction: column; }
+            .playlist-create-btn { width: 100%; text-align: center; }
         }
     </style>
     <script>
@@ -589,7 +671,9 @@
         }
     </script>
 </head>
-<body class=""> <nav class="topnav">
+<body class=""> 
+
+<nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
@@ -600,6 +684,13 @@
         <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+</nav>
+
+<nav class="bottom-nav">
+    <a href="index.html">🏠</a>
+    <a href="esplora.html">🧭</a>
+    <a href="podcast.html">🎙️</a>
+    <a href="profilo.html" class="active">👤</a>
 </nav>
 
 <div class="profile-hero">
@@ -716,8 +807,8 @@
 
     </div>
 
-        <div id="tab-amici" class="tab-content">
-     <div style="margin-bottom: 24px;">
+    <div id="tab-amici" class="tab-content">
+        <div style="margin-bottom: 24px;">
             <input type="text" id="searchAmici" placeholder="Cerca tra i tuoi amici per nome o scuola..." 
                  oninput="filtraAmici()" 
                  style="width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid var(--border2); background: var(--surface2); color: var(--text); font-family: inherit; font-weight: 600; outline: none;">

@@ -50,11 +50,11 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 40px;
+            padding-bottom: 80px; /* Spazio per footer/bottom nav */
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ─── NAVBAR ─── */
+        /* ─── NAVBAR (PC) ─── */
         .topnav { 
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); 
             background: rgba(var(--bg-rgb, 10,10,10), 0.95); backdrop-filter: blur(10px); 
@@ -94,6 +94,29 @@
         }
         .nav__back:hover { background: rgba(255,255,255,0.1); }
         body.light-theme .nav__back:hover { background: rgba(0,0,0,0.05); }
+
+        /* ════════════════════════════
+           BOTTOM NAV (SOLO SMARTPHONE)
+        ════════════════════════════ */
+        .bottom-nav {
+            display: none; 
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10,10,15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); 
+        }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
 
         /* ─── LAYOUT RICERCA ─── */
         .search-page {
@@ -272,30 +295,24 @@
 
         /* ─── RESPONSIVE (SMARTPHONE) ─── */
         @media (max-width: 768px) { 
-            /* Navbar orizzontale scrollabile */
+            /* 1. Navbar limitata a Logo, pulsanti Accedi/Torna indietro */
             .topnav { 
                 height: auto; 
                 padding: 12px 16px; 
-                flex-wrap: wrap; 
-                gap: 12px;
+                justify-content: space-between; 
             }
+            .topnav__links { display: none; } 
             .topnav__brand { margin-right: auto; }
-            .topnav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
-            .nav__back { margin-left: auto; } /* Mantiene il tasto back allineato a destra */
-            .topnav__links { 
-                display: flex; 
-                width: 100%; 
-                overflow-x: auto; 
-                scrollbar-width: none; 
-                gap: 8px;
-            }
-            .topnav__links::-webkit-scrollbar { display: none; }
-            .topnav__links a { white-space: nowrap; padding: 6px 12px; }
+            .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
+            .nav__back { margin-left: auto; } 
+            
+            /* 2. Mostra la Bottom Nav */
+            .bottom-nav { display: flex; }
 
-            /* Ricerca */
+            /* 3. Aggiustamenti Ricerca Utenti */
             .search-page { margin-top: 120px; padding: 0 16px 40px; }
             
-            /* Profilo Utente: Riorganizza header */
+            /* 4. Profilo Utente: Riorganizza header */
             .profile-header {
                 flex-direction: column;
                 align-items: center;
@@ -311,13 +328,13 @@
             .profile-actions { justify-content: center; width: 100%; }
             .btn-follow { flex: 1; min-width: 140px; }
 
-            /* Main and Grids */
+            /* 5. Main and Grids per Profilo Utente */
             .main { padding: 0 16px 40px; margin-top: 24px; }
             .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .stat-card { padding: 16px; }
             .stat-card__n { font-size: 1.6rem; }
             
-            /* Tabs scrollabili */
+            /* Tabs scrollabili orizzontalmente (invece di nascondersi in verticale) */
             .tabs-container {
                 max-width: 100%;
                 overflow-x: auto;
@@ -332,496 +349,503 @@
 </head>
 <body class=""> 
 
-<nav class="topnav">
-    <a href="index.html" class="topnav__brand">📚 Appunti</a>
-    <ul class="topnav__links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="esplora.html">Esplora</a></li>
-        <li><a href="profilo.html">Profilo</a></li>
-        <li><a href="utenti.html" class="active">Utenti</a></li>
-        <li><a href="podcast.html">Podcast</a></li>
-        <li><a href="impostazioni.html">Impostazioni</a></li>
-    </ul>
-    
-    <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
-    <div class="nav__back" id="navBack" onclick="window.location.href='utenti.html'">← Torna alla ricerca</div>
-</nav>
-
-<div id="pageContent">
-    <div class="loading"><div class="spinner"></div></div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-    // Applico il tema al body a caricamento DOM per sicurezza
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('appuntiTheme') === 'light') {
-            document.body.classList.add('light-theme');
-        }
-    });
-
-    // --- UTILITY E NAVBAR ---
-    function getCookieSafe(name) {
-        let value = `; ${document.cookie}`;
-        let parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
-    function aggiornaNavbar() {
-        const btnLogin = document.getElementById('navLoginBtn');
-        if (getCookieSafe('username') && btnLogin) {
-            btnLogin.style.display = 'none';
-        }
-    }
-
-    const coloriMateria = {
-        "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6","Chimica":"#a855f7",
-        "Storia":"#ec4899","Geografia":"#14b8a6","Italiano":"#f59e0b","Inglese":"#6366f1",
-        "Informatica":"#ef4444","Arte":"#0ea5e9","Biologia":"#059669","Geometria":"#7c3aed"
-    };
-    const iconeMateria = {
-        "Matematica":"∑","Scienze":"🔬","Fisica":"⚛️","Chimica":"🧪","Storia":"📖",
-        "Geografia":"🌍","Italiano":"✏️","Inglese":"🗣️","Informatica":"💻","Arte":"🎨",
-        "Biologia":"🧬","Geometria":"📐"
-    };
-
-    const usernameUrl = new URLSearchParams(window.location.search).get('user') || '';
-
-    // --- GESTIONE CRONOLOGIA ---
-    function getCronologia() {
-        return JSON.parse(localStorage.getItem('searchHistory') || '[]');
-    }
-
-    function aggiungiACronologia(userObj) {
-        let history = getCronologia();
-        history = history.filter(u => u.username !== userObj.username);
-        history.unshift(userObj);
-        if (history.length > 5) history.pop();
-        localStorage.setItem('searchHistory', JSON.stringify(history));
-    }
-
-    function pulisciCronologia() {
-        localStorage.removeItem('searchHistory');
-        gestisciInput(document.getElementById('userInput'));
-    }
-
-    function generaHtmlUtente(u, isHistory = false) {
-        const onclickAttr = `onclick="aggiungiACronologia({username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
-        return `
-            <a class="${isHistory ? 'history-result' : 'user-result'}" href="utenti.html?user=${u.username}" ${onclickAttr}>
-                ${isHistory ? '<div class="history-icon">🕒</div>' : `
-                <div class="user-result__photo">
-                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
-                </div>
-                `}
-                <div>
-                    <div class="user-result__name">@${u.username}</div>
-                </div>
-            </a>`;
-    }
-
-    // --- MODALITÀ: RICERCA ---
-    function mostraRicerca() {
-        document.title = 'Cerca Utenti — Appunti';
-        document.getElementById('navBack').style.display = 'none';
-        document.getElementById('pageContent').innerHTML = `
-            <div class="search-page">
-                <h1 class="search-page__title">Cerca utenti</h1>
-                <p class="search-page__sub">Trova altri studenti e scopri i loro contenuti pubblicati</p>
-                <div class="search-box">
-                    <input class="search-box__input" id="userInput" type="text" placeholder="Cerca @username..." oninput="gestisciInput(this)" onclick="gestisciInput(this)" autocomplete="off">
-                    <button class="search-box__btn" onclick="eseguiRicerca(document.getElementById('userInput').value)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    </button>
-                </div>
-                <div class="results-container" id="risultati">
-                    <div class="empty">Inizia a scrivere per cercare qualcuno...</div>
-                </div>
-            </div>`;
+    <nav class="topnav">
+        <a href="index.html" class="topnav__brand">📚 Appunti</a>
+        <ul class="topnav__links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="esplora.html">Esplora</a></li>
+            <li><a href="profilo.html">Profilo</a></li>
+            <li><a href="utenti.html" class="active">Utenti</a></li>
+            <li><a href="podcast.html">Podcast</a></li>
+            <li><a href="impostazioni.html">Impostazioni</a></li>
+        </ul>
         
-        if(localStorage.getItem('appuntiTheme') !== 'light'){
-            document.querySelector('.search-box__btn svg').setAttribute('stroke', '#000');
+        <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+        <div class="nav__back" id="navBack" onclick="window.location.href='utenti.html'">← Torna alla ricerca</div>
+    </nav>
+
+    <nav class="bottom-nav">
+        <a href="index.html">🏠</a>
+        <a href="esplora.html">🧭</a>
+        <a href="podcast.html">🎙️</a>
+        <a href="profilo.html">👤</a>
+    </nav>
+
+    <div id="pageContent">
+        <div class="loading"><div class="spinner"></div></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Applico il tema al body a caricamento DOM per sicurezza
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('appuntiTheme') === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        });
+
+        // --- UTILITY E NAVBAR ---
+        function getCookieSafe(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
         }
 
-        const inputVal = document.getElementById('userInput').value;
-        if(inputVal.length > 0) eseguiRicerca(inputVal);
-        else mostraSuggerimenti();
-    }
-
-    let timer;
-    function gestisciInput(inputEl) {
-        const val = inputEl.value.trim();
-        clearTimeout(timer);
-        if (val.length === 0) {
-            mostraSuggerimenti();
-            return;
+        function aggiornaNavbar() {
+            const btnLogin = document.getElementById('navLoginBtn');
+            if (getCookieSafe('username') && btnLogin) {
+                btnLogin.style.display = 'none';
+            }
         }
-        timer = setTimeout(() => eseguiRicerca(val), 300);
-    }
 
-    function mostraSuggerimenti() {
-        const box = document.getElementById('risultati');
-        const history = getCronologia();
+        const coloriMateria = {
+            "Matematica":"#f97316","Scienze":"#22c55e","Fisica":"#3b82f6","Chimica":"#a855f7",
+            "Storia":"#ec4899","Geografia":"#14b8a6","Italiano":"#f59e0b","Inglese":"#6366f1",
+            "Informatica":"#ef4444","Arte":"#0ea5e9","Biologia":"#059669","Geometria":"#7c3aed"
+        };
+        const iconeMateria = {
+            "Matematica":"∑","Scienze":"🔬","Fisica":"⚛️","Chimica":"🧪","Storia":"📖",
+            "Geografia":"🌍","Italiano":"✏️","Inglese":"🗣️","Informatica":"💻","Arte":"🎨",
+            "Biologia":"🧬","Geometria":"📐"
+        };
 
-        if (history.length > 0) {
-            box.innerHTML = `
-                <div class="results-header">
-                    <h3 class="results-label">Ricerche Recenti</h3>
-                    <button class="clear-history-btn" onclick="pulisciCronologia()">Cancella</button>
-                </div>
-                ${history.map(u => generaHtmlUtente(u, true)).join('')}
-            `;
-        } else {
-            box.innerHTML = `<div class="empty">Inizia a scrivere per cercare qualcuno...</div>`;
+        const usernameUrl = new URLSearchParams(window.location.search).get('user') || '';
+
+        // --- GESTIONE CRONOLOGIA ---
+        function getCronologia() {
+            return JSON.parse(localStorage.getItem('searchHistory') || '[]');
         }
-    }
 
-    async function eseguiRicerca(q) {
-        const box = document.getElementById('risultati');
-        if (!q.trim()) { mostraSuggerimenti(); return; }
+        function aggiungiACronologia(userObj) {
+            let history = getCronologia();
+            history = history.filter(u => u.username !== userObj.username);
+            history.unshift(userObj);
+            if (history.length > 5) history.pop();
+            localStorage.setItem('searchHistory', JSON.stringify(history));
+        }
 
-        box.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
-        try {
-            const res = await fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`);
-            const utenti = await res.json();
+        function pulisciCronologia() {
+            localStorage.removeItem('searchHistory');
+            gestisciInput(document.getElementById('userInput'));
+        }
+
+        function generaHtmlUtente(u, isHistory = false) {
+            const onclickAttr = `onclick="aggiungiACronologia({username: '${u.username}', foto_profilo_url: '${u.foto_profilo_url || ''}'})"`;
+            return `
+                <a class="${isHistory ? 'history-result' : 'user-result'}" href="utenti.html?user=${u.username}" ${onclickAttr}>
+                    ${isHistory ? '<div class="history-icon">🕒</div>' : `
+                    <div class="user-result__photo">
+                        ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
+                    </div>
+                    `}
+                    <div>
+                        <div class="user-result__name">@${u.username}</div>
+                    </div>
+                </a>`;
+        }
+
+        // --- MODALITÀ: RICERCA ---
+        function mostraRicerca() {
+            document.title = 'Cerca Utenti — Appunti';
+            document.getElementById('navBack').style.display = 'none';
+            document.getElementById('pageContent').innerHTML = `
+                <div class="search-page">
+                    <h1 class="search-page__title">Cerca utenti</h1>
+                    <p class="search-page__sub">Trova altri studenti e scopri i loro contenuti pubblicati</p>
+                    <div class="search-box">
+                        <input class="search-box__input" id="userInput" type="text" placeholder="Cerca @username..." oninput="gestisciInput(this)" onclick="gestisciInput(this)" autocomplete="off">
+                        <button class="search-box__btn" onclick="eseguiRicerca(document.getElementById('userInput').value)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </button>
+                    </div>
+                    <div class="results-container" id="risultati">
+                        <div class="empty">Inizia a scrivere per cercare qualcuno...</div>
+                    </div>
+                </div>`;
             
-            if (utenti.length === 0) {
-                box.innerHTML = `<div class="empty">Nessun utente trovato per "${q}"</div>`;
+            if(localStorage.getItem('appuntiTheme') !== 'light'){
+                document.querySelector('.search-box__btn svg').setAttribute('stroke', '#000');
+            }
+
+            const inputVal = document.getElementById('userInput').value;
+            if(inputVal.length > 0) eseguiRicerca(inputVal);
+            else mostraSuggerimenti();
+        }
+
+        let timer;
+        function gestisciInput(inputEl) {
+            const val = inputEl.value.trim();
+            clearTimeout(timer);
+            if (val.length === 0) {
+                mostraSuggerimenti();
                 return;
             }
-            box.innerHTML = `<div class="results-header"><h3 class="results-label">Risultati della ricerca</h3></div>` 
-                            + utenti.map(u => generaHtmlUtente(u, false)).join('');
-        } catch (e) { box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; }
-    }
-
-    // --- SWITCH TABS ---
-    function showTab(tabName) {
-        document.getElementById('section-appunti').classList.remove('active');
-        document.getElementById('section-podcast').classList.remove('active');
-        document.getElementById('section-playlists').classList.remove('active');
-        
-        document.getElementById('btn-tab-appunti').classList.remove('active');
-        document.getElementById('btn-tab-podcast').classList.remove('active', 'active-podcast');
-        document.getElementById('btn-tab-playlists').classList.remove('active');
-        
-        if (tabName === 'appunti') {
-            document.getElementById('section-appunti').classList.add('active');
-            document.getElementById('btn-tab-appunti').classList.add('active');
-        } else if (tabName === 'podcast') {
-            document.getElementById('section-podcast').classList.add('active');
-            document.getElementById('btn-tab-podcast').classList.add('active-podcast');
-        } else if (tabName === 'playlists') {
-            document.getElementById('section-playlists').classList.add('active');
-            document.getElementById('btn-tab-playlists').classList.add('active');
+            timer = setTimeout(() => eseguiRicerca(val), 300);
         }
-    }
 
-    // --- GESTIONE FOLLOW (NUOVA FUNZIONALITÀ AGGIORNATA) ---
-    window.toggleFollow = async function(targetId) {
-        const myId = getCookieSafe('utente_id');
-        if (!myId) {
-            alert("Devi effettuare l'accesso per poter seguire gli utenti!");
-            window.location.href = "login.html";
-            return;
-        }
-        
-        const btn = document.getElementById('btnFollow');
-        btn.disabled = true;
-        
-        try {
-            const res = await fetch('/api/follow', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ follower_id: myId, seguito_id: targetId })
-            });
-            const data = await res.json();
-            
-            const statFollowers = document.getElementById('statFollowers');
-            let count = parseInt(statFollowers.innerText) || 0;
+        function mostraSuggerimenti() {
+            const box = document.getElementById('risultati');
+            const history = getCronologia();
 
-            if (data.action === 'followed') {
-                btn.classList.add('following');
-                btn.innerHTML = 'Smetti di seguire'; 
-                statFollowers.innerText = count + 1;
-            } else if (data.action === 'unfollowed') {
-                btn.classList.remove('following');
-                btn.innerHTML = 'Segui'; 
-                statFollowers.innerText = Math.max(0, count - 1);
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Errore di connessione");
-        }
-        btn.disabled = false;
-    }
-
-    async function initFollowData(targetId) {
-        const myId = getCookieSafe('utente_id');
-        const btn = document.getElementById('btnFollow');
-
-        try {
-            const resStats = await fetch(`/api/follow?utente_id=${targetId}`);
-            if (resStats.ok) {
-                const stats = await resStats.json();
-                document.getElementById('statFollowers').innerText = stats.followers || 0;
-                document.getElementById('statFollowing').innerText = stats.following || 0;
-            }
-        } catch(e) { console.error(e) }
-
-        if (myId !== targetId) {
-            btn.style.display = 'block';
-            
-            if (myId) {
-                try {
-                    const resCheck = await fetch(`/api/follow?utente_id=${myId}&target_id=${targetId}&check_status=true`);
-                    if (resCheck.ok) {
-                        const check = await resCheck.json();
-                        if (check.isFollowing) {
-                            btn.classList.add('following');
-                            btn.innerHTML = 'Smetti di seguire'; 
-                        }
-                    }
-                } catch(e) {}
+            if (history.length > 0) {
+                box.innerHTML = `
+                    <div class="results-header">
+                        <h3 class="results-label">Ricerche Recenti</h3>
+                        <button class="clear-history-btn" onclick="pulisciCronologia()">Cancella</button>
+                    </div>
+                    ${history.map(u => generaHtmlUtente(u, true)).join('')}
+                `;
+            } else {
+                box.innerHTML = `<div class="empty">Inizia a scrivere per cercare qualcuno...</div>`;
             }
         }
-    }
 
-    // --- MODALITÀ: PROFILO ---
-    async function caricaProfilo() {
-        document.getElementById('navBack').style.display = 'flex';
-        try {
-            const [resU, resA, resP] = await Promise.all([
-                fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`),
-                fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`),
-                fetch(`/api/podcast?username=${encodeURIComponent(usernameUrl)}`) 
-            ]);
-            
-            if (!resU.ok) { mostraNotFound(); return; }
-            
-            const u = await resU.json();
-            document.title = `@${u.username} — Appunti`;
+        async function eseguiRicerca(q) {
+            const box = document.getElementById('risultati');
+            if (!q.trim()) { mostraSuggerimenti(); return; }
 
-            const allAppunti = resA.ok ? await resA.json() : [];
-            const allPodcast = resP.ok ? await resP.json() : []; 
-
-            const appuntiFiltrati = allAppunti.filter(a => a.username === u.username);
-            const podcastFiltrati = allPodcast.filter(p => p.username === u.username);
-
-            renderProfiloHtml(u, appuntiFiltrati, podcastFiltrati);
-            
-            caricaPlaylistsUtente(u.id);
-            initFollowData(u.id);
-
-        } catch (e) { mostraNotFound(); }
-    }
-
-    function renderProfiloHtml(u, appunti, podcast) {
-        const data = new Date(u.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
-        
-        document.getElementById('pageContent').innerHTML = `
-            <div class="cover">
-                <div class="cover__pattern"></div>
-                <div class="cover__grad"></div>
-            </div>
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
-                </div>
-                <div class="profile-info">
-                    <h1 class="profile-name">@${u.username}</h1>
-                    <div class="profile-username-sub">Iscritto il ${data}</div>
-                </div>
-                <div class="profile-actions">
-                    <button class="btn-share btn-follow" id="btnFollow" onclick="toggleFollow('${u.id}')" style="display:none;">Segui</button>
-                    <button class="btn-share" onclick="condividi('${u.username.replace(/'/g, "\\'")}')">↗ Condividi</button>
-                </div>
-            </div>
-            <div class="main">
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <span class="stat-card__n">${appunti.length + podcast.length}</span>
-                        <span class="stat-card__l">Contenuti</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__n" id="statFollowers">0</span>
-                        <span class="stat-card__l">Followers</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__n" id="statFollowing">0</span>
-                        <span class="stat-card__l">Seguiti</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__n" style="font-size: 1.25rem; word-break: break-word;">${u.scuola || 'Nessuna'}</span>
-                        <span class="stat-card__l">Scuola</span>
-                    </div>
-                </div>
+            box.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+            try {
+                const res = await fetch(`/api/cerca-utenti?q=${encodeURIComponent(q)}`);
+                const utenti = await res.json();
                 
-                <div class="tabs-container">
-                    <button class="tab-btn active" id="btn-tab-appunti" onclick="showTab('appunti')">📄 Appunti (${appunti.length})</button>
-                    <button class="tab-btn" id="btn-tab-podcast" onclick="showTab('podcast')">🎙️ Podcast (${podcast.length})</button>
-                    <button class="tab-btn" id="btn-tab-playlists" onclick="showTab('playlists')">📂 Playlists</button>
-                </div>
+                if (utenti.length === 0) {
+                    box.innerHTML = `<div class="empty">Nessun utente trovato per "${q}"</div>`;
+                    return;
+                }
+                box.innerHTML = `<div class="results-header"><h3 class="results-label">Risultati della ricerca</h3></div>` 
+                                + utenti.map(u => generaHtmlUtente(u, false)).join('');
+            } catch (e) { box.innerHTML = `<div class="empty">Errore di connessione al server.</div>`; }
+        }
 
-                <div id="section-appunti" class="content-section active">
-                    <div class="notes-grid">
-                        ${appunti.map(a => {
-                            const c = coloriMateria[a.materia] || '#888';
-                            const icon = iconeMateria[a.materia] || '📄';
-                            return `
-                            <a href="esplora.html?focus=${a.id}" class="note-card">
-                                <div class="note-card__thumb">
-                                    <div class="note-card__thumb-bg" style="background:${a.cover_url ? `url('${a.cover_url}') center/cover` : `radial-gradient(circle, ${c}, transparent)`}; opacity: ${a.cover_url ? 0.4 : 0.15}"></div>
-                                    <div class="note-card__thumb-icon">${icon}</div>
-                                </div>
-                                <div class="note-card__body">
-                                    <div class="note-card__chip" style="background:${c}20; color:${c}; border:1px solid ${c}40">${a.materia}</div>
-                                    <div class="note-card__title">${a.titolo}</div>
-                                    <div class="note-card__meta">Visualizza appunto</div>
-                                </div>
-                            </a>`;
-                        }).join('')}
+        // --- SWITCH TABS ---
+        function showTab(tabName) {
+            document.getElementById('section-appunti').classList.remove('active');
+            document.getElementById('section-podcast').classList.remove('active');
+            document.getElementById('section-playlists').classList.remove('active');
+            
+            document.getElementById('btn-tab-appunti').classList.remove('active');
+            document.getElementById('btn-tab-podcast').classList.remove('active', 'active-podcast');
+            document.getElementById('btn-tab-playlists').classList.remove('active');
+            
+            if (tabName === 'appunti') {
+                document.getElementById('section-appunti').classList.add('active');
+                document.getElementById('btn-tab-appunti').classList.add('active');
+            } else if (tabName === 'podcast') {
+                document.getElementById('section-podcast').classList.add('active');
+                document.getElementById('btn-tab-podcast').classList.add('active-podcast');
+            } else if (tabName === 'playlists') {
+                document.getElementById('section-playlists').classList.add('active');
+                document.getElementById('btn-tab-playlists').classList.add('active');
+            }
+        }
+
+        // --- GESTIONE FOLLOW (NUOVA FUNZIONALITÀ AGGIORNATA) ---
+        window.toggleFollow = async function(targetId) {
+            const myId = getCookieSafe('utente_id');
+            if (!myId) {
+                alert("Devi effettuare l'accesso per poter seguire gli utenti!");
+                window.location.href = "login.html";
+                return;
+            }
+            
+            const btn = document.getElementById('btnFollow');
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/follow', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ follower_id: myId, seguito_id: targetId })
+                });
+                const data = await res.json();
+                
+                const statFollowers = document.getElementById('statFollowers');
+                let count = parseInt(statFollowers.innerText) || 0;
+
+                if (data.action === 'followed') {
+                    btn.classList.add('following');
+                    btn.innerHTML = 'Smetti di seguire'; 
+                    statFollowers.innerText = count + 1;
+                } else if (data.action === 'unfollowed') {
+                    btn.classList.remove('following');
+                    btn.innerHTML = 'Segui'; 
+                    statFollowers.innerText = Math.max(0, count - 1);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Errore di connessione");
+            }
+            btn.disabled = false;
+        }
+
+        async function initFollowData(targetId) {
+            const myId = getCookieSafe('utente_id');
+            const btn = document.getElementById('btnFollow');
+
+            try {
+                const resStats = await fetch(`/api/follow?utente_id=${targetId}`);
+                if (resStats.ok) {
+                    const stats = await resStats.json();
+                    document.getElementById('statFollowers').innerText = stats.followers || 0;
+                    document.getElementById('statFollowing').innerText = stats.following || 0;
+                }
+            } catch(e) { console.error(e) }
+
+            if (myId !== targetId) {
+                btn.style.display = 'block';
+                
+                if (myId) {
+                    try {
+                        const resCheck = await fetch(`/api/follow?utente_id=${myId}&target_id=${targetId}&check_status=true`);
+                        if (resCheck.ok) {
+                            const check = await resCheck.json();
+                            if (check.isFollowing) {
+                                btn.classList.add('following');
+                                btn.innerHTML = 'Smetti di seguire'; 
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+        }
+
+        // --- MODALITÀ: PROFILO ---
+        async function caricaProfilo() {
+            document.getElementById('navBack').style.display = 'flex';
+            try {
+                const [resU, resA, resP] = await Promise.all([
+                    fetch(`/api/utente?username=${encodeURIComponent(usernameUrl)}`),
+                    fetch(`/api/appunti?username=${encodeURIComponent(usernameUrl)}`),
+                    fetch(`/api/podcast?username=${encodeURIComponent(usernameUrl)}`) 
+                ]);
+                
+                if (!resU.ok) { mostraNotFound(); return; }
+                
+                const u = await resU.json();
+                document.title = `@${u.username} — Appunti`;
+
+                const allAppunti = resA.ok ? await resA.json() : [];
+                const allPodcast = resP.ok ? await resP.json() : []; 
+
+                const appuntiFiltrati = allAppunti.filter(a => a.username === u.username);
+                const podcastFiltrati = allPodcast.filter(p => p.username === u.username);
+
+                renderProfiloHtml(u, appuntiFiltrati, podcastFiltrati);
+                
+                caricaPlaylistsUtente(u.id);
+                initFollowData(u.id);
+
+            } catch (e) { mostraNotFound(); }
+        }
+
+        function renderProfiloHtml(u, appunti, podcast) {
+            const data = new Date(u.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+            
+            document.getElementById('pageContent').innerHTML = `
+                <div class="cover">
+                    <div class="cover__pattern"></div>
+                    <div class="cover__grad"></div>
+                </div>
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        ${u.foto_profilo_url ? `<img src="${u.foto_profilo_url}">` : (u.username || '?').charAt(0).toUpperCase()}
                     </div>
-                    ${appunti.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato appunti.</div>' : ''}
-                </div>
-
-                <div id="section-podcast" class="content-section">
-                    <div class="notes-grid">
-                        ${podcast.map(p => `
-                            <a href="podcast.html?focus=${p.id}" class="note-card podcast-card">
-                                <div class="note-card__thumb" style="background: var(--surface2);">
-                                    <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
-                                    <div class="note-card__thumb-icon">🎙️</div>
-                                </div>
-                                <div class="note-card__body">
-                                    <div class="note-card__chip" style="background:rgba(255,77,109,0.15); color:var(--accent2); border:1px solid rgba(255,77,109,0.3)">Podcast</div>
-                                    <div class="note-card__title">${p.titolo}</div>
-                                    <div class="note-card__meta">Ascolta ora</div>
-                                </div>
-                            </a>
-                        `).join('')}
+                    <div class="profile-info">
+                        <h1 class="profile-name">@${u.username}</h1>
+                        <div class="profile-username-sub">Iscritto il ${data}</div>
                     </div>
-                    ${podcast.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato podcast.</div>' : ''}
+                    <div class="profile-actions">
+                        <button class="btn-share btn-follow" id="btnFollow" onclick="toggleFollow('${u.id}')" style="display:none;">Segui</button>
+                        <button class="btn-share" onclick="condividi('${u.username.replace(/'/g, "\\'")}')">↗ Condividi</button>
+                    </div>
                 </div>
-
-                <div id="section-playlists" class="content-section">
-                    <div id="vistaElencoPlaylists">
-                        <div id="grigliaPlaylists" class="notes-grid">
-                            <p style="color:var(--muted); font-size:0.9rem;">Caricamento playlists…</p>
+                <div class="main">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <span class="stat-card__n">${appunti.length + podcast.length}</span>
+                            <span class="stat-card__l">Contenuti</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__n" id="statFollowers">0</span>
+                            <span class="stat-card__l">Followers</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__n" id="statFollowing">0</span>
+                            <span class="stat-card__l">Seguiti</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-card__n" style="font-size: 1.25rem; word-break: break-word;">${u.scuola || 'Nessuna'}</span>
+                            <span class="stat-card__l">Scuola</span>
                         </div>
                     </div>
                     
-                    <div id="vistaContenutoPlaylist" style="display:none;">
-                        <div class="playlist-back-row">
-                            <button class="playlist-back-btn" onclick="tornaAllePlaylists()">← Indietro</button>
-                            <h2 class="playlist-back-title" id="titoloPlaylistAttuale"></h2>
-                        </div>
-                        <div id="grigliaContenutoPlaylist" class="notes-grid"></div>
+                    <div class="tabs-container">
+                        <button class="tab-btn active" id="btn-tab-appunti" onclick="showTab('appunti')">📄 Appunti (${appunti.length})</button>
+                        <button class="tab-btn" id="btn-tab-podcast" onclick="showTab('podcast')">🎙️ Podcast (${podcast.length})</button>
+                        <button class="tab-btn" id="btn-tab-playlists" onclick="showTab('playlists')">📂 Playlists</button>
                     </div>
-                </div>
-            </div>`;
-    }
 
-    // --- CARICAMENTO E GESTIONE PLAYLIST DELL'UTENTE VISUALIZZATO ---
-    async function caricaPlaylistsUtente(idProprietario) {
-        const container = document.getElementById('grigliaPlaylists');
-        try {
-            const res = await fetch(`/api/playlists?utente_id=${idProprietario}`);
-            if(!res.ok) throw new Error();
-            const playlists = await res.json();
+                    <div id="section-appunti" class="content-section active">
+                        <div class="notes-grid">
+                            ${appunti.map(a => {
+                                const c = coloriMateria[a.materia] || '#888';
+                                const icon = iconeMateria[a.materia] || '📄';
+                                return `
+                                <a href="esplora.html?focus=${a.id}" class="note-card">
+                                    <div class="note-card__thumb">
+                                        <div class="note-card__thumb-bg" style="background:${a.cover_url ? `url('${a.cover_url}') center/cover` : `radial-gradient(circle, ${c}, transparent)`}; opacity: ${a.cover_url ? 0.4 : 0.15}"></div>
+                                        <div class="note-card__thumb-icon">${icon}</div>
+                                    </div>
+                                    <div class="note-card__body">
+                                        <div class="note-card__chip" style="background:${c}20; color:${c}; border:1px solid ${c}40">${a.materia}</div>
+                                        <div class="note-card__title">${a.titolo}</div>
+                                        <div class="note-card__meta">Visualizza appunto</div>
+                                    </div>
+                                </a>`;
+                            }).join('')}
+                        </div>
+                        ${appunti.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato appunti.</div>' : ''}
+                    </div>
+
+                    <div id="section-podcast" class="content-section">
+                        <div class="notes-grid">
+                            ${podcast.map(p => `
+                                <a href="podcast.html?focus=${p.id}" class="note-card podcast-card">
+                                    <div class="note-card__thumb" style="background: var(--surface2);">
+                                        <div class="note-card__thumb-bg" style="background: radial-gradient(circle, var(--accent2), transparent); opacity: 0.15"></div>
+                                        <div class="note-card__thumb-icon">🎙️</div>
+                                    </div>
+                                    <div class="note-card__body">
+                                        <div class="note-card__chip" style="background:rgba(255,77,109,0.15); color:var(--accent2); border:1px solid rgba(255,77,109,0.3)">Podcast</div>
+                                        <div class="note-card__title">${p.titolo}</div>
+                                        <div class="note-card__meta">Ascolta ora</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                        ${podcast.length === 0 ? '<div class="empty">L\'utente non ha ancora caricato podcast.</div>' : ''}
+                    </div>
+
+                    <div id="section-playlists" class="content-section">
+                        <div id="vistaElencoPlaylists">
+                            <div id="grigliaPlaylists" class="notes-grid">
+                                <p style="color:var(--muted); font-size:0.9rem;">Caricamento playlists…</p>
+                            </div>
+                        </div>
+                        
+                        <div id="vistaContenutoPlaylist" style="display:none;">
+                            <div class="playlist-back-row">
+                                <button class="playlist-back-btn" onclick="tornaAllePlaylists()">← Indietro</button>
+                                <h2 class="playlist-back-title" id="titoloPlaylistAttuale"></h2>
+                            </div>
+                            <div id="grigliaContenutoPlaylist" class="notes-grid"></div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // --- CARICAMENTO E GESTIONE PLAYLIST DELL'UTENTE VISUALIZZATO ---
+        async function caricaPlaylistsUtente(idProprietario) {
+            const container = document.getElementById('grigliaPlaylists');
+            try {
+                const res = await fetch(`/api/playlists?utente_id=${idProprietario}`);
+                if(!res.ok) throw new Error();
+                const playlists = await res.json();
+                
+                if (playlists.length === 0) {
+                    container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Nessuna playlist creata da questo utente.</div>";
+                    return;
+                }
+
+                container.innerHTML = playlists.map(pl => `
+                    <div class="playlist-card">
+                        <div class="playlist-card__cover">📂</div>
+                        <div class="playlist-card__body">
+                            <div class="playlist-card__title">${pl.titolo}</div>
+                            <div class="playlist-card__count">${pl.numero_appunti || 0} elementi</div>
+                            <button class="playlist-card__btn"
+                                onclick="apriContenutoPlaylist(${pl.id}, '${pl.titolo.replace(/'/g, "\\'")}')">
+                                Esplora →
+                            </button>
+                        </div>
+                    </div>`).join('');
+            } catch { 
+                container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Errore nel caricamento delle playlist.</div>"; 
+            }
+        }
+
+        window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
+            document.getElementById('vistaElencoPlaylists').style.display = 'none';
+            document.getElementById('vistaContenutoPlaylist').style.display = 'block';
+            document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
+            const container = document.getElementById('grigliaContenutoPlaylist');
+            container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
             
-            if (playlists.length === 0) {
-                container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Nessuna playlist creata da questo utente.</div>";
-                return;
-            }
-
-            container.innerHTML = playlists.map(pl => `
-                <div class="playlist-card">
-                    <div class="playlist-card__cover">📂</div>
-                    <div class="playlist-card__body">
-                        <div class="playlist-card__title">${pl.titolo}</div>
-                        <div class="playlist-card__count">${pl.numero_appunti || 0} elementi</div>
-                        <button class="playlist-card__btn"
-                            onclick="apriContenutoPlaylist(${pl.id}, '${pl.titolo.replace(/'/g, "\\'")}')">
-                            Esplora →
-                        </button>
-                    </div>
-                </div>`).join('');
-        } catch { 
-            container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Errore nel caricamento delle playlist.</div>"; 
-        }
-    }
-
-    window.apriContenutoPlaylist = async function(playlistId, titoloPlaylist) {
-        document.getElementById('vistaElencoPlaylists').style.display = 'none';
-        document.getElementById('vistaContenutoPlaylist').style.display = 'block';
-        document.getElementById('titoloPlaylistAttuale').textContent = titoloPlaylist;
-        const container = document.getElementById('grigliaContenutoPlaylist');
-        container.innerHTML = "<p style='color:var(--muted); font-size:0.9rem;'>Caricamento…</p>";
-        
-        try {
-            const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
-            if (!res.ok) throw new Error();
-            const appunti = await res.json();
-            if (appunti.length === 0) {
-                container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Questa raccolta è vuota.</div>";
-                return;
-            }
-            container.innerHTML = appunti.map(a => {
-                const isPodcast = a.tipo === 'podcast';
-                const icona = isPodcast ? '🎙️' : '📄';
-                const link = isPodcast ? `podcast.html?focus=${a.id}` : `esplora.html?focus=${a.id}`;
-                const label = isPodcast ? 'Ascolta' : 'Apri Appunto';
-                return `
-                <div class="note-card">
-                    <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">${icona}</span>`}</div>
-                    <div class="note-info">
-                        <div class="note-title">${a.titolo}</div>
-                        <div class="note-meta">${a.materia || a.categoria || 'Contenuto'} · @${a.username || 'Anonimo'}</div>
-                        <div style="margin-top:auto; padding-top:10px;">
-                            <a href="${link}" class="btn-small btn-open" style="display:block;">${label}</a>
+            try {
+                const res = await fetch(`/api/playlists?playlist_id=${playlistId}`);
+                if (!res.ok) throw new Error();
+                const appunti = await res.json();
+                if (appunti.length === 0) {
+                    container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Questa raccolta è vuota.</div>";
+                    return;
+                }
+                container.innerHTML = appunti.map(a => {
+                    const isPodcast = a.tipo === 'podcast';
+                    const icona = isPodcast ? '🎙️' : '📄';
+                    const link = isPodcast ? `podcast.html?focus=${a.id}` : `esplora.html?focus=${a.id}`;
+                    const label = isPodcast ? 'Ascolta' : 'Apri Appunto';
+                    return `
+                    <div class="note-card">
+                        <div class="note-thumb">${a.cover_url ? `<img src="${a.cover_url}">` : `<div class="note-thumb-bg"></div><span style="font-size:2.5rem; position:relative; z-index:1;">${icona}</span>`}</div>
+                        <div class="note-info">
+                            <div class="note-title">${a.titolo}</div>
+                            <div class="note-meta">${a.materia || a.categoria || 'Contenuto'} · @${a.username || 'Anonimo'}</div>
+                            <div style="margin-top:auto; padding-top:10px;">
+                                <a href="${link}" class="btn-small btn-open" style="display:block;">${label}</a>
+                            </div>
                         </div>
-                    </div>
-                </div>`
-            }).join('');
-        } catch { container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Errore di connessione.</div>"; }
-    }
-
-    window.tornaAllePlaylists = function() {
-        document.getElementById('vistaContenutoPlaylist').style.display = 'none';
-        document.getElementById('vistaElencoPlaylists').style.display = 'block';
-    }
-
-    function mostraNotFound() {
-        document.getElementById('pageContent').innerHTML = `
-            <div class="empty" style="margin-top:100px">
-                <h1 style="font-family:Fraunces; font-size:3rem">404</h1>
-                <p>Utente non trovato.</p>
-                <a href="utenti.html" style="color:var(--accent); font-weight:800; text-decoration:none">Torna alla ricerca</a>
-            </div>`;
-    }
-
-    function condividi(username) {
-        const url = window.location.href;
-        if (navigator.share) {
-            navigator.share({ title: `Profilo di @${username} su Appunti`, url });
-        } else {
-            navigator.clipboard.writeText(url).then(() => {
-                const t = document.getElementById('toast');
-                t.textContent = "Link copiato negli appunti!";
-                t.classList.add('show');
-                setTimeout(() => t.classList.remove('show'), 3000);
-            });
+                    </div>`
+                }).join('');
+            } catch { container.innerHTML = "<div class='empty' style='grid-column: 1/-1;'>Errore di connessione.</div>"; }
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        aggiornaNavbar();
-        if (usernameUrl) caricaProfilo();
-        else mostraRicerca();
-    });
-</script>
+        window.tornaAllePlaylists = function() {
+            document.getElementById('vistaContenutoPlaylist').style.display = 'none';
+            document.getElementById('vistaElencoPlaylists').style.display = 'block';
+        }
+
+        function mostraNotFound() {
+            document.getElementById('pageContent').innerHTML = `
+                <div class="empty" style="margin-top:100px">
+                    <h1 style="font-family:Fraunces; font-size:3rem">404</h1>
+                    <p>Utente non trovato.</p>
+                    <a href="utenti.html" style="color:var(--accent); font-weight:800; text-decoration:none">Torna alla ricerca</a>
+                </div>`;
+        }
+
+        function condividi(username) {
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: `Profilo di @${username} su Appunti`, url });
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    const t = document.getElementById('toast');
+                    t.textContent = "Link copiato negli appunti!";
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 3000);
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            aggiornaNavbar();
+            if (usernameUrl) caricaProfilo();
+            else mostraRicerca();
+        });
+    </script>
 
 </body>
 </html>

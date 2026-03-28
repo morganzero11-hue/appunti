@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Appunti — Condividi il Sapere</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
@@ -55,7 +55,7 @@
         }
 
         /* ════════════════════════════
-           NAVBAR
+           NAVBAR (SUPERIORE)
         ════════════════════════════ */
         .topnav {
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
@@ -80,6 +80,7 @@
             50%      { transform: translateY(-4px) rotate(2deg); }
         }
 
+        /* Link testuali (solo su PC) */
         .topnav__links {
             list-style: none; display: flex; gap: 2px; flex: 1;
         }
@@ -102,6 +103,29 @@
         }
         body.light-theme .nav__login { color: #fff; }
         .nav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
+
+        /* ════════════════════════════
+           BOTTOM NAV (SOLO SMARTPHONE)
+        ════════════════════════════ */
+        .bottom-nav {
+            display: none; /* Nascosto di default su PC */
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10,10,15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* Fix per la barra di iOS */
+        }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
 
         /* ════════════════════════════
            HERO
@@ -535,61 +559,34 @@
         .footer strong { color: var(--text); }
 
         /* ════════════════════════════
-           RESPONSIVE (SMARTPHONE & TABLET)
+           RESPONSIVE (SMARTPHONE)
         ════════════════════════════ */
         @media (max-width: 900px) {
             .feature-strip__grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-            /* Navbar scrollabile orizzontalmente */
-            .topnav { 
-                height: auto; 
-                padding: 12px 16px; 
-                flex-wrap: wrap; 
-                gap: 12px;
-            }
-            .topnav__brand { margin-right: auto; }
-            .nav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
-            .topnav__links { 
-                display: flex; 
-                width: 100%; 
-                overflow-x: auto; 
-                scrollbar-width: none; 
-                gap: 8px;
-            }
-            .topnav__links::-webkit-scrollbar { display: none; }
-            .topnav__links a { white-space: nowrap; padding: 6px 12px; }
+            /* Navbar alta modificata per mobile */
+            .topnav { padding: 0 16px; justify-content: space-between; }
+            .topnav__links { display: none; } /* Nasconde i testi su mobile */
+            .nav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
+            
+            /* Mostra la bottom nav */
+            .bottom-nav { display: flex; }
+
+            /* Aggiustamenti layout generale per non coprire la bottom nav */
+            body { padding-bottom: 80px; }
 
             /* Hero adjustments */
-            .hero { padding-top: 140px; }
             .hero__title { font-size: 3.2rem; letter-spacing: -1.5px; }
-            .hero__sub { font-size: 1rem; padding: 0 10px; margin-bottom: 32px; }
-            
-            /* Bottoni Hero affiancati o in colonna spaziosa */
-            .hero__ctas { 
-                flex-direction: column; 
-                align-items: stretch; 
-                max-width: 100%; 
-                padding: 0 20px;
-                gap: 12px;
-            }
-            .cta-primary, .cta-secondary { justify-content: center; padding: 14px; }
-
-            /* Stats container fix (diventa una colonna unica coi bordi corretti) */
-            .hero__stats { 
-                flex-direction: column; 
-                margin: 0 20px; 
-                border-radius: 16px; 
-            }
-            .hero__stat { padding: 16px; border-bottom: 1px solid var(--border2); }
-            .hero__stat:last-child { border-bottom: none; }
-            .hero__stat + .hero__stat::before { display: none; } /* Rimuove le righe divisorie verticali */
+            .hero__ctas { flex-direction: column; align-items: stretch; max-width: 300px; margin-left: auto; margin-right: auto; }
+            .hero__stats { flex-direction: column; }
+            .hero__stat + .hero__stat::before { display: none; }
 
             /* Main and sections */
             .main-content { padding: 48px 16px; }
             .feature-strip { padding: 40px 16px; }
-            .notes-grid { grid-template-columns: 1fr; gap: 16px; }
-            .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .notes-grid { grid-template-columns: 1fr; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
     <script>
@@ -614,6 +611,13 @@
             <li><a href="impostazioni.html">Impostazioni</a></li>
         </ul>
         <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
+    </nav>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="active">🏠</a>
+        <a href="esplora.html">🧭</a>
+        <a href="podcast.html">🎙️</a>
+        <a href="profilo.html">👤</a>
     </nav>
 
     <header class="hero">
