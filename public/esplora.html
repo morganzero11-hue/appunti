@@ -40,7 +40,8 @@
             --border2: rgba(0,0,0,0.15);
         }
 
-        html, body { height: 100%; overflow: hidden; background: var(--bg); transition: background-color 0.3s; }
+        /* FIX PER LO SCROLL: Uso di dvh per le altezze reali su mobile */
+        html, body { height: 100dvh; overflow: hidden; background: var(--bg); transition: background-color 0.3s; }
         body {
             font-family: 'Cabinet Grotesk', sans-serif;
             color: var(--text);
@@ -97,14 +98,8 @@
             transition: all .2s; display: flex; align-items: center; gap: 11px;
             letter-spacing: -0.1px;
         }
-        .sidenav__links a:hover {
-            background: var(--surface2);
-            color: var(--text);
-        }
-        .sidenav__links a.active {
-            background: rgba(200,240,96,0.1);
-            color: var(--accent);
-        }
+        .sidenav__links a:hover { background: var(--surface2); color: var(--text); }
+        .sidenav__links a.active { background: rgba(200,240,96,0.1); color: var(--accent); }
         .sidenav__links a .nav-icon {
             width: 32px; height: 32px; border-radius: 9px;
             display: flex; align-items: center; justify-content: center;
@@ -139,11 +134,11 @@
             box-shadow: 0 8px 24px rgba(200,240,96,0.28);
         }
 
-        /* ══════════════════════════
-           BOTTOM NAV (SMARTPHONE)
-        ══════════════════════════ */
+        /* ════════════════════════════
+           BOTTOM NAV (SOLO SMARTPHONE)
+        ════════════════════════════ */
         .bottom-nav {
-            display: none; /* Nascosto su PC */
+            display: none; 
             position: fixed; bottom: 0; left: 0; right: 0;
             height: 64px;
             background: rgba(10,10,15, 0.95);
@@ -151,9 +146,10 @@
             border-top: 1px solid var(--border);
             z-index: 1000;
             justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); /* Fix per iPhone */
+            padding-bottom: env(safe-area-inset-bottom); 
         }
         body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
         .bottom-nav a {
             color: var(--muted); text-decoration: none;
             font-size: 1.4rem; padding: 10px; border-radius: 12px;
@@ -161,13 +157,12 @@
         }
         .bottom-nav a.active { color: var(--accent); }
 
-
         /* ══════════════════════════
-           FEED WRAPPER
+           FEED WRAPPER & SCROLL FIX
         ══════════════════════════ */
         .feed-wrapper {
             margin-left: var(--sidebar-w);
-            flex: 1; height: 100vh;
+            flex: 1; height: 100dvh;
             position: relative;
         }
 
@@ -175,6 +170,8 @@
             height: 100%;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
+            /* Fix iOS overscroll */
+            overscroll-behavior-y: none;
             -webkit-overflow-scrolling: touch;
         }
         .feed::-webkit-scrollbar { display: none; }
@@ -294,13 +291,16 @@
         }
 
         /* ══════════════════════════
-           CARD (9:16 feed)
+           CARD (9:16 feed) - MODIFICATO PER FIX SCROLL
         ══════════════════════════ */
         .card {
-            height: 100vh;
+            height: 100%; /* Si adatta al feed wrapper */
+            width: 100%;
             scroll-snap-align: start;
+            scroll-snap-stop: always; /* Forza la fermata esatta su una card */
             display: flex; justify-content: center; align-items: center;
-            position: relative; overflow: hidden; padding: 20px;
+            position: relative; overflow: hidden; 
+            padding: 20px; /* Padding su PC */
         }
 
         /* Background blurred image */
@@ -319,7 +319,8 @@
 
         .card__media-container {
             position: relative; z-index: 1;
-            height: 100%; max-height: 920px;
+            height: 100%; width: 100%; max-width: 500px; /* Larghezza massima per non schiacciare su PC */
+            max-height: 850px;
             aspect-ratio: 9 / 16;
             background: var(--surface);
             border-radius: 20px;
@@ -447,7 +448,7 @@
         /* ── SIDEBAR BUTTONS ── */
         .card__sidebar {
             position: absolute;
-            right: max(18px, calc((100% - (920px * 9/16)) / 2 - 72px));
+            right: 18px; /* Fissato a destra del contenitore */
             bottom: 64px;
             display: flex; flex-direction: column;
             align-items: center; justify-content: flex-end;
@@ -638,30 +639,31 @@
         /* ══════════════════════════
            RESPONSIVE (MOBILE FIXES)
         ══════════════════════════ */
-        @media (max-width: 1100px) {
-            .card__sidebar { right: 18px; }
-        }
         @media (max-width: 768px) {
             /* 1. Nascondiamo la sidebar su PC, mostriamo la bottom-nav */
             .sidenav { display: none; }
             .bottom-nav { display: flex; }
 
-            /* 2. Riduciamo l'altezza totale per lasciare spazio alla bottom-nav (64px) */
+            /* 2. Layout Fullscreen adattato per Mobile */
             .feed-wrapper { 
                 margin-left: 0; 
-                height: calc(100dvh - 64px); /* dVH è vitale su iOS per la barra di navigazione */
+                height: calc(100dvh - 64px); /* Ridotto esattamente dello spazio della bottom-nav */
             }
             .card { 
-                height: calc(100dvh - 64px); 
-                padding: 0; 
+                height: calc(100dvh - 64px); /* Una card occupa esattamente lo spazio visibile */
+                padding: 0; /* Rimuove padding per far occupare all'immagine tutto lo schermo */
             }
             
             /* 3. L'immagine/video occupa tutto lo schermo del telefono */
             .card__media-container {
-                width: 100%; border-radius: 0; max-height: none;
+                width: 100%; 
+                max-width: 100%; /* Rimuove limite di 500px */
+                border-radius: 0; 
+                max-height: 100%; /* Altezza intera */
+                aspect-ratio: auto; /* Adatta al telefono */
             }
 
-            /* 4. Rialziamo gli elementi interattivi per non farli coprire dalla bottom-nav */
+            /* 4. Rialziamo gli elementi interattivi */
             .card__content { 
                 padding: 48px 16px 20px; 
             }
