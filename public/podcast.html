@@ -145,7 +145,7 @@
             height: 100%;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
-            overscroll-behavior-y: none;
+            overscroll-behavior-y: none; /* Previene l'effetto "rimbalzo" che sfalsa lo scroll su mobile */
             -webkit-overflow-scrolling: touch;
         }
         .feed::-webkit-scrollbar { display: none; }
@@ -212,7 +212,7 @@
             height: 100%; 
             width: 100%;
             scroll-snap-align: start;
-            scroll-snap-stop: always; /* OBBLIGA LO SCROLL A FERMARSI QUI */
+            scroll-snap-stop: always;
             display: flex; justify-content: center; align-items: center;
             position: relative; overflow: hidden; 
             padding: 20px; 
@@ -228,17 +228,25 @@
             overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
 
-        /* ── SLIDER ── */
-        .card__slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; scrollbar-width: none; }
+        /* ── SLIDER DELLE IMMAGINI Orizzontali ── */
+        .card__slider { 
+            display: flex; 
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory; 
+            width: 100%; 
+            height: 100%; 
+            scrollbar-width: none; 
+            scroll-behavior: smooth; /* Aggiunto per evitare slittamenti troppo veloci */
+            -webkit-overflow-scrolling: touch; 
+        }
         .card__slider::-webkit-scrollbar { display: none; }
         
-        /* ✅ FIX PER BLOCCARE LO SCORRIMENTO ORIZZONTALE AD UNA FOTO ALLA VOLTA ✅ */
         .slider__item { 
             flex: 0 0 100%; 
             width: 100%; 
             height: 100%; 
-            scroll-snap-align: start; 
-            scroll-snap-stop: always; /* La magia è qui: frena obbligatoriamente ogni volta che incontra una slide */
+            scroll-snap-align: center; /* Snap al centro per maggior stabilità */
+            scroll-snap-stop: always; /* Forza lo stop obbligatorio a ogni slide */
             position: relative; 
             display: flex; 
             align-items: center; 
