@@ -3,34 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Podcast — Appunti</title>
+    <title>Esplora — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            /* TEMA SCURO (DEFAULT) */
-            --bg: #0a0a0a;
-            --surface: #111111;
-            --surface2: #181818;
-            --surface3: #202020;
-            --text: #f2f0ec;
-            --muted: rgba(242,240,236,0.45);
-            --accent: #c8f060;
-            --accent2: #ff4d6d;
-            --accent-glow: rgba(200,240,96,0.15);
-            --nav-h: 62px;
-            --radius: 18px;
-            --border: rgba(255,255,255,0.05);
-            --border2: rgba(255,255,255,0.10);
-            --shadow-color: rgba(0,0,0,0.5);
-            --shadow-color-hover: rgba(0,0,0,0.8);
-            --cover-gradient-start: rgba(17,17,17,0.85);
-            --hero-grad-accent: rgba(200,240,96,0.07);
-            --hero-grad-accent2: rgba(255,77,109,0.06);
-            --hero-grad-accent3: rgba(96,180,240,0.04);
-            --audio-invert: invert(0);
+            --bg:       #0a0a0f;
+            --surface:  #111118;
+            --surface2: #1a1a24;
+            --surface3: #22222e;
+            --border:   rgba(255,255,255,0.05);
+            --border2:  rgba(255,255,255,0.12);
+            --text:     #f0ede8;
+            --muted:    rgba(240,237,232,0.42);
+            --accent:   #c8f060;
+            --accent2:  #ff4d6d;
+            --accent3:  #60b4f0;
+            --sidebar-w: 252px;
+            --radius:   16px;
         }
 
-        /* ─── VARIABILI TEMA CHIARO ─── */
         body.light-theme {
             --bg: #f8f9fa; 
             --surface: #ffffff; 
@@ -40,64 +33,86 @@
             --muted: rgba(0,0,0,0.55);
             --accent: #a3cc2b;
             --accent2: #e63950;
-            --accent-glow: rgba(163,204,43,0.15);
+            --accent3: #4a9bd6;
             --border: rgba(0,0,0,0.08);
             --border2: rgba(0,0,0,0.15);
-            --shadow-color: rgba(0,0,0,0.05);
-            --shadow-color-hover: rgba(0,0,0,0.12);
-            --cover-gradient-start: rgba(255,255,255,0.85);
-            --hero-grad-accent: rgba(163,204,43,0.08);
-            --hero-grad-accent2: rgba(230,57,80,0.06);
-            --hero-grad-accent3: rgba(74,155,214,0.06);
-            --audio-invert: invert(0.9) hue-rotate(180deg);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-
+        /* FIX SCROLL: altezza in dvh */
+        html, body { height: 100dvh; overflow: hidden; background: var(--bg); transition: background-color 0.3s; }
         body {
             font-family: 'Cabinet Grotesk', sans-serif;
-            background: var(--bg);
             color: var(--text);
-            min-height: 100vh;
-            padding-bottom: 80px; /* Spazio per footer/bottom nav */
-            overflow-x: hidden;
-            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            transition: color 0.3s;
         }
 
-        /* ─── NAVBAR (PC) ─── */
-        .topnav {
-            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
-            background: rgba(var(--bg-rgb, 10,10,10), 0.92); backdrop-filter: blur(20px);
-            display: flex; align-items: center; padding: 0 32px; z-index: 1000;
-            border-bottom: 1px solid var(--border);
-            transition: background-color 0.3s;
+        /* ─── SIDEBAR (PC) ─── */
+        .sidenav {
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-w);
+            background: rgba(var(--bg-rgb, 14, 14, 20), 0.97);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            padding: 28px 16px 28px;
+            display: flex; flex-direction: column;
+            z-index: 1000;
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        body.light-theme .topnav { background: rgba(248, 249, 250, 0.92); }
+        body.light-theme .sidenav { background: rgba(248, 249, 250, 0.97); }
 
-        .topnav__brand {
-            display: flex; align-items: center; gap: 12px;
-            font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900;
-            color: var(--accent); text-decoration: none; margin-right: 30px;
+        .sidenav__brand {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
+            color: var(--accent); text-decoration: none;
+            padding: 8px 12px; margin-bottom: 32px;
+            letter-spacing: -0.4px;
         }
-        .topnav__links { list-style: none; display: flex; gap: 4px; flex: 1; margin: 0; padding: 0; }
-        .topnav__links a {
-            color: var(--muted); text-decoration: none; font-size: 0.95rem;
-            font-weight: 700; padding: 8px 14px; border-radius: 10px; transition: all .2s;
+
+        .sidenav__logo { position: relative; width: 28px; height: 28px; }
+        .sidenav__logo span { position: absolute; width: 14px; height: 14px; border-radius: 4px; }
+        .sidenav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
+        .sidenav__logo span:nth-child(2) { background: #ff4d6d; top: 7px; left: 7px; z-index: 2; }
+        .sidenav__logo span:nth-child(3) { background: #60b4f0; top: 14px; left: 14px; z-index: 1; }
+
+        .sidenav__section-label {
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--muted);
+            padding: 0 12px; margin-bottom: 8px; margin-top: 4px;
         }
-        .topnav__links a:hover { color: var(--text); background: var(--surface2); }
-        .topnav__links a.active { color: var(--accent); background: var(--accent-glow); }
-        .topnav__login {
-            background: var(--accent); color: #fff; padding: 8px 24px;
-            border-radius: 10px; text-decoration: none; font-weight: 800;
-            font-size: 0.95rem; transition: all .2s; margin-left: auto;
+
+        .sidenav__links { list-style: none; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+        .sidenav__links a {
+            color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 700;
+            padding: 11px 14px; border-radius: 12px; transition: all .2s; display: flex; align-items: center; gap: 11px;
         }
-        body:not(.light-theme) .topnav__login { color: #0a0a0a; }
-        .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
-        
-        /* ════════════════════════════
-           BOTTOM NAV (SOLO SMARTPHONE)
-        ════════════════════════════ */
+        .sidenav__links a:hover { background: var(--surface2); color: var(--text); }
+        .sidenav__links a.active { background: rgba(200,240,96,0.1); color: var(--accent); }
+        .sidenav__links a .nav-icon {
+            width: 32px; height: 32px; border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; flex-shrink: 0;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            transition: background .2s, border-color .2s;
+        }
+        body.light-theme .sidenav__links a .nav-icon { background: rgba(0,0,0,0.04); }
+        .sidenav__links a:hover .nav-icon { background: var(--surface3); }
+        .sidenav__links a.active .nav-icon { background: rgba(200,240,96,0.12); border-color: rgba(200,240,96,0.25); }
+
+        .sidenav__divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+        .sidenav__login {
+            background: var(--accent); color: #0a0a0f;
+            padding: 12px 20px; border-radius: 12px;
+            text-decoration: none; font-weight: 800; font-size: 0.9rem;
+            text-align: center; transition: all .2s; margin-top: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        body.light-theme .sidenav__login { color: #fff; }
+        .sidenav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,240,96,0.28); }
+
+        /* ─── BOTTOM NAV (SMARTPHONE) ─── */
         .bottom-nav {
             display: none; 
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -105,520 +120,351 @@
             background: rgba(10,10,15, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid var(--border);
-            z-index: 10000; /* Z-index altissimo per essere sempre cliccabile */
+            z-index: 10000;
             justify-content: space-around; align-items: center;
             padding-bottom: env(safe-area-inset-bottom); 
         }
         body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
-        
         .bottom-nav div {
             color: var(--muted); text-decoration: none;
             font-size: 1.4rem; padding: 10px; border-radius: 12px;
             transition: all .2s; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; /* Cambiato a cursore interattivo */
+            cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
         .bottom-nav div.active { color: var(--accent); }
 
-        /* ─── HERO PODCAST ─── */
-        .hero {
-            margin-top: var(--nav-h);
-            position: relative; overflow: hidden;
-            padding: 80px 32px 70px;
-            display: flex; flex-direction: column; align-items: center;
-            text-align: center;
+        /* ─── FEED WRAPPER & SCROLL FIX ─── */
+        .feed-wrapper {
+            margin-left: var(--sidebar-w);
+            flex: 1; height: 100dvh;
+            position: relative;
         }
 
-        .hero::before {
-            content: ''; position: absolute; inset: 0;
-            background:
-                radial-gradient(ellipse 600px 400px at 20% 50%, var(--hero-grad-accent) 0%, transparent 60%),
-                radial-gradient(ellipse 400px 300px at 80% 30%, var(--hero-grad-accent2) 0%, transparent 60%),
-                radial-gradient(ellipse 500px 500px at 60% 90%, var(--hero-grad-accent3) 0%, transparent 60%);
+        .feed {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .feed::-webkit-scrollbar { display: none; }
+
+        /* ─── TOP BAR ─── */
+        .top-bar {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 20px 72px 16px 20px;
+            background: linear-gradient(to bottom, rgba(10,10,15,0.96) 0%, rgba(10,10,15,0) 100%);
+            display: flex; align-items: center; gap: 14px;
+            z-index: 100; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        body.light-theme .top-bar { background: linear-gradient(to bottom, rgba(248, 249, 250, 0.96) 0%, rgba(248, 249, 250, 0) 100%); }
+
+        .filter-bar {
+            display: flex; gap: 8px;
+            overflow-x: auto; scroll-behavior: smooth;
+            -ms-overflow-style: none; scrollbar-width: none;
+            flex: 1; pointer-events: auto;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            padding: 7px 16px; background: rgba(255,255,255,0.06); backdrop-filter: blur(16px);
+            border: 1px solid var(--border2); border-radius: 30px; color: var(--muted);
+            font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.8rem; font-weight: 800;
+            cursor: pointer; white-space: nowrap; transition: all .25s; display: flex; align-items: center; gap: 5px;
+        }
+        body.light-theme .filter-chip { background: rgba(0,0,0,0.04); }
+        .filter-chip:hover { background: var(--surface2); color: var(--text); transform: translateY(-2px); }
+        .filter-chip.active { background: var(--accent); color: #0a0a0f; border-color: var(--accent); box-shadow: 0 4px 16px rgba(200,240,96,0.3); }
+        body.light-theme .filter-chip.active { color: #fff; }
+
+        .search-container { pointer-events: auto; flex-shrink: 0; }
+        .search-input {
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(16px); border: 1px solid var(--border2);
+            border-radius: 30px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.8rem; font-weight: 600; padding: 7px 16px 7px 34px; outline: none; width: 190px;
+            transition: all .25s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: 12px center;
+        }
+        body.light-theme .search-input { background: rgba(0,0,0,0.04); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(0,0,0,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E"); }
+        .search-input:focus { background: var(--surface2); border-color: var(--accent); width: 230px; box-shadow: 0 0 0 3px rgba(200,240,96,0.08); }
+
+        .toggle-view-btn {
+            position: fixed; top: 20px; right: 20px; background: rgba(14,14,20,0.8); backdrop-filter: blur(12px);
+            color: var(--muted); border: 1px solid var(--border2); width: 42px; height: 42px; border-radius: 50%;
+            font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10000;
+            transition: all .2s;
+        }
+        body.light-theme .toggle-view-btn { background: rgba(255,255,255,0.8); }
+        .toggle-view-btn:hover { transform: scale(1.1); color: var(--text); border-color: var(--border2); }
+
+        body.clean-view .top-bar, body.clean-view .card__content, body.clean-view .card__sidebar,
+        body.clean-view .page-indicator, body.clean-view .card-audio-btn, body.clean-view .scroll-hint {
+            opacity: 0 !important; pointer-events: none !important;
+        }
+        .card__content, .card__sidebar, .page-indicator, .card-audio-btn, .scroll-hint { transition: opacity 0.3s ease; }
+
+        /* ─── CARD (9:16 feed) ─── */
+        .card {
+            height: 100%; 
+            width: 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always; /* OBBLIGA LO SCROLL A FERMARSI QUI */
+            display: flex; justify-content: center; align-items: center;
+            position: relative; overflow: hidden; 
+            padding: 20px; 
         }
 
-        .hero::after {
-            content: ''; position: absolute; inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 28px 28px;
-        }
-        body.light-theme .hero::after { background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px); }
+        .card__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; filter: blur(48px) brightness(0.2) saturate(1.4); transform: scale(1.15); }
+        .card__bg-vignette { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.7) 100%); }
 
-        .hero__inner { position: relative; z-index: 1; max-width: 700px; }
-
-        .hero__eyebrow {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--accent-glow); border: 1px solid rgba(200,240,96,0.2);
-            color: var(--accent); font-size: 0.75rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 2px;
-            padding: 6px 16px; border-radius: 30px; margin-bottom: 24px;
-            animation: slideDown .7s cubic-bezier(.22,1,.36,1) both;
-        }
-        body.light-theme .hero__eyebrow { border-color: rgba(163,204,43,0.3); }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-16px); }
-            to   { opacity: 1; transform: translateY(0); }
+        .card__media-container {
+            position: relative; z-index: 1; height: 100%; width: 100%; max-width: 500px;
+            max-height: 850px; aspect-ratio: 9 / 16; background: var(--surface); border-radius: 20px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.4);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
 
-        .hero__title {
-            font-family: 'Fraunces', serif;
-            font-size: clamp(3rem, 7vw, 5rem);
-            font-weight: 900; line-height: 0.95;
-            letter-spacing: -2px; margin-bottom: 20px;
-            animation: fadeUp .8s .1s cubic-bezier(.22,1,.36,1) both;
+        /* ── SLIDER ── */
+        .card__slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; height: 100%; scrollbar-width: none; }
+        .card__slider::-webkit-scrollbar { display: none; }
+        
+        /* ✅ FIX PER BLOCCARE LO SCORRIMENTO ORIZZONTALE AD UNA FOTO ALLA VOLTA ✅ */
+        .slider__item { 
+            flex: 0 0 100%; 
+            width: 100%; 
+            height: 100%; 
+            scroll-snap-align: start; 
+            scroll-snap-stop: always; /* La magia è qui: frena obbligatoriamente ogni volta che incontra una slide */
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
         }
+        
+        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .hero__title em {
-            font-style: italic; color: transparent; -webkit-text-stroke: 1.5px var(--accent);
-        }
+        .slider-dots { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
+        .dot { width: 24px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.3); transition: all .3s; cursor: pointer; }
+        .dot.active { background: #fff; width: 32px; }
 
-        .hero__sub {
-            font-family: 'DM Sans', sans-serif;
-            color: var(--muted); font-size: 1.05rem; font-weight: 300;
-            line-height: 1.7; max-width: 480px; margin: 0 auto;
-            animation: fadeUp .8s .2s cubic-bezier(.22,1,.36,1) both;
-        }
+        .page-indicator { position: absolute; top: 82px; left: 16px; background: rgba(10,10,15,0.7); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; z-index: 10; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+        .card-audio-btn { position: absolute; top: 80px; right: 16px; background: rgba(10,10,15,0.7); backdrop-filter: blur(8px); color: #fff; border: 1px solid rgba(255,255,255,0.12); width: 36px; height: 36px; border-radius: 50%; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: all .2s; }
+        .card-audio-btn:hover { transform: scale(1.1); background: rgba(10,10,15,0.9); }
 
-        .hero__wave {
-            margin-top: 40px; display: flex; align-items: center; justify-content: center;
-            gap: 4px; height: 48px;
-            animation: fadeUp .8s .3s cubic-bezier(.22,1,.36,1) both;
-        }
+        .card__content { position: absolute; bottom: 0; left: 0; right: 0; padding: 48px 16px 20px; background: linear-gradient(to top, rgba(10,10,15,0.97) 0%, rgba(10,10,15,0.6) 50%, transparent 100%); z-index: 2; pointer-events: auto; }
+        .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .card__author { font-size: 0.95rem; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
+        .card__time { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 600; }
+        .card__subject { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; margin-bottom: 8px; background: rgba(10,10,15,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .card__title { font-family: 'Fraunces', serif; font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-weight: 900; line-height: 1.15; margin-bottom: 14px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+        
+        .card__btn { padding: 11px 20px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 800; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: all .2s; background: var(--accent); color: #0a0a0f; width: 100%; text-decoration: none;}
+        body.light-theme .card__btn { color: #fff; }
+        .card__btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,240,96,0.3); }
 
-        .hero__wave-bar {
-            width: 4px; border-radius: 4px;
-            background: var(--accent); opacity: 0.7;
-            animation: wavePulse var(--dur, 1.2s) ease-in-out infinite alternate;
-            animation-delay: var(--del, 0s);
-        }
+        .card__sidebar { position: absolute; right: 18px; bottom: 64px; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 2; pointer-events: auto; }
+        .sidebar-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: transform .2s; border: 2px solid rgba(255,255,255,0.9); background: var(--surface2); color: var(--accent); text-decoration: none;}
+        .sidebar-avatar:hover { transform: scale(1.08); }
+        .side-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; border: none; background: none; color: rgba(255,255,255,0.8); transition: color .2s, transform .2s; }
+        .side-btn:hover { color: #fff; transform: scale(1.05); }
+        .side-btn__icon { width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all .2s; }
+        .side-btn:hover .side-btn__icon { background: rgba(255,255,255,0.18); }
+        .side-btn.liked { color: var(--accent2); }
+        .side-btn.liked .side-btn__icon { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); }
+        .side-btn__count { font-size: 0.72rem; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
-        @keyframes wavePulse {
-            from { transform: scaleY(0.2); opacity: 0.3; }
-            to   { transform: scaleY(1); opacity: 0.85; }
-        }
+        .scroll-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); font-size: 0.7rem; font-weight: 700; pointer-events: none; z-index: 50; animation: bounce 2.5s ease-in-out infinite; text-transform: uppercase; }
+        .scroll-hint.hidden { opacity: 0; }
+        @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-7px); } }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ─── MAIN CONTENT ─── */
-        .main-content {
-            max-width: 1200px; margin: 0 auto; padding: 0 28px;
-        }
-
-        .section-header {
-            display: flex; align-items: flex-end; justify-content: space-between;
-            margin-bottom: 28px;
-        }
-
-        .section-label {
-            display: flex; flex-direction: column; gap: 4px;
-        }
-
-        .section-eyebrow {
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 2px; color: var(--accent);
-        }
-
-        .section-title {
-            font-family: 'Fraunces', serif; font-size: 1.9rem;
-            font-weight: 900; letter-spacing: -0.5px; line-height: 1;
-        }
-
-        .featured-section { margin-bottom: 64px; display: none; }
-
-        .featured-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
-        }
-
-        /* ─── FILTERS SECTION ─── */
-        .filters-section { margin-bottom: 40px; }
-
-        .filters-card {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .filter-group { position: relative; flex: 1; min-width: 180px; }
-
-        .filter-icon {
-            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-            font-size: 0.9rem; pointer-events: none; color: var(--muted);
-        }
-
-        .filters-card input,
-        .filters-card select {
-            width: 100%; padding: 11px 14px 11px 38px; border-radius: 12px;
-            border: 1.5px solid var(--border2); background: var(--bg);
-            color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.88rem; font-weight: 600; outline: none;
-            transition: border-color .2s, background .2s, box-shadow .2s;
-        }
-
-        .filters-card input::placeholder { color: var(--muted); }
-        .filters-card input:focus, .filters-card select:focus {
-            border-color: var(--accent); background: var(--accent-glow);
-            box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
-        }
-
-        .filters-card select { cursor: pointer; }
-        .filters-card select option { background: var(--surface); color: var(--text); }
-
-        /* ─── POD GRID ─── */
-        .pod-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        /* ─── POD CARD ─── */
-        .pod-card {
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column;
-            transition: transform .3s ease, border-color .3s, box-shadow .3s; position: relative;
-        }
-
-        .pod-card:hover {
-            transform: translateY(-6px); border-color: var(--border2); box-shadow: 0 20px 50px var(--shadow-color-hover);
-        }
-        body.light-theme .pod-card:hover { border-color: var(--accent); }
-
-        .featured-card { border-color: var(--accent-glow); }
-        .featured-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 20px 50px var(--shadow-color-hover), 0 0 0 1px rgba(200,240,96,0.1);
-        }
-
-        /* Cover image */
-        .pod-cover {
-            height: 200px; background: var(--surface2); background-size: cover;
-            background-position: center; position: relative; overflow: hidden;
-        }
-
-        .pod-cover::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to top, var(--cover-gradient-start) 0%, transparent 50%);
-        }
-
-        .pod-cover--empty {
-            display: flex; align-items: center; justify-content: center; background: var(--surface2);
-        }
-        body.light-theme .pod-cover--empty { background: linear-gradient(135deg, #e9ecef 0%, #f1f3f5 100%); }
-        body:not(.light-theme) .pod-cover--empty { background: linear-gradient(135deg, #161616 0%, #202020 100%); }
-
-        .pod-cover--empty-icon { font-size: 3.5rem; opacity: 0.3; position: relative; z-index: 1; }
-
-        .featured-badge {
-            position: absolute; top: 14px; right: 14px; z-index: 10;
-            background: var(--accent); color: #0a0a0a; padding: 5px 12px;
-            border-radius: 20px; font-size: 0.72rem; font-weight: 800;
-            font-family: 'Cabinet Grotesk', sans-serif; letter-spacing: 0.3px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        body.light-theme .featured-badge { color: #fff; }
-
-        .pod-cover-wave {
-            position: absolute; bottom: 14px; left: 16px; z-index: 10;
-            display: flex; align-items: flex-end; gap: 3px; height: 24px;
-        }
-        .pod-cover-wave span {
-            display: block; width: 3px; border-radius: 2px;
-            background: var(--accent); opacity: 0.8;
-        }
-
-        .pod-info { padding: 22px; flex: 1; display: flex; flex-direction: column; gap: 0; }
-
-        .pod-category {
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1.5px; color: var(--accent); margin-bottom: 8px;
-        }
-
-        .pod-title {
-            font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900;
-            line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.3px; color: var(--text);
-        }
-
-        .pod-author {
-            font-size: 0.82rem; color: var(--muted); font-weight: 700;
-            margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
-        }
-        .pod-author::before {
-            content: ''; display: inline-block; width: 6px; height: 6px;
-            border-radius: 50%; background: var(--accent); flex-shrink: 0;
-        }
-
-        .pod-desc {
-            font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--muted);
-            line-height: 1.6; margin-bottom: 14px; flex: 1;
-        }
-
-        .pod-fonti {
-            font-size: 0.78rem; color: var(--accent); margin-bottom: 14px; font-weight: 700;
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        /* Custom audio player */
-        .pod-audio {
-            width: 100%; height: 36px; border-radius: 30px; margin-bottom: 16px;
-            accent-color: var(--accent); filter: var(--audio-invert);
-        }
-        audio::-webkit-media-controls-panel { background: var(--surface3); }
-
-        /* ─── BOTTONI: LIKE & PLAYLIST ─── */
-        .actions-row {
-            display: flex; align-items: center; gap: 10px; margin-top: auto;
-        }
-
-        .btn-like, .btn-playlist {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            background: var(--surface2); border: 1px solid var(--border2); color: var(--muted);
-            padding: 9px 0; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.85rem;
-            font-family: 'Cabinet Grotesk', sans-serif; transition: all .2s; flex: 1;
-        }
-
-        .btn-like:hover {
-            background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3);
-            color: var(--accent2); transform: translateY(-1px);
-        }
-
-        .btn-playlist:hover {
-            background: var(--accent-glow); border-color: rgba(200,240,96,0.3);
-            color: var(--accent); transform: translateY(-1px);
-        }
-
-        .btn-like--liked, .btn-like[style*="rgba(255,77,109"] {
-            background: rgba(255,77,109,0.1) !important;
-            border-color: rgba(255,77,109,0.3) !important;
-            color: var(--accent2) !important;
-        }
-
-        /* ─── EMPTY STATE ─── */
-        .empty-state {
-            grid-column: 1 / -1; text-align: center; padding: 80px 40px; color: var(--muted);
-        }
-        .empty-state__icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
-        .empty-state h3 {
-            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: var(--text); margin-bottom: 8px;
-        }
-        .empty-state p { font-size: 0.9rem; line-height: 1.6; }
-
-        .section-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 60px; }
-
-        /* ─── PLAYLIST MODAL ─── */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px); z-index: 2000; display: none;
-            align-items: center; justify-content: center;
-        }
+        /* ─── MODALS ─── */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-overlay.open { display: flex; }
-        .modal {
-            background: var(--surface); border: 1px solid var(--border2);
-            border-radius: 20px; padding: 32px; width: 520px; max-width: 95vw;
-            animation: modalIn .3s ease;
-        }
-        @keyframes modalIn {
-            from { opacity:0; transform: scale(.95) translateY(12px); }
-            to { opacity:1; transform: none; }
-        }
-        .modal__title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
-        .modal__sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 24px; }
-        
-        .playlist-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 16px; border-radius: 12px; background: var(--surface2);
-            margin-bottom: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
-        }
-        .playlist-item:hover { border-color: var(--accent); background: var(--accent-glow); }
-        .playlist-item-title { font-weight: 700; font-size: 1rem; color: var(--text); }
-        .playlist-item-count { font-size: 0.8rem; color: var(--muted); }
-        
-        .modal__actions { display: flex; gap: 10px; margin-top: 24px; }
-        .modal__btn {
-            flex: 1; padding: 11px; border-radius: 11px;
-            font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 800;
-            cursor: pointer; border: none; transition: transform .2s, box-shadow .2s;
-            text-align: center; text-decoration: none; line-height: normal; display: block;
-        }
+        .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 24px; padding: 36px; width: 100%; max-width: 500px; box-shadow: 0 24px 60px var(--shadow-color, rgba(0,0,0,0.6)); animation: modalIn .3s cubic-bezier(.22,1,.36,1); }
+        @keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(16px); } to { opacity: 1; transform: none; } }
+        .modal__icon { font-size: 2rem; margin-bottom: 12px; }
+        .modal__title { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
+        .modal__sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+        .modal__field { margin-bottom: 16px; }
+        .modal__label { font-size: 0.7rem; font-weight: 800; color: var(--muted); margin-bottom: 7px; display: block; text-transform: uppercase; }
+        .modal__input, .modal__select { width: 100%; background: var(--surface2); border: 1.5px solid var(--border2); border-radius: 12px; color: var(--text); font-family: inherit; font-size: 0.88rem; font-weight: 600; padding: 11px 14px; outline: none; }
+        .modal__input:focus, .modal__select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,240,96,0.1); }
+        .modal__actions { display: flex; gap: 10px; margin-top: 28px; }
+        .modal__btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; font-family: inherit; text-align: center; text-decoration: none;}
         .modal__btn--accent { background: var(--accent); color: #0a0a0f; }
         body.light-theme .modal__btn--accent { color: #fff; }
         .modal__btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 
-        /* ─── TOAST ─── */
-        .toast {
-            position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: #fff;
-            padding: 12px 24px; border-radius: 12px; font-weight: 800;
-            opacity: 0; transform: translateY(20px); transition: all .3s; z-index: 9999;
-        }
-        body:not(.light-theme) .toast { color: #000; }
+        .playlist-item { display: flex; justify-content: space-between; padding: 13px 16px; background: var(--surface2); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all .2s; border: 1.5px solid transparent; }
+        .playlist-item:hover { border-color: var(--accent); transform: translateX(4px); }
+        .playlist-item-title { font-weight: 800; font-size: 0.95rem; }
+        .playlist-item-count { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+
+        .toast { position: fixed; bottom: 28px; right: 28px; background: var(--accent); color: #0a0a0f; padding: 11px 22px; border-radius: 14px; font-weight: 800; opacity: 0; transform: translateY(12px); transition: all .3s; pointer-events: none; z-index: 9999; }
+        body.light-theme .toast { color: #fff; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
-        /* ─── RESPONSIVE (SMARTPHONE) ─── */
+        .card__no-media { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-weight: 600; }
+        .card__no-media-icon { font-size: 3.5rem; opacity: 0.4; margin-bottom: 12px; }
+
+        /* ══════════════════════════
+           RESPONSIVE (MOBILE)
+        ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. Navbar orizzontale in alto (mostra solo Logo e Accedi) */
-            .topnav { 
-                height: auto; 
-                padding: 12px 16px; 
-                justify-content: space-between; 
-            }
-            .topnav__links { display: none; } 
-            .topnav__brand { margin-right: 0; }
-            .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
-            
-            /* 2. Mostra la bottom nav per scorrere tra le pagine */
+            .sidenav { display: none; }
             .bottom-nav { display: flex; }
 
-            /* 3. Aggiustamenti Hero */
-            .hero { padding: 120px 20px 50px; } /* Più margine in alto per la navbar */
-            .hero__title { font-size: 2.8rem; }
-            
-            /* 4. Main Content e Griglie */
-            .main-content { padding: 0 16px; }
-            .featured-grid, .pod-grid { grid-template-columns: 1fr; }
-            
-            /* 5. Filtri su colonna singola per facilitare i tap */
-            .filters-card { flex-direction: column; padding: 16px; gap: 10px; }
-            .filter-group { min-width: 100%; width: 100%; }
+            .feed-wrapper { margin-left: 0; height: calc(100dvh - 64px); }
+            .card { height: calc(100dvh - 64px); padding: 0; }
+            .card__media-container { width: 100%; max-width: 100%; border-radius: 0; max-height: 100%; aspect-ratio: auto; }
+            .card__content { padding: 48px 16px 20px; }
+            .card__sidebar { right: 12px; bottom: 24px; }
+            .toggle-view-btn { top: 80px; right: 16px; width: 36px; height: 36px; }
+            .scroll-hint { bottom: 84px; }
+
+            .top-bar { flex-direction: row; align-items: center; padding: 12px 16px; gap: 10px; background: linear-gradient(to bottom, rgba(10,10,15,0.9) 0%, transparent 100%); }
+            .search-container { flex-shrink: 1; }
+            .search-input { width: 130px; }
+            .search-input:focus { width: 180px; }
         }
     </style>
 </head>
 <body class=""> 
 
-    <nav class="topnav">
-        <a href="index.html" class="topnav__brand">📚 Appunti</a>
-        <ul class="topnav__links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="esplora.html">Esplora</a></li>
-            <li><a href="profilo.html">Profilo</a></li>
-            <li><a href="utenti.html">Utenti</a></li>
-            <li><a href="podcast.html" class="active">Podcast</a></li>
-            <li><a href="impostazioni.html">Impostazioni</a></li>
-        </ul>
-        <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
-    </nav>
-
-    <nav class="bottom-nav">
-        <div onclick="window.location.href='index.html'">🏠</div>
-        <div onclick="window.location.href='esplora.html'">🧭</div>
-        <div onclick="window.location.href='podcast.html'" class="active">🎙️</div>
-        <div onclick="window.location.href='profilo.html'">👤</div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero__inner">
-            <div class="hero__eyebrow">✦ Ascolta e impara</div>
-            <h1 class="hero__title">Libreria<br><em>Podcast</em></h1>
-            <p class="hero__sub">Spiegazioni vocali create da studenti come te. Ascolta mentre sei in giro, in treno, ovunque.</p>
-            <div class="hero__wave" id="heroWave"></div>
+<nav class="sidenav">
+    <a href="index.html" class="sidenav__brand">
+        <div class="sidenav__logo">
+            <span></span><span></span><span></span>
         </div>
-    </header>
+        Appunti
+    </a>
+    <div class="sidenav__section-label">Navigazione</div>
+    <ul class="sidenav__links">
+        <li><a href="index.html"><span class="nav-icon">🏠</span>Home</a></li>
+        <li><a href="esplora.html" class="active"><span class="nav-icon">🧭</span>Esplora</a></li>
+        <li><a href="profilo.html"><span class="nav-icon">👤</span>Profilo</a></li>
+        <li><a href="utenti.html"><span class="nav-icon">🔍</span>Utenti</a></li>
+        <li><a href="podcast.html"><span class="nav-icon">🎙️</span>Podcast</a></li>
+        <div class="sidenav__divider"></div>
+        <li><a href="impostazioni.html"><span class="nav-icon">⚙️</span>Impostazioni</a></li>
+    </ul>
+    <a href="login.html" class="sidenav__login" id="navLoginBtn">Accedi →</a>
+</nav>
 
-    <main class="main-content">
-        <section class="featured-section" id="featuredSection">
-            <div class="section-header">
-                <div class="section-label">
-                    <span class="section-eyebrow">Classifica</span>
-                    <h2 class="section-title">I più amati 🔥</h2>
-                </div>
-            </div>
-            <div class="featured-grid" id="featuredFeed"></div>
-        </section>
+<nav class="bottom-nav">
+    <div onclick="window.location.href='index.html'">🏠</div>
+    <div onclick="window.location.href='esplora.html'" class="active">🧭</div>
+    <div onclick="window.location.href='podcast.html'">🎙️</div>
+    <div onclick="window.location.href='profilo.html'">👤</div>
+</nav>
 
-        <hr class="section-divider">
-
-        <section class="filters-section">
-            <div class="section-header" style="margin-bottom:20px;">
-                <div class="section-label">
-                    <span class="section-eyebrow">Libreria</span>
-                    <h2 class="section-title">Esplora tutti 🎧</h2>
-                </div>
-            </div>
-            <div class="filters-card">
-                <div class="filter-group">
-                    <span class="filter-icon">🔍</span>
-                    <input type="text" id="searchTitolo" placeholder="Cerca titolo o descrizione..." oninput="applicaFiltri()">
-                </div>
-                <div class="filter-group">
-                    <span class="filter-icon">🏷️</span>
-                    <select id="filterCategoria" onchange="applicaFiltri()" style="padding-left:38px">
-                        <option value="">Tutte le categorie</option>
-                        <option value="Storia">Storia</option>
-                        <option value="Scienze">Scienze</option>
-                        <option value="Letteratura">Letteratura</option>
-                        <option value="Filosofia">Filosofia</option>
-                        <option value="Motivazionale">Motivazionale</option>
-                        <option value="Altro">Altro</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <span class="filter-icon">🏫</span>
-                    <input type="text" id="filterScuola" placeholder="Cerca per scuola..." oninput="applicaFiltri()">
-                </div>
-                <div class="filter-group">
-                    <span class="filter-icon">📚</span>
-                    <input type="text" id="filterFonti" placeholder="Cerca fonte / libro..." oninput="applicaFiltri()">
-                </div>
-            </div>
-        </section>
-
-        <div class="pod-grid" id="podcastFeed">
-            <div class="empty-state">
-                <div class="empty-state__icon">🎙️</div>
-                <h3>Caricamento podcast...</h3>
-            </div>
+<div class="feed-wrapper">
+    <div class="top-bar">
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">✦ Tutte</button>
+            <button class="filter-chip" onclick="applicaFiltro('Matematica', this)">∑ Matematica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Scienze', this)">🔬 Scienze</button>
+            <button class="filter-chip" onclick="applicaFiltro('Fisica', this)">⚛️ Fisica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Chimica', this)">🧪 Chimica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Storia', this)">📖 Storia</button>
+            <button class="filter-chip" onclick="applicaFiltro('Geografia', this)">🌍 Geografia</button>
+            <button class="filter-chip" onclick="applicaFiltro('Italiano', this)">✏️ Italiano</button>
+            <button class="filter-chip" onclick="applicaFiltro('Inglese', this)">🗣️ Inglese</button>
+            <button class="filter-chip" onclick="applicaFiltro('Informatica', this)">💻 Informatica</button>
+            <button class="filter-chip" onclick="applicaFiltro('Arte', this)">🎨 Arte</button>
+            <button class="filter-chip" onclick="applicaFiltro('Biologia', this)">🧬 Biologia</button>
+            <button class="filter-chip" onclick="applicaFiltro('Geometria', this)">📐 Geometria</button>
+            <button class="filter-chip" onclick="applicaFiltro('Altro', this)">📌 Altro</button>
         </div>
-    </main>
-
-    <div class="modal-overlay" id="modalPlaylist">
-        <div class="modal">
-            <div class="modal__title">📂 Salva in una Playlist</div>
-            <div class="modal__sub">Scegli dove vuoi salvare questo podcast</div>
-            
-            <div id="elencoPlaylistsModale" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-                <p style="color:var(--muted); font-size:0.9rem; text-align:center;">Caricamento...</p>
-            </div>
-
-            <div class="modal__actions">
-                <button class="modal__btn modal__btn--ghost" onclick="chiudiModalPlaylist()">Annulla</button>
-                <a href="profilo.html" class="modal__btn modal__btn--accent">+ Nuova Playlist</a>
-            </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Cerca nel titolo..." oninput="onSearchInput(event)">
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <button class="toggle-view-btn" id="toggleViewBtn" onclick="toggleInterfaceVisibility()" title="Nascondi/Mostra interfaccia">👁️</button>
 
-    <script src="/js/podcast.js"></script>
+    <div class="feed" id="feed"></div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem('appuntiTheme') === 'light') {
-                document.body.classList.add('light-theme');
-            }
-            if (document.cookie.includes('username=')) {
-                const loginBtn = document.getElementById('navLoginBtn');
-                if(loginBtn) loginBtn.style.display = 'none';
-            }
-        });
+    <div class="scroll-hint" id="scrollHint">
+        <span style="font-size:1rem; letter-spacing:2px">↓</span>
+        scorri per scoprire
+    </div>
+</div>
 
-        (function buildWave() {
-            const w = document.getElementById('heroWave');
-            const heights = [12,22,34,28,16,40,32,18,44,26,14,38,30,20,42,24,16,36,28,12,40];
-            heights.forEach((h, i) => {
-                const bar = document.createElement('div');
-                bar.className = 'hero__wave-bar';
-                bar.style.setProperty('--dur', (0.9 + Math.random() * 0.8).toFixed(2) + 's');
-                bar.style.setProperty('--del', (i * 0.06).toFixed(2) + 's');
-                bar.style.height = h + 'px';
-                w.appendChild(bar);
-            });
-        })();
-    </script>
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal__icon">✦</div>
+        <div class="modal__title">Carica un appunto</div>
+        <div class="modal__sub">Condividi i tuoi appunti in PDF o Immagine con la community</div>
+        <div class="modal__field">
+            <label class="modal__label">Titolo</label>
+            <input class="modal__input" id="mTitolo" type="text" placeholder="es. Derivate — regole fondamentali">
+        </div>
+        <div class="modal__field">
+            <label class="modal__label">Materia</label>
+            <select class="modal__select" id="mMateria">
+                <option>Matematica</option><option>Scienze</option><option>Fisica</option><option>Chimica</option>
+                <option>Storia</option><option>Geografia</option><option>Italiano</option><option>Inglese</option>
+                <option>Informatica</option><option>Arte</option><option>Biologia</option><option>Geometria</option>
+                <option>Altro</option>
+            </select>
+        </div>
+        <div class="modal__field">
+            <label class="modal__label">Foto Preview / Copertina (Opzionale)</label>
+            <input class="modal__input" id="mCover" type="file" accept="image/*">
+        </div>
+        <div class="modal__field">
+            <label class="modal__label">Documento (PDF o più immagini)</label>
+            <input class="modal__input" id="mFile" type="file" accept=".pdf, image/*" multiple>
+        </div>
+        <div class="modal__field">
+            <label class="modal__label">Spiegazione Audio (Opzionale)</label>
+            <input class="modal__input" id="mAudio" type="file" accept="audio/*">
+        </div>
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--ghost" onclick="chiudiModal()">Annulla</button>
+            <button class="modal__btn modal__btn--accent" id="mBtnPubblica" onclick="pubblicaAppunto()">🚀 Pubblica</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalPlaylist">
+    <div class="modal">
+        <div class="modal__icon">📂</div>
+        <div class="modal__title">Salva in Playlist</div>
+        <div class="modal__sub">Scegli in quale raccolta vuoi salvare questo appunto</div>
+        <div id="elencoPlaylistsModale" style="max-height: 280px; overflow-y: auto; margin-bottom: 8px;"></div>
+        <div class="modal__actions">
+            <button class="modal__btn modal__btn--ghost" onclick="chiudiModalPlaylist()">Annulla</button>
+            <a href="profilo.html" class="modal__btn modal__btn--accent">+ Nuova Playlist</a>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+        if (document.cookie.includes('username=')) {
+            const loginBtn = document.getElementById('navLoginBtn');
+            if(loginBtn) loginBtn.style.display = 'none';
+        }
+    });
+
+    function toggleInterfaceVisibility() {
+        document.body.classList.toggle('clean-view');
+        const btn = document.getElementById('toggleViewBtn');
+        btn.innerHTML = document.body.classList.contains('clean-view') ? '🙈' : '👁️';
+    }
+</script>
+<script src="/js/esplora.js"></script>
+
 </body>
 </html>
