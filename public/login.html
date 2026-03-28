@@ -2,13 +2,14 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Accedi — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,400&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
+            /* TEMA SCURO (DEFAULT) */
             --bg:      #0a0a0a;
             --surface: #111111;
             --border:  rgba(255,255,255,0.08);
@@ -17,6 +18,20 @@
             --muted:   rgba(242,240,236,0.4);
             --accent:  #f0c040;
             --accent2: #d4522a;
+            --btn-text: #0a0a0a;
+        }
+
+        /* ─── VARIABILI TEMA CHIARO ─── */
+        body.light-theme {
+            --bg:      #f8f9fa;
+            --surface: #ffffff;
+            --border:  rgba(0,0,0,0.08);
+            --border2: rgba(0,0,0,0.14);
+            --text:    #1a1a1a;
+            --muted:   rgba(0,0,0,0.55);
+            --accent:  #f0c040; /* Manteniamo il giallo/oro per coerenza col brand */
+            --accent2: #d4522a;
+            --btn-text: #0a0a0a;
         }
 
         html, body {
@@ -24,12 +39,14 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             background: var(--bg);
             color: var(--text);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* ─── BACKGROUND ─── */
         .bg {
             position: fixed; inset: 0; z-index: 0;
             overflow: hidden;
+            transition: opacity 0.3s;
         }
 
         /* dot grid */
@@ -38,6 +55,9 @@
             position: absolute; inset: 0;
             background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
             background-size: 26px 26px;
+        }
+        body.light-theme .bg::before {
+            background-image: radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px);
         }
 
         /* warm glow bottom-left */
@@ -71,6 +91,15 @@
                 rgba(255,255,255,0.012) 61px
             );
         }
+        body.light-theme .bg__stripes {
+             background-image: repeating-linear-gradient(
+                -55deg,
+                transparent,
+                transparent 60px,
+                rgba(0,0,0,0.015) 60px,
+                rgba(0,0,0,0.015) 61px
+            );
+        }
 
         /* ─── LAYOUT ─── */
         .page {
@@ -88,6 +117,7 @@
             width: 100%;
             max-width: 960px;
             align-items: center;
+            gap: 40px; /* Aggiunto gap per sicurezza */
         }
 
         /* ─── LEFT PANEL ─── */
@@ -173,10 +203,11 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 0.95rem; flex-shrink: 0;
         }
+        body.light-theme .feat__dot { background: rgba(0,0,0,0.03); }
 
         .feat__text {
             font-size: 0.85rem; font-weight: 700;
-            color: rgba(242,240,236,0.65);
+            color: var(--muted);
         }
 
         /* ─── DIVIDER ─── */
@@ -213,6 +244,10 @@
                 0 0 0 1px rgba(255,255,255,0.03),
                 0 24px 64px rgba(0,0,0,0.45),
                 inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        body.light-theme .card {
+            box-shadow: 0 24px 64px rgba(0,0,0,0.08);
         }
 
         .card__title {
@@ -263,8 +298,9 @@
             outline: none;
             transition: border-color .2s, background .2s, box-shadow .2s;
         }
+        body.light-theme .field__input { background: rgba(0,0,0,0.02); }
 
-        .field__input::placeholder { color: rgba(255,255,255,0.22); font-weight: 400; }
+        .field__input::placeholder { color: var(--muted); font-weight: 400; opacity: 0.6; }
 
         .field__input:focus {
             border-color: var(--accent);
@@ -304,6 +340,7 @@
             transition: border-color .2s, background .2s;
             flex-shrink: 0;
         }
+        body.light-theme .remember__box { background: rgba(0,0,0,0.02); }
 
         .remember__check { display: none; color: #0a0a0a; font-size: 0.65rem; font-weight: 900; }
 
@@ -328,7 +365,7 @@
         .btn-submit {
             width: 100%;
             background: var(--accent);
-            color: #0a0a0a;
+            color: var(--btn-text);
             border: none;
             border-radius: 12px;
             padding: 14px;
@@ -389,11 +426,13 @@
             display: flex; align-items: center; justify-content: center; gap: 10px;
             transition: background .2s, border-color .2s, transform .2s;
         }
+        body.light-theme .btn-social { background: rgba(0,0,0,0.02); }
         .btn-social:hover {
             background: rgba(255,255,255,0.09);
             border-color: rgba(255,255,255,0.22);
             transform: translateY(-1px);
         }
+        body.light-theme .btn-social:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.2); }
 
         /* ─── REGISTER LINK ─── */
         .register-row {
@@ -427,24 +466,48 @@
             border: 1px solid rgba(42,125,79,0.3);
             color: #6ee7a0;
         }
+        body.light-theme .messaggio.success { color: #21834b; }
+        
         .messaggio.error {
             background: rgba(212,82,42,0.15);
             border: 1px solid rgba(212,82,42,0.3);
             color: #f4a07a;
         }
+        body.light-theme .messaggio.error { color: #d4522a; }
+
+        /* ─── MOBILE LOGO (ONLY SHOWS ON PHONE) ─── */
+        .mobile-brand {
+            display: none;
+            align-items: center; justify-content: center; gap: 8px;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .mobile-brand .brand__icon { font-size: 2rem; }
+        .mobile-brand .brand__name { font-size: 1.8rem; }
 
         /* ─── RESPONSIVE ─── */
-        @media (max-width: 800px) {
-            .page__inner { grid-template-columns: 1fr; }
-            .left, .divider { display: none; }
-            .right { padding: 32px 20px; }
-            .card { padding: 32px 26px; }
+        @media (max-width: 850px) {
+            .page { padding: 20px 16px; align-items: flex-start; } /* Su mobile sta più in alto */
+            .page__inner { 
+                grid-template-columns: 1fr; 
+                gap: 0; /* Rimuoviamo il gap orizzontale */
+                max-width: 480px; 
+                margin: 0 auto; 
+            }
+            .left, .divider { display: none; } /* Nascondiamo la colonna testuale */
+            .right { padding: 20px 0 40px; animation: slideIn 0.5s ease both; } /* Animazione più semplice */
+            .card { 
+                padding: 40px 24px; /* Padding ridotto per schermi stretti */
+                max-width: 100%; 
+                border-radius: 20px;
+                box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+            }
+            .mobile-brand { display: flex; animation: fadeUp 0.6s ease both; }
         }
     </style>
 </head>
-<body>
+<body class="">
 
-<!-- Background -->
 <div class="bg">
     <div class="bg__glow1"></div>
     <div class="bg__glow2"></div>
@@ -454,12 +517,10 @@
 <div class="page">
 <div class="page__inner">
 
-    <!-- LEFT PANEL -->
     <div class="left">
         <a href="index.html" class="brand">
             <span class="brand__icon">📚</span>
             <span class="brand__name">Appunti</span>
-
         </a>
 
         <h1 class="left__headline">
@@ -488,68 +549,74 @@
         </div>
     </div>
 
-    <!-- DIVIDER -->
     <div class="divider"></div>
 
-    <!-- RIGHT PANEL -->
     <div class="right">
-        <div class="card">
-            <div class="card__title">Bentornato 👋</div>
-            <div class="card__sub">Inserisci le tue credenziali per accedere</div>
+        
+        <div style="width: 100%;">
+            <a href="index.html" class="mobile-brand">
+                <span class="brand__icon">📚</span>
+                <span class="brand__name">Appunti</span>
+            </a>
 
-            <form class="form" id="loginForm" onsubmit="inviaLogin(event)" novalidate>
+            <div class="card">
+                <div class="card__title">Bentornato 👋</div>
+                <div class="card__sub">Inserisci le tue credenziali per accedere</div>
 
-                <div class="field">
-                    <div class="field__label">Username</div>
-                    <div class="field__wrap">
-                        <input class="field__input" type="text" id="username" placeholder="es. studente_curioso99" autocomplete="username" required>
-                        <span class="field__icon">👤</span>
+                <form class="form" id="loginForm" onsubmit="inviaLogin(event)" novalidate>
+
+                    <div class="field">
+                        <div class="field__label">Username</div>
+                        <div class="field__wrap">
+                            <input class="field__input" type="text" id="username" placeholder="es. studente_curioso99" autocomplete="username" required>
+                            <span class="field__icon">👤</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="field">
-                    <div class="field__label">Password</div>
-                    <div class="field__wrap">
-                        <input class="field__input" type="password" id="password" placeholder="La tua password" autocomplete="current-password" required>
-                        <span class="field__icon">🔒</span>
-                        <button type="button" class="field__toggle" id="togglePwd" onclick="togglePassword()" title="Mostra/nascondi password">👁</button>
+                    <div class="field">
+                        <div class="field__label">Password</div>
+                        <div class="field__wrap">
+                            <input class="field__input" type="password" id="password" placeholder="La tua password" autocomplete="current-password" required>
+                            <span class="field__icon">🔒</span>
+                            <button type="button" class="field__toggle" id="togglePwd" onclick="togglePassword()" title="Mostra/nascondi password">👁</button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row-opts">
-                    <label class="remember">
-                        <input type="checkbox" id="rememberCb">
-                        <span class="remember__box">
-                            <span class="remember__check">✓</span>
-                        </span>
-                        <span class="remember__label">Ricordami</span>
-                    </label>
-                    <a href="#" class="forgot">Password dimenticata?</a>
-                </div>
+                    <div class="row-opts">
+                        <label class="remember">
+                            <input type="checkbox" id="rememberCb">
+                            <span class="remember__box">
+                                <span class="remember__check">✓</span>
+                            </span>
+                            <span class="remember__label">Ricordami</span>
+                        </label>
+                        <a href="#" class="forgot">Password dimenticata?</a>
+                    </div>
 
-                <div class="messaggio" id="messaggio"></div>
+                    <div class="messaggio" id="messaggio"></div>
 
-                <button type="submit" class="btn-submit" id="btnSubmit">
-                    Accedi
-                </button>
+                    <button type="submit" class="btn-submit" id="btnSubmit">
+                        Accedi
+                    </button>
 
-                <div class="or-line"><span>oppure</span></div>
+                    <div class="or-line"><span>oppure</span></div>
 
-                <button type="button" class="btn-social" onclick="socialLogin('Google')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                    </svg>
-                    Continua con Google
-                </button>
+                    <button type="button" class="btn-social" onclick="socialLogin('Google')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        Continua con Google
+                    </button>
 
-                <div class="register-row">
-                    Non hai un account? <a href="register.html">Registrati gratis</a>
-                </div>
+                    <div class="register-row">
+                        Non hai un account? <a href="register.html">Registrati gratis</a>
+                    </div>
 
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -557,6 +624,13 @@
 </div>
 
 <script>
+    // Recupero il tema salvato nelle impostazioni 
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('appuntiTheme') === 'light') {
+            document.body.classList.add('light-theme');
+        }
+    });
+
     function togglePassword() {
         const input = document.getElementById('password');
         const btn   = document.getElementById('togglePwd');

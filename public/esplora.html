@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Esplora — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -49,7 +49,7 @@
         }
 
         /* ══════════════════════════
-           SIDEBAR NAV
+           SIDEBAR NAV (PC)
         ══════════════════════════ */
         .sidenav {
             position: fixed; top: 0; left: 0; bottom: 0;
@@ -139,10 +139,28 @@
             box-shadow: 0 8px 24px rgba(200,240,96,0.28);
         }
 
-        @media (max-width: 768px) {
-            .sidenav { display: none; }
-            body { display: block; }
+        /* ══════════════════════════
+           BOTTOM NAV (SMARTPHONE)
+        ══════════════════════════ */
+        .bottom-nav {
+            display: none; /* Nascosto su PC */
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10,10,15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* Fix per iPhone */
         }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
+
 
         /* ══════════════════════════
            FEED WRAPPER
@@ -618,33 +636,59 @@
         .card__no-media-icon { font-size: 3.5rem; opacity: 0.4; }
 
         /* ══════════════════════════
-           RESPONSIVE
+           RESPONSIVE (MOBILE FIXES)
         ══════════════════════════ */
         @media (max-width: 1100px) {
             .card__sidebar { right: 18px; }
         }
         @media (max-width: 768px) {
-            .feed-wrapper { margin-left: 0; }
-            .card { padding: 0; }
+            /* 1. Nascondiamo la sidebar su PC, mostriamo la bottom-nav */
+            .sidenav { display: none; }
+            .bottom-nav { display: flex; }
+
+            /* 2. Riduciamo l'altezza totale per lasciare spazio alla bottom-nav (64px) */
+            .feed-wrapper { 
+                margin-left: 0; 
+                height: calc(100dvh - 64px); /* dVH è vitale su iOS per la barra di navigazione */
+            }
+            .card { 
+                height: calc(100dvh - 64px); 
+                padding: 0; 
+            }
+            
+            /* 3. L'immagine/video occupa tutto lo schermo del telefono */
             .card__media-container {
                 width: 100%; border-radius: 0; max-height: none;
             }
-            .card__sidebar { right: 10px; bottom: 72px; }
-            .top-bar {
-                flex-direction: column-reverse; align-items: stretch;
-                padding: 14px 56px 14px 12px; gap: 10px;
+
+            /* 4. Rialziamo gli elementi interattivi per non farli coprire dalla bottom-nav */
+            .card__content { 
+                padding: 48px 16px 20px; 
             }
-            .search-input { width: 100%; }
-            .search-input:focus { width: 100%; }
+            .card__sidebar { 
+                right: 12px; 
+                bottom: 24px; 
+            }
+            
+            /* 5. Alziamo il pulsante UI-toggle e la scroll-hint */
+            .toggle-view-btn { top: 80px; right: 16px; width: 36px; height: 36px; }
+            .scroll-hint { bottom: 84px; }
+
+            /* 6. Sistemiamo la barra superiore di ricerca/filtri */
+            .top-bar {
+                flex-direction: row; align-items: center;
+                padding: 12px 16px; gap: 10px;
+                background: linear-gradient(to bottom, rgba(10,10,15,0.9) 0%, transparent 100%);
+            }
+            .search-container { flex-shrink: 1; }
+            .search-input { width: 130px; }
+            .search-input:focus { width: 180px; }
         }
     </style>
-    <script>
-        if (localStorage.getItem('appuntiTheme') === 'light') {
-            document.documentElement.classList.add('light-theme');
-        }
-    </script>
 </head>
-<body class=""> <nav class="sidenav">
+<body class=""> 
+
+<nav class="sidenav">
     <a href="index.html" class="sidenav__brand">
         <div class="sidenav__logo">
             <span></span><span></span><span></span>
@@ -696,6 +740,13 @@
     <a href="login.html" class="sidenav__login" id="navLoginBtn">
         Accedi →
     </a>
+</nav>
+
+<nav class="bottom-nav">
+    <a href="index.html"><span class="nav-icon">🏠</span></a>
+    <a href="esplora.html" class="active"><span class="nav-icon">🧭</span></a>
+    <a href="podcast.html"><span class="nav-icon">🎙️</span></a>
+    <a href="profilo.html"><span class="nav-icon">👤</span></a>
 </nav>
 
 <div class="feed-wrapper">

@@ -65,6 +65,7 @@
         .topnav__brand { 
             display: flex; align-items: center; gap: 12px; font-family: 'Fraunces', serif; 
             font-size: 1.5rem; font-weight: 900; color: var(--accent); text-decoration: none; margin-right: 30px; 
+            letter-spacing: -0.4px;
         }
         .topnav__links { list-style: none; display: flex; gap: 6px; flex: 1; }
         .topnav__links a { 
@@ -108,6 +109,7 @@
             padding: 12px 16px; border-radius: 12px;
             color: var(--muted); text-decoration: none; font-weight: 700;
             transition: all .2s; cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+            font-family: inherit; font-size: 0.95rem;
         }
         .sidebar__item:hover { color: var(--text); background: var(--surface2); }
         .sidebar__item.active { color: var(--accent); background: var(--accent-soft); }
@@ -120,7 +122,7 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section__title { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 8px; }
+        .section__title { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
         .section__sub { color: var(--muted); margin-bottom: 40px; font-size: 1rem; }
 
         /* ─── SETTINGS COMPONENTS ─── */
@@ -134,7 +136,7 @@
         .setting-row__icon { 
             width: 44px; height: 44px; background: var(--surface2); border-radius: 12px;
             display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--border2);
-            transition: background-color 0.3s;
+            transition: background-color 0.3s; flex-shrink: 0;
         }
         .setting-row__info { flex: 1; }
         .setting-row__label { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
@@ -150,12 +152,12 @@
 
         .setting-select {
             background: var(--surface2); border: 1px solid var(--border2);
-            color: var(--text); padding: 8px 16px; border-radius: 10px; font-weight: 700; outline: none;
-            transition: background-color 0.3s;
+            color: var(--text); padding: 10px 16px; border-radius: 10px; font-weight: 700; outline: none;
+            transition: background-color 0.3s; font-family: inherit; cursor: pointer;
         }
 
         /* Toggle */
-        .toggle { position: relative; width: 48px; height: 26px; cursor: pointer; }
+        .toggle { position: relative; width: 48px; height: 26px; cursor: pointer; flex-shrink: 0; }
         .toggle input { opacity: 0; width: 0; height: 0; }
         .toggle__slider {
             position: absolute; inset: 0; background: var(--surface3); border-radius: 30px;
@@ -179,11 +181,13 @@
         .theme-card__icon { font-size: 2rem; margin-bottom: 10px; display: block; }
 
         /* Buttons */
+        .settings-actions { display: flex; gap: 12px; }
+        
         .btn {
             padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer;
-            font-family: inherit; transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+            font-family: inherit; transition: all .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn--accent { background: var(--accent); color: #fff; }
+        .btn--accent { background: var(--accent); color: #0a0a0f; }
         .btn--accent:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--accent-soft); }
         .btn--ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
         .btn--danger { background: rgba(255, 77, 109, 0.1); color: var(--red); }
@@ -197,11 +201,90 @@
         }
         .toast.show { transform: translateY(0); }
 
+        /* ══════════════════════════
+           RESPONSIVE (SMARTPHONE)
+        ══════════════════════════ */
         @media (max-width: 850px) {
             .page-container { grid-template-columns: 1fr; }
-            .sidebar { height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar { height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); padding: 20px 16px; }
             .main-content { padding: 40px 20px; }
-            .topnav__links { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            /* 1. Navbar: Rendiamo i link scrollabili orizzontalmente invece di nasconderli */
+            .topnav { 
+                height: auto; 
+                padding: 12px 16px; 
+                flex-wrap: wrap; /* Permette agli elementi di andare a capo */
+                gap: 12px;
+            }
+            .topnav__brand { margin-right: auto; }
+            .topnav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
+            .topnav__links { 
+                display: flex; 
+                width: 100%; /* Prende tutta la riga sotto il logo */
+                overflow-x: auto; /* Scroll orizzontale col dito */
+                scrollbar-width: none; /* Nasconde la scrollbar */
+                gap: 8px;
+            }
+            .topnav__links::-webkit-scrollbar { display: none; }
+            .topnav__links a { white-space: nowrap; padding: 6px 12px; }
+
+            /* 2. Spazio extra sotto la navbar più alta */
+            .page-container { margin-top: 100px; }
+
+            /* 3. Sidebar trasformata in Tab orizzontali */
+            .sidebar { padding: 16px 16px 0; }
+            .sidebar__label { display: none; } /* Nascondiamo la scritta "Preferenze" per fare spazio */
+            .sidebar__nav { 
+                flex-direction: row; 
+                overflow-x: auto; 
+                scrollbar-width: none; 
+                gap: 8px;
+                padding-bottom: 12px;
+            }
+            .sidebar__nav::-webkit-scrollbar { display: none; }
+            .sidebar__item { 
+                white-space: nowrap; 
+                width: auto; 
+                padding: 10px 18px; 
+                margin-top: 0 !important; /* Rimuove il margine al tasto Esci */
+            }
+            /* Nasconde la linea separatrice tra i tab */
+            .sidebar__nav > div { display: none; } 
+
+            /* 4. Main Content: adattamento margini */
+            .main-content { padding: 32px 16px 60px; }
+            .section__title { font-size: 1.8rem; }
+            .section__sub { margin-bottom: 24px; font-size: 0.9rem; }
+
+            /* 5. Righe impostazioni impilate */
+            .setting-row { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 12px; 
+                padding: 20px 16px; 
+            }
+            .setting-row__icon { margin-bottom: 4px; }
+            .setting-row__info { width: 100%; }
+            
+            /* Tasto toggle sulla stessa riga del titolo per risparmiare spazio */
+            .setting-row:has(.toggle) {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .setting-row:has(.toggle) .setting-row__info {
+                width: auto; flex: 1;
+            }
+
+            .setting-select { width: 100%; margin-top: 12px; }
+
+            /* 6. Bottoni a larghezza intera */
+            .settings-actions { flex-direction: column; }
+            .btn { width: 100%; }
+            
+            .setting-row button.btn--danger { width: 100%; }
         }
     </style>
     <script>
@@ -287,7 +370,7 @@
                     </select>
                 </div>
             </div>
-            <div style="display: flex; gap: 12px;">
+            <div class="settings-actions">
                 <button class="btn btn--accent" onclick="salva('Modifiche salvate con successo!')">Salva Modifiche</button>
                 <button class="btn btn--ghost" onclick="caricaDatiAccount()">Ripristina</button>
             </div>
