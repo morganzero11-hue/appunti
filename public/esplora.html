@@ -21,7 +21,7 @@
             --accent:   #c8f060;
             --accent-glow: rgba(200,240,96,0.15);
             --accent2:  #ff4d6d;
-            --accent3:  #60b4f0;
+            --accent3:  #60b4f0; /* Azzurro per il download */
             --nav-h:    64px;
             --radius:   16px;
             --shadow-color: rgba(200,240,96,0.28);
@@ -44,8 +44,13 @@
             --shadow-color: rgba(163,204,43,0.3);
         }
 
-        /* FIX PER LO SCROLL: Uso di dvh per le altezze reali su mobile */
-        html, body { height: 100dvh; overflow: hidden; background: var(--bg); transition: background-color 0.3s; }
+        /* FIX PER LO SCROLL */
+        html, body { 
+            height: 100dvh; 
+            overflow: hidden; 
+            background: var(--bg); 
+            transition: background-color 0.3s; 
+        }
         body {
             font-family: 'Cabinet Grotesk', sans-serif;
             color: var(--text);
@@ -55,7 +60,7 @@
         }
 
         /* ════════════════════════════
-           NAVBAR (DESKTOP)
+           TOPNAV (UNIFICATA PC & MOBILE)
         ════════════════════════════ */
         .topnav {
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
@@ -93,20 +98,78 @@
         .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
         body.light-theme .topnav__links a.active { background: rgba(163,204,43,0.15); }
 
-        .nav__login {
+        .topnav__actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .topnav__settings-mobile {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .topnav__login {
             background: var(--accent); color: #0a0a0f;
             padding: 8px 22px; border-radius: 10px;
             text-decoration: none; font-weight: 800;
-            font-size: 0.9rem; transition: all .2s; margin-left: auto;
+            font-size: 0.9rem; transition: all .2s;
         }
-        body.light-theme .nav__login { color: #fff; }
-        .nav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
+        body.light-theme .topnav__login { color: #fff; }
+        .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
 
         /* ════════════════════════════
-           BOTTOM NAV — NASCOSTA SU PC
+           BOTTOM NAV — UNIFICATA
         ════════════════════════════ */
         .bottom-nav {
             display: none;
+            position: fixed; 
+            bottom: 0; left: 0; right: 0;
+            width: 100%; z-index: 10000;
+            padding: 0 8px;
+            padding-bottom: env(safe-area-inset-bottom);
+            pointer-events: none; 
+        }
+        .bottom-nav__inner {
+            background: rgba(17,17,17,0.96);
+            backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid var(--border2);
+            border-radius: 24px 24px 0 0;
+            display: flex; justify-content: space-around; align-items: center;
+            height: 68px; padding: 0 8px;
+            pointer-events: auto; 
+            max-width: 600px; margin: 0 auto;
+        }
+        body.light-theme .bottom-nav__inner {
+            background: rgba(255,255,255,0.96);
+            border-color: rgba(0,0,0,0.1);
+        }
+        .bottom-nav__item {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 3px; padding: 8px 10px;
+            text-decoration: none; color: var(--muted);
+            border-radius: 16px; transition: all .25s;
+            position: relative; flex: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav__item.active { color: var(--accent); }
+        .bottom-nav__item.active::before {
+            content: ''; position: absolute;
+            top: 6px; left: 50%; transform: translateX(-50%);
+            width: 36px; height: 36px;
+            background: var(--accent-glow);
+            border-radius: 12px; z-index: -1;
+        }
+        body.light-theme .bottom-nav__item.active::before { background: rgba(163,204,43,0.15); }
+        .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
+        .bottom-nav__label {
+            font-size: 0.58rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
         }
 
         /* ══════════════════════════
@@ -115,7 +178,7 @@
         .feed-wrapper {
             margin-top: var(--nav-h); 
             flex: 1; 
-            height: calc(100dvh - var(--nav-h));
+            height: calc(100dvh - var(--nav-h) - 68px - env(safe-area-inset-bottom)); /* Default su PC è senza nav inferiore vera */
             position: relative;
             background: var(--bg);
         }
@@ -130,11 +193,11 @@
         .feed::-webkit-scrollbar { display: none; }
 
         /* ══════════════════════════
-           TOP BAR (FILTRI)
+           TOP BAR (FILTRI DENTRO IL FEED)
         ══════════════════════════ */
         .top-bar {
             position: absolute; top: 0; left: 0; right: 0;
-            padding: 20px 72px 16px 20px;
+            padding: max(20px, env(safe-area-inset-top)) 72px 16px 20px;
             background: linear-gradient(to bottom, rgba(10,10,15,0.96) 0%, rgba(10,10,15,0) 100%);
             display: flex; align-items: center; gap: 14px;
             z-index: 100; pointer-events: none;
@@ -150,10 +213,7 @@
         }
         .filter-bar::-webkit-scrollbar { display: none; }
 
-        /* Questo contenitore select apparirà solo su mobile */
-        .filter-select-mobile {
-            display: none;
-        }
+        .filter-select-mobile { display: none; } /* Nascosta su PC */
 
         .filter-chip {
             padding: 7px 16px;
@@ -171,30 +231,21 @@
         }
         body.light-theme .filter-chip { background: rgba(0,0,0,0.04); }
         .filter-chip:hover {
-            background: var(--surface2);
-            color: var(--text);
-            transform: translateY(-2px);
+            background: var(--surface2); color: var(--text); transform: translateY(-2px);
         }
         .filter-chip.active {
-            background: var(--accent);
-            color: #0a0a0f;
-            border-color: var(--accent);
+            background: var(--accent); color: #0a0a0f; border-color: var(--accent);
             box-shadow: 0 4px 16px rgba(200,240,96,0.3);
         }
         body.light-theme .filter-chip.active { color: #fff; }
 
         .search-container { pointer-events: auto; flex-shrink: 0; }
         .search-input {
-            background: rgba(255,255,255,0.07);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border2);
-            border-radius: 30px;
-            color: var(--text);
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.8rem; font-weight: 600;
-            padding: 7px 16px 7px 34px;
-            outline: none; width: 190px;
-            transition: all .25s;
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(16px);
+            border: 1px solid var(--border2); border-radius: 30px;
+            color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.8rem; font-weight: 600; padding: 7px 16px 7px 34px;
+            outline: none; width: 190px; transition: all .25s;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: 12px center;
         }
@@ -204,10 +255,8 @@
         }
         .search-input::placeholder { color: var(--muted); }
         .search-input:focus {
-            background: var(--surface2);
-            border-color: var(--accent);
-            width: 230px;
-            box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
+            background: var(--surface2); border-color: var(--accent);
+            width: 230px; box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
         }
 
         /* ══════════════════════════
@@ -215,20 +264,14 @@
         ══════════════════════════ */
         .toggle-view-btn {
             position: fixed; top: calc(var(--nav-h) + 20px); right: 20px;
-            background: rgba(14,14,20,0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(14,14,20,0.8); backdrop-filter: blur(12px);
             color: var(--muted); border: 1px solid var(--border2);
-            width: 42px; height: 42px;
-            border-radius: 50%; font-size: 1.1rem;
+            width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 10000;
-            transition: all .2s;
+            cursor: pointer; z-index: 10000; transition: all .2s;
         }
         body.light-theme .toggle-view-btn { background: rgba(255,255,255,0.8); }
-        .toggle-view-btn:hover {
-            transform: scale(1.1);
-            color: var(--text); border-color: var(--border2);
-        }
+        .toggle-view-btn:hover { transform: scale(1.1); color: var(--text); border-color: var(--border2); }
 
         /* ══════════════════════════
            CLEAN VIEW (nascondi UI)
@@ -239,12 +282,9 @@
         body.clean-view .page-indicator,
         body.clean-view .card-audio-btn,
         body.clean-view .scroll-hint {
-            opacity: 0 !important;
-            pointer-events: none !important;
+            opacity: 0 !important; pointer-events: none !important;
         }
-
-        .card__content, .card__sidebar, .page-indicator,
-        .card-audio-btn, .scroll-hint {
+        .card__content, .card__sidebar, .page-indicator, .card-audio-btn, .scroll-hint {
             transition: opacity 0.3s ease;
         }
 
@@ -252,47 +292,31 @@
            CARD (9:16 feed)
         ══════════════════════════ */
         .card {
-            height: 100%; 
-            width: 100%;
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
+            height: 100%; width: 100%;
+            scroll-snap-align: start; scroll-snap-stop: always;
             display: flex; justify-content: center; align-items: center;
-            position: relative; overflow: hidden; 
-            padding: 20px; 
+            position: relative; overflow: hidden; padding: 20px; 
         }
 
         /* Background blurred image */
         .card__bg {
-            position: absolute; inset: 0;
-            pointer-events: none; z-index: 0;
-            filter: blur(48px) brightness(0.2) saturate(1.4);
-            transform: scale(1.15);
+            position: absolute; inset: 0; pointer-events: none; z-index: 0;
+            filter: blur(48px) brightness(0.2) saturate(1.4); transform: scale(1.15);
         }
-
-        /* Vignette overlay */
         .card__bg-vignette {
             position: absolute; inset: 0; z-index: 0;
             background: radial-gradient(ellipse at center, transparent 40%, rgba(10,10,15,0.7) 100%);
         }
 
         .card__media-container {
-            position: relative; z-index: 1;
-            height: 100%; width: 100%; max-width: 600px;
-            max-height: 100%;
-            aspect-ratio: auto;
-            background: var(--surface);
-            box-shadow:
-                0 0 0 1px rgba(255,255,255,0.06),
-                0 20px 60px rgba(0,0,0,0.8),
-                0 0 80px rgba(0,0,0,0.4);
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 1; height: 100%; width: 100%; max-width: 600px;
+            max-height: 100%; aspect-ratio: auto; background: var(--surface);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.8), 0 0 80px rgba(0,0,0,0.4);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
 
-        /* ── SLIDER ── */
         .card__slider {
-            display: flex; overflow-x: auto;
-            scroll-snap-type: x mandatory;
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
             width: 100%; height: 100%; scrollbar-width: none;
         }
         .card__slider::-webkit-scrollbar { display: none; }
@@ -302,183 +326,109 @@
             scroll-snap-align: start; position: relative;
             display: flex; align-items: center; justify-content: center;
         }
+        .card__media-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .card__media-img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-
-        /* Dots progress */
         .slider-dots {
             position: absolute; top: max(16px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
             display: flex; gap: 5px; z-index: 10;
         }
         .dot {
             width: 24px; height: 3px; border-radius: 2px;
-            background: rgba(255,255,255,0.3); transition: all .3s;
-            cursor: pointer;
+            background: rgba(255,255,255,0.3); transition: all .3s; cursor: pointer;
         }
         .dot.active { background: #fff; width: 32px; }
 
-        /* Page indicator */
         .page-indicator {
             position: absolute; top: max(82px, calc(env(safe-area-inset-top) + 66px)); left: 16px;
-            background: rgba(10,10,15,0.7);
-            backdrop-filter: blur(8px);
-            padding: 4px 10px; border-radius: 20px;
-            font-size: 0.7rem; font-weight: 800; z-index: 10;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.8);
+            background: rgba(10,10,15,0.7); backdrop-filter: blur(8px);
+            padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; z-index: 10;
+            border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
         }
 
-        /* Audio button */
         .card-audio-btn {
             position: absolute; top: max(80px, calc(env(safe-area-inset-top) + 64px)); right: 16px;
-            background: rgba(10,10,15,0.7);
-            backdrop-filter: blur(8px);
-            color: #fff; border: 1px solid rgba(255,255,255,0.12);
-            width: 36px; height: 36px; border-radius: 50%;
-            font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; z-index: 10;
-            transition: all .2s;
+            background: rgba(10,10,15,0.7); backdrop-filter: blur(8px); color: #fff; border: 1px solid rgba(255,255,255,0.12);
+            width: 36px; height: 36px; border-radius: 50%; font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; transition: all .2s;
         }
-        .card-audio-btn:hover {
-            transform: scale(1.1);
-            background: rgba(10,10,15,0.9);
-        }
+        .card-audio-btn:hover { transform: scale(1.1); background: rgba(10,10,15,0.9); }
 
         /* ── CARD CONTENT (bottom overlay) ── */
         .card__content {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 48px 16px 20px;
-            background: linear-gradient(
-                to top,
-                rgba(10,10,15,0.97) 0%,
-                rgba(10,10,15,0.6) 50%,
-                transparent 100%
-            );
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 48px 16px 20px;
+            background: linear-gradient(to top, rgba(10,10,15,0.97) 0%, rgba(10,10,15,0.6) 50%, transparent 100%);
             z-index: 2; pointer-events: auto;
         }
 
         .card__meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .card__author {
-            font-size: 0.95rem; font-weight: 800; color: #fff;
-            letter-spacing: -0.2px;
-        }
+        .card__author { font-size: 0.95rem; font-weight: 800; color: #fff; letter-spacing: -0.2px; }
         .card__time { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 600; }
 
         .card__subject {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 12px; border-radius: 20px;
-            font-size: 0.72rem; font-weight: 800; margin-bottom: 8px;
-            background: rgba(10,10,15,0.7);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
-            letter-spacing: 0.2px;
-            color: #fff;
+            display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 800; margin-bottom: 8px; background: rgba(10,10,15,0.7);
+            backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.2px; color: #fff;
         }
 
         .card__title {
-            font-family: 'Fraunces', serif;
-            font-size: clamp(1.3rem, 2.2vw, 1.7rem);
-            font-weight: 900; line-height: 1.15;
-            letter-spacing: -0.5px; margin-bottom: 14px;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            font-family: 'Fraunces', serif; font-size: clamp(1.3rem, 2.2vw, 1.7rem); font-weight: 900; line-height: 1.15;
+            letter-spacing: -0.5px; margin-bottom: 14px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.6);
         }
 
-        /* Il bottone scarica base per PC, largo */
-        .card__btn-download-wide {
-            padding: 11px 20px; border-radius: 12px;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.88rem; font-weight: 800;
-            cursor: pointer; border: none;
-            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-            transition: all .2s; text-decoration: none;
-            background: var(--accent); color: #0a0a0f;
-            width: 100%; letter-spacing: -0.2px;
-        }
-        body.light-theme .card__btn-download-wide { color: #fff; }
-        .card__btn-download-wide:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(200,240,96,0.3);
-        }
+        /* Bottone UI base per il Download su PC se viene lasciato visibile (largo) */
+        .card__btn-download-wide { display: none; }
 
         /* ── SIDEBAR BUTTONS ── */
         .card__sidebar {
-            position: absolute;
-            right: 12px;
-            bottom: 24px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-end;
+            position: absolute; right: 12px; bottom: 24px;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             gap: 20px; z-index: 2; pointer-events: auto;
         }
 
         .sidebar-avatar {
             width: 52px; height: 52px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800; flex-shrink: 0;
-            overflow: hidden; text-decoration: none;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-            transition: transform .2s;
-            border: 2px solid rgba(255,255,255,0.9);
-            background: var(--surface2);
-            color: var(--accent);
+            font-size: 1.5rem; font-weight: 800; flex-shrink: 0; overflow: hidden; text-decoration: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: transform .2s;
+            border: 2px solid rgba(255,255,255,0.9); background: var(--surface2); color: var(--accent);
         }
         .sidebar-avatar:hover { transform: scale(1.08); }
 
         .side-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-            cursor: pointer; border: none; background: none;
-            color: rgba(255,255,255,0.8);
-            transition: color .2s, transform .2s;
+            display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; border: none; background: none;
+            color: rgba(255,255,255,0.8); transition: color .2s, transform .2s;
         }
         .side-btn:hover { color: #fff; transform: scale(1.05); }
 
         .side-btn__icon {
-            width: 46px; height: 46px; border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.18);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem;
-            transition: all .2s;
+            width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.18);
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all .2s;
         }
-        .side-btn:hover .side-btn__icon {
-            background: rgba(255,255,255,0.18);
-        }
-
-        /* Stile specifico per il tasto download circolare su mobile */
-        .side-btn.download-round {
-            display: none; /* Nascosto su PC */
-            color: var(--accent);
-        }
-        .side-btn.download-round .side-btn__icon {
-            background: rgba(200,240,96,0.15);
-            border-color: rgba(200,240,96,0.3);
-        }
+        .side-btn:hover .side-btn__icon { background: rgba(255,255,255,0.18); }
 
         .side-btn.liked { color: var(--accent2); }
-        .side-btn.liked .side-btn__icon {
-            background: rgba(255,77,109,0.2);
-            border-color: rgba(255,77,109,0.4);
+        .side-btn.liked .side-btn__icon { background: rgba(255,77,109,0.2); border-color: rgba(255,77,109,0.4); }
+
+        /* NUOVO: Stile per il bottone Scarica circolare */
+        .side-btn.download-btn { color: var(--accent3); } /* Azzurro */
+        .side-btn.download-btn .side-btn__icon {
+            background: rgba(96,180,240,0.2);
+            border-color: rgba(96,180,240,0.4);
+        }
+        .side-btn.download-btn:hover .side-btn__icon {
+            background: rgba(96,180,240,0.4);
         }
 
-        .side-btn__count {
-            font-size: 0.72rem; font-weight: 800;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-        }
+        .side-btn__count { font-size: 0.72rem; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
 
         /* ── SCROLL HINT ── */
         .scroll-hint {
-            position: fixed; bottom: 84px; left: 50%;
-            transform: translateX(-50%);
+            position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
             display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: var(--muted); font-size: 0.7rem; font-weight: 700;
-            pointer-events: none; z-index: 50;
-            animation: bounce 2.5s ease-in-out infinite;
-            opacity: 1; transition: opacity .4s;
-            letter-spacing: 0.5px; text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            color: var(--muted); font-size: 0.7rem; font-weight: 700; pointer-events: none; z-index: 50;
+            animation: bounce 2.5s ease-in-out infinite; opacity: 1; transition: opacity .4s;
+            letter-spacing: 0.5px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .scroll-hint.hidden { opacity: 0; }
         @keyframes bounce {
@@ -490,54 +440,35 @@
            UPLOAD MODAL & PLAYLIST MODAL
         ══════════════════════════ */
         .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(12px);
-            z-index: 20000; display: none;
-            align-items: center; justify-content: center;
-            padding: 20px;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px);
+            z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px;
         }
         .modal-overlay.open { display: flex; }
-
         .modal {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 24px; padding: 36px;
-            width: 100%; max-width: 500px;
-            box-shadow: 0 24px 60px var(--shadow-color, rgba(0,0,0,0.6));
+            background: var(--surface); border: 1px solid var(--border2); border-radius: 24px; padding: 36px;
+            width: 100%; max-width: 500px; box-shadow: 0 24px 60px var(--shadow-color, rgba(0,0,0,0.6));
             animation: modalIn .3s cubic-bezier(.22,1,.36,1);
         }
         @keyframes modalIn {
             from { opacity: 0; transform: scale(.95) translateY(16px); }
             to   { opacity: 1; transform: none; }
         }
-
         .modal__icon { font-size: 2rem; margin-bottom: 12px; }
-        .modal__title {
-            font-family: 'Fraunces', serif; font-size: 1.6rem;
-            font-weight: 900; margin-bottom: 6px; letter-spacing: -0.3px;
-        }
+        .modal__title { font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; letter-spacing: -0.3px; }
         .modal__sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
         .modal__field { margin-bottom: 16px; }
-        .modal__label {
-            font-size: 0.7rem; font-weight: 800; color: var(--muted);
-            margin-bottom: 7px; display: block; text-transform: uppercase; letter-spacing: 1.2px;
-        }
+        .modal__label { font-size: 0.7rem; font-weight: 800; color: var(--muted); margin-bottom: 7px; display: block; text-transform: uppercase; letter-spacing: 1.2px; }
         .modal__input, .modal__select {
-            width: 100%; background: var(--surface2); border: 1.5px solid var(--border2);
-            border-radius: 12px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.88rem; font-weight: 600; padding: 11px 14px; outline: none;
-            transition: border-color .2s, box-shadow .2s;
+            width: 100%; background: var(--surface2); border: 1.5px solid var(--border2); border-radius: 12px;
+            color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.88rem; font-weight: 600;
+            padding: 11px 14px; outline: none; transition: border-color .2s, box-shadow .2s;
         }
-        .modal__input:focus, .modal__select:focus {
-            border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,240,96,0.1);
-        }
+        .modal__input:focus, .modal__select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,240,96,0.1); }
         .modal__select option { background: var(--surface2); }
         .modal__actions { display: flex; gap: 10px; margin-top: 28px; }
         .modal__btn {
             flex: 1; padding: 12px; border-radius: 12px; font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 0.9rem; font-weight: 800; cursor: pointer; border: none;
-            transition: all .2s; letter-spacing: -0.2px;
+            font-size: 0.9rem; font-weight: 800; cursor: pointer; border: none; transition: all .2s; letter-spacing: -0.2px;
         }
         .modal__btn--accent { background: var(--accent); color: #0a0a0f; }
         body.light-theme .modal__btn--accent { color: #fff; }
@@ -546,10 +477,8 @@
         .modal__btn--ghost:hover { background: var(--surface3); }
 
         .playlist-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 13px 16px; border-radius: 12px;
-            background: var(--surface2); margin-bottom: 8px;
-            cursor: pointer; border: 1.5px solid transparent; transition: all .2s;
+            display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-radius: 12px;
+            background: var(--surface2); margin-bottom: 8px; cursor: pointer; border: 1.5px solid transparent; transition: all .2s;
         }
         .playlist-item:hover { border-color: var(--accent); background: var(--accent-glow); transform: translateX(4px); }
         .playlist-item-title { font-weight: 800; font-size: 0.95rem; }
@@ -560,13 +489,10 @@
         ══════════════════════════ */
         .toast {
             position: fixed; bottom: 84px; right: 16px; left: 16px; text-align: center;
-            background: var(--accent); color: #0a0a0f;
-            padding: 11px 22px; border-radius: 14px;
+            background: var(--accent); color: #0a0a0f; padding: 11px 22px; border-radius: 14px;
             font-family: 'Cabinet Grotesk', sans-serif; font-weight: 800; font-size: 0.85rem;
-            opacity: 0; transform: translateY(12px);
-            transition: all .3s cubic-bezier(.22,1,.36,1);
-            pointer-events: none; z-index: 99999;
-            box-shadow: 0 8px 24px var(--shadow-color, rgba(200,240,96,0.2));
+            opacity: 0; transform: translateY(12px); transition: all .3s cubic-bezier(.22,1,.36,1);
+            pointer-events: none; z-index: 99999; box-shadow: 0 8px 24px var(--shadow-color, rgba(200,240,96,0.2));
             letter-spacing: -0.2px;
         }
         body.light-theme .toast { color: #fff; }
@@ -583,8 +509,12 @@
            RESPONSIVE MOBILE (IL FEED FULLSCREEN)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. NASCONDI TOTALMENTE LA TOPNAV SU MOBILE */
-            .topnav { display: none !important; }
+            /* 1. MOSTRA TOPNAV ANCHE SU MOBILE COME RICHIESTO */
+            .topnav { padding: 0 16px; justify-content: space-between; height: var(--nav-h); display: flex; }
+            .topnav__links { display: none; }
+            .topnav__actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+            .topnav__settings-mobile { display: flex; align-items: center; justify-content: center; }
+            .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
 
             /* 2. MOSTRA BOTTOM NAV TRASPARENTE */
             .bottom-nav { 
@@ -604,10 +534,9 @@
                 display: flex; justify-content: space-around; align-items: center;
                 height: 68px; padding: 0 8px;
             }
-
             .bottom-nav__item {
                 color: rgba(255,255,255,0.9);
-                text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+                text-shadow: 0 2px 6px rgba(0,0,0,0.8); 
             }
             body.light-theme .bottom-nav__item {
                 color: rgba(255,255,255,0.9); 
@@ -615,34 +544,26 @@
             }
             .bottom-nav__item.active { color: var(--accent); }
 
-            /* 3. IL FEED OCCUPA TUTTO LO SCHERMO (100dvh) */
+            /* 3. IL FEED INIZIA SOTTO LA TOPNAV */
             .feed-wrapper { 
-                margin-top: 0;
-                height: 100dvh; 
+                margin-top: var(--nav-h);
+                height: calc(100dvh - var(--nav-h)); 
             }
             .card { 
-                height: 100dvh; 
+                height: calc(100dvh - var(--nav-h)); 
                 padding: 0; 
             }
             .card__media-container {
-                width: 100%; 
-                max-width: 100%;
-                border-radius: 0; 
-                max-height: 100%;
-                aspect-ratio: auto; 
+                width: 100%; max-width: 100%; border-radius: 0; max-height: 100%; aspect-ratio: auto; 
             }
 
-            /* 4. NASCONDI IL TASTO SCARICA LARGO SU MOBILE E MOSTRA QUELLO TONDO */
-            .card__btn-download-wide { display: none !important; }
-            .side-btn.download-round { display: flex; }
-
-            /* 5. SPOSTIAMO I CONTENUTI IN ALTO PER EVITARE LA BOTTOM NAV */
-            .card__content { padding: 48px 16px 85px; } /* + padding in basso */
+            /* 4. SPOSTIAMO I TESTI IN ALTO PER NON COPRIRE LA BOTTOM NAV */
+            .card__content { padding: 48px 16px 85px; } 
             
             /* ALZIAMO LA SIDEBAR E AUMENTIAMO IL GAP TRA I PULSANTI */
             .card__sidebar { 
                 right: 12px; 
-                bottom: 110px; /* Alzata considerevolmente */
+                bottom: 110px; /* Alzata per fare spazio */
                 gap: 16px; /* Spazio tra i bottoni rotondi */
             } 
             
@@ -652,7 +573,7 @@
             .card-audio-btn { top: max(64px, calc(env(safe-area-inset-top) + 48px)); right: 16px; }
             .toggle-view-btn { top: max(16px, env(safe-area-inset-top)); right: 16px; width: 36px; height: 36px; }
 
-            /* 6. LA BARRA DI RICERCA/FILTRI IN ALTO DIVENTA FLUTTUANTE E COMPATTA */
+            /* 5. LA BARRA DI RICERCA/FILTRI IN ALTO DIVENTA FLUTTUANTE E COMPATTA */
             .top-bar {
                 flex-direction: row; align-items: center;
                 padding: max(16px, env(safe-area-inset-top)) 16px 12px 16px; gap: 10px;
@@ -662,11 +583,11 @@
                 background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
             }
             
-            /* Sostituisci i bottoni materia con una tendina select per risparmiare spazio */
-            .filter-bar { display: none; } /* Nascondi i bottoni larghi */
+            .filter-bar { display: none; } /* Nascondi i bottoni larghi su mobile */
             
+            /* MOSTRA LA SELECT TENDINA */
             .filter-select-mobile {
-                display: block; /* Mostra la tendina */
+                display: block; 
                 pointer-events: auto;
                 background: rgba(255,255,255,0.07);
                 backdrop-filter: blur(16px);
@@ -677,7 +598,7 @@
                 font-size: 0.8rem; font-weight: 600;
                 padding: 7px 12px 7px 30px;
                 outline: none;
-                appearance: none; /* Rimuove la freccia di default */
+                appearance: none; 
                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.7)' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
                 background-repeat: no-repeat; background-position: 8px center;
             }
@@ -690,7 +611,7 @@
 
             .search-container { flex-shrink: 1; flex-grow: 1; }
             .search-input { width: 100%; }
-            .search-input:focus { width: 100%; } /* Nessun resize per evitare spostamenti */
+            .search-input:focus { width: 100%; } 
         }
         
         /* Desktop fix per toast */
@@ -714,7 +635,10 @@
         <li><a href="utenti.html">Utenti</a></li>
         <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-    <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
+    <div class="topnav__actions">
+        <a href="impostazioni.html" class="topnav__settings-mobile" title="Impostazioni">⚙️</a>
+        <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+    </div>
 </nav>
 
 <nav class="bottom-nav">
@@ -791,7 +715,8 @@
         👁️
     </button>
 
-    <div class="feed" id="feed"></div>
+    <div class="feed" id="feed">
+        </div>
 
     <div class="scroll-hint" id="scrollHint">
         <span style="font-size:1rem; letter-spacing:2px">↓</span>
@@ -892,17 +817,15 @@
     }
 
     // Intercetta la funzione js per gestire sia il click su PC che la Select su Mobile
-    // Nota: devi assicurarti che la tua logica in esplora.js intercetti correttamente questa chiamata.
     const originalApplicaFiltro = window.applicaFiltro;
     window.applicaFiltro = function(materia, el) {
         if (typeof originalApplicaFiltro === 'function') {
             originalApplicaFiltro(materia, el);
         } else {
             console.log('Filtra per:', materia);
-            // Fallback nel caso esplora.js non fosse ancora caricato o fosse diverso
         }
         
-        // Se ho cliccato su una chip desktop, aggiorno anche la tendina mobile
+        // Aggiorna la tendina se clicco dai bottoni desktop
         if(el) {
             document.getElementById('filterSelectMobile').value = materia;
         }
