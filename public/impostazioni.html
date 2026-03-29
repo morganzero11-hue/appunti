@@ -82,6 +82,28 @@
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: scale(1.05); }
 
+        /* ─── BOTTOM NAV (SOLO SMARTPHONE) ─── */
+        .bottom-nav {
+            display: none; 
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 64px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); 
+            transition: background-color 0.3s;
+        }
+        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
+        
+        .bottom-nav a {
+            color: var(--muted); text-decoration: none;
+            font-size: 1.4rem; padding: 10px; border-radius: 12px;
+            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .bottom-nav a.active { color: var(--accent); }
+
         /* ─── LAYOUT ─── */
         .page-container {
             margin-top: var(--nav-h);
@@ -197,7 +219,7 @@
             position: fixed; bottom: 32px; right: 32px; background: var(--text);
             color: var(--bg); padding: 16px 24px; border-radius: 12px;
             font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.95rem;
-            transform: translateY(100px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
+            transform: translateY(150px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
         }
         .toast.show { transform: translateY(0); }
 
@@ -211,6 +233,11 @@
         }
 
         @media (max-width: 768px) {
+            /* Navbar bottom visibile e margin al body per non coprire il contenuto */
+            body { padding-bottom: 80px; }
+            .bottom-nav { display: flex; }
+            .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; } /* Sposta il toast sopra la navbar */
+
             /* 1. Navbar: Rendiamo i link scrollabili orizzontalmente invece di nasconderli */
             .topnav { 
                 height: auto; 
@@ -221,17 +248,11 @@
             .topnav__brand { margin-right: auto; }
             .topnav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
             .topnav__links { 
-                display: flex; 
-                width: 100%; /* Prende tutta la riga sotto il logo */
-                overflow-x: auto; /* Scroll orizzontale col dito */
-                scrollbar-width: none; /* Nasconde la scrollbar */
-                gap: 8px;
+                display: none; /* Nascondiamo su mobile poiché abbiamo la bottom nav */
             }
-            .topnav__links::-webkit-scrollbar { display: none; }
-            .topnav__links a { white-space: nowrap; padding: 6px 12px; }
 
             /* 2. Spazio extra sotto la navbar più alta */
-            .page-container { margin-top: 100px; }
+            .page-container { margin-top: 60px; min-height: calc(100vh - 60px - 80px); } /* Sottrae top e bottom nav */
 
             /* 3. Sidebar trasformata in Tab orizzontali */
             .sidebar { padding: 16px 16px 0; }
@@ -294,7 +315,9 @@
         }
     </script>
 </head>
-<body class=""> <nav class="topnav">
+<body class=""> 
+
+<nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
         <li><a href="index.html">Home</a></li>
@@ -305,6 +328,13 @@
         <li><a href="impostazioni.html" class="active">Impostazioni</a></li>
     </ul>
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+</nav>
+
+<nav class="bottom-nav">
+    <a href="index.html">🏠</a>
+    <a href="esplora.html">🧭</a>
+    <a href="podcast.html">🎙️</a>
+    <a href="profilo.html">👤</a>
 </nav>
 
 <div class="page-container">
