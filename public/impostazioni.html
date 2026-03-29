@@ -2,11 +2,12 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Impostazioni — Appunti</title>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* TEMA SCURO (DEFAULT) */
             --bg: #0a0a0a; 
             --surface: #111111; 
             --surface2: #181818;
@@ -14,16 +15,17 @@
             --text: #f2f0ec; 
             --muted: rgba(242,240,236,0.45);
             --accent: #c8f060; 
-            --accent-soft: rgba(200,240,96,0.1);
+            --accent-soft: rgba(200,240,96,0.12);
             --red: #ff4d6d;
             --nav-h: 62px;
             --sidebar-w: 260px;
             --radius: 16px;
-            --border: rgba(255,255,255,0.05);
-            --border2: rgba(255,255,255,0.1);
+            --border: rgba(255,255,255,0.06);
+            --border2: rgba(255,255,255,0.12);
             --shadow-color: rgba(0,0,0,0.5);
         }
 
+        /* ─── VARIABILI TEMA CHIARO ─── */
         body.light-theme {
             --bg: #f8f9fa; 
             --surface: #ffffff; 
@@ -31,7 +33,7 @@
             --surface3: #e9ecef;
             --text: #1a1a1a; 
             --muted: rgba(0,0,0,0.55);
-            --accent: #a3cc2b;
+            --accent: #a3cc2b; 
             --accent-soft: rgba(163,204,43,0.15);
             --border: rgba(0,0,0,0.08);
             --border2: rgba(0,0,0,0.15);
@@ -47,6 +49,9 @@
             color: var(--text);
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
+            /* BLOCCA LO SCORRIMENTO ORIZZONTALE */
+            overflow-x: hidden;
+            max-width: 100%;
         }
 
         /* ─── NAVBAR (SOLO DESKTOP) ─── */
@@ -78,52 +83,9 @@
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: scale(1.05); }
 
-        /* ─── BOTTOM NAV (SOLO SMARTPHONE) ─── */
+        /* ─── BOTTOM NAV (NASCOSTA SU PC) ─── */
         .bottom-nav {
             display: none; 
-            position: fixed; bottom: 0; left: 0; right: 0;
-            z-index: 10000;
-            padding: 0 8px;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .bottom-nav__inner {
-            background: rgba(17,17,17,0.96);
-            backdrop-filter: blur(24px) saturate(200%);
-            border: 1px solid var(--border2);
-            border-radius: 24px 24px 0 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 68px;
-            padding: 0 8px;
-        }
-        body.light-theme .bottom-nav__inner {
-            background: rgba(255,255,255,0.96);
-            border-color: rgba(0,0,0,0.1);
-        }
-        .bottom-nav__item {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 3px; padding: 8px 20px;
-            text-decoration: none; color: var(--muted);
-            border-radius: 16px; transition: all .25s;
-            position: relative; flex: 1;
-        }
-        .bottom-nav__item.active { color: var(--accent); }
-        .bottom-nav__item.active::before {
-            content: '';
-            position: absolute;
-            top: 6px; left: 50%; transform: translateX(-50%);
-            width: 36px; height: 36px;
-            background: rgba(200,240,96,0.12);
-            border-radius: 12px;
-            z-index: -1;
-        }
-        body.light-theme .bottom-nav__item.active::before { background: rgba(163,204,43,0.15); }
-        .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
-        .bottom-nav__label {
-            font-size: 0.58rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 0.8px;
         }
 
         /* ─── LAYOUT ─── */
@@ -194,6 +156,7 @@
         .setting-input:focus { border-color: var(--accent); }
 
         .setting-select {
+            width: 100%; margin-top: 12px;
             background: var(--surface2); border: 1px solid var(--border2);
             color: var(--text); padding: 10px 16px; border-radius: 10px; font-weight: 700; outline: none;
             transition: background-color 0.3s; font-family: inherit; cursor: pointer;
@@ -237,7 +200,7 @@
 
         /* Toast */
         .toast {
-            position: fixed; bottom: 90px; right: 32px; background: var(--text);
+            position: fixed; bottom: 40px; right: 32px; background: var(--text);
             color: var(--bg); padding: 16px 24px; border-radius: 12px;
             font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.95rem;
             transform: translateY(150px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
@@ -254,86 +217,157 @@
         }
 
         /* ══════════════════════════
-           RESPONSIVE — MOBILE
-           Stessa grafica di profilo.html:
-           topnav nascosta, solo bottom-nav
+           RESPONSIVE — MOBILE (OTTIMIZZATO E FISSO)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* Nascondi completamente la topnav su mobile */
+            /* Nascondi topnav su mobile */
             .topnav { display: none; }
 
-            /* Mostra la bottom-nav */
-            .bottom-nav { display: block; }
+            /* ── BOTTOM NAV FISSA IN BASSO ── */
+            .bottom-nav { 
+                display: block; 
+                position: fixed; /* LA INCHIODA ALLO SCHERMO */
+                bottom: 0; 
+                left: 0; 
+                right: 0;
+                width: 100%;
+                z-index: 10000;
+                padding-bottom: env(safe-area-inset-bottom);
+                background: var(--bg); /* Sfondo per sicurezza in caso di safe-area */
+            }
+            .bottom-nav__inner {
+                background: rgba(17,17,17,0.96);
+                backdrop-filter: blur(24px) saturate(200%);
+                border-top: 1px solid var(--border2);
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                height: 68px;
+                padding: 0 8px;
+            }
+            body.light-theme .bottom-nav__inner {
+                background: rgba(255,255,255,0.96);
+                border-color: rgba(0,0,0,0.1);
+            }
+            .bottom-nav__item {
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: 3px; padding: 8px 20px;
+                text-decoration: none; color: var(--muted);
+                border-radius: 16px; transition: all .25s;
+                position: relative; flex: 1;
+            }
+            .bottom-nav__item.active { color: var(--accent); }
+            .bottom-nav__item.active::before {
+                content: '';
+                position: absolute;
+                top: 6px; left: 50%; transform: translateX(-50%);
+                width: 36px; height: 36px;
+                background: var(--accent-soft);
+                border-radius: 12px;
+                z-index: -1;
+            }
+            .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
+            .bottom-nav__label {
+                font-size: 0.58rem; font-weight: 800;
+                text-transform: uppercase; letter-spacing: 0.8px;
+            }
 
-            /* Body con padding per la bottom-nav */
-            body { padding-bottom: 80px; }
+            /* Body con padding per non far coprire i contenuti alla nav in basso */
+            body { padding-bottom: 100px; }
 
-            /* Il page-container parte dall'alto, senza offset della topnav */
+            /* Page container senza margin top */
             .page-container {
                 margin-top: 0;
-                min-height: calc(100dvh - 68px);
+                min-height: calc(100vh - 100px);
                 grid-template-columns: 1fr;
             }
 
-            /* Toast sopra la bottom-nav */
-            .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; }
+            /* Toast riposizionato sopra la bottom-nav */
+            .toast { 
+                bottom: 90px; right: 16px; left: 16px; 
+                text-align: center; width: auto; 
+            }
 
-            /* Sidebar come tab orizzontali (invariato ma senza riferimento alla topnav) */
+            /* ── Sidebar (Tabs a pillola fisse in alto) ── */
             .sidebar {
-                padding: 16px 16px 0;
+                padding: 16px 16px 10px;
                 position: sticky;
                 top: 0;
                 z-index: 100;
+                background: rgba(10,10,10, 0.85);
+                backdrop-filter: blur(16px);
                 border-bottom: 1px solid var(--border);
                 border-right: none;
                 height: auto;
             }
+            body.light-theme .sidebar { background: rgba(248,249,250, 0.85); }
+            
             .sidebar__label { display: none; }
+            
             .sidebar__nav { 
                 flex-direction: row; 
                 overflow-x: auto; 
                 scrollbar-width: none; 
-                gap: 8px;
-                padding-bottom: 12px;
+                gap: 10px;
             }
             .sidebar__nav::-webkit-scrollbar { display: none; }
+            
             .sidebar__item { 
                 white-space: nowrap; 
                 width: auto; 
-                padding: 10px 18px; 
+                padding: 8px 18px; 
                 margin-top: 0 !important;
+                border-radius: 30px; 
+                background: var(--surface);
+                border: 1px solid var(--border2);
+                font-size: 0.9rem;
             }
-            .sidebar__nav > div { display: none; }
-
-            /* Main Content */
-            .main-content { padding: 32px 16px 60px; }
-            .section__title { font-size: 1.8rem; }
-            .section__sub { margin-bottom: 24px; font-size: 0.9rem; }
-
-            /* Righe impostazioni impilate */
-            .setting-row { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 12px; 
-                padding: 20px 16px; 
+            .sidebar__item.active {
+                background: var(--accent-soft);
+                border-color: var(--accent);
             }
-            .setting-row__icon { margin-bottom: 4px; }
-            .setting-row__info { width: 100%; }
+            .sidebar__nav > div { display: none; } 
+
+            /* ── Main Content ── */
+            .main-content { padding: 24px 16px 60px; }
+            .section__title { font-size: 1.7rem; margin-bottom: 4px; }
+            .section__sub { margin-bottom: 24px; font-size: 0.9rem; line-height: 1.4; }
+
+            /* ── Layout intelligente per le Form ── */
+            .settings-group { border-radius: 20px; }
             
+            .setting-row { 
+                flex-direction: row; 
+                align-items: flex-start; 
+                gap: 16px; 
+                padding: 16px; 
+            }
+            .setting-row__icon { 
+                width: 40px; height: 40px; font-size: 1.1rem; flex-shrink: 0;
+            }
+            /* FIX DEFINITIVO OVERFLOW: min-width 0 */
+            .setting-row__info { 
+                width: 100%; flex: 1; min-width: 0;
+            }
+            .setting-row__label { font-size: 0.95rem; }
+            .setting-row__desc { font-size: 0.8rem; }
+            
+            /* Impedisce a input e select di sbordare */
+            .setting-input, .setting-select { 
+                margin-top: 10px; padding: 10px 14px; font-size: 0.95rem; max-width: 100%; box-sizing: border-box;
+            }
+
             .setting-row:has(.toggle) {
-                flex-direction: row;
                 align-items: center;
-                justify-content: space-between;
-            }
-            .setting-row:has(.toggle) .setting-row__info {
-                width: auto; flex: 1;
             }
 
-            .setting-select { width: 100%; margin-top: 12px; }
+            .theme-grid { gap: 12px; }
+            .theme-card { padding: 16px; border-radius: 16px; }
+            .theme-card__icon { font-size: 1.6rem; }
 
-            /* Bottoni a larghezza intera */
-            .settings-actions { flex-direction: column; }
-            .btn { width: 100%; }
+            .settings-actions { flex-direction: column; gap: 10px; }
+            .btn { width: 100%; padding: 14px; font-size: 0.95rem; }
             .setting-row button.btn--danger { width: 100%; }
         }
     </style>
@@ -346,7 +380,6 @@
 </head>
 <body class=""> 
 
-<!-- TOPNAV (DESKTOP) -->
 <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
@@ -360,7 +393,6 @@
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
-<!-- BOTTOM NAV (MOBILE) — stesso stile di profilo.html -->
 <nav class="bottom-nav">
     <div class="bottom-nav__inner">
         <a href="index.html" class="bottom-nav__item">
@@ -434,15 +466,15 @@
                     <div class="setting-row__info">
                         <div class="setting-row__label">Anno di corso</div>
                         <div class="setting-row__desc">Seleziona il tuo attuale anno di studi.</div>
+                        <select class="setting-select" id="setAnno">
+                            <option>Superiori - 1°</option>
+                            <option>Superiori - 2°</option>
+                            <option>Superiori - 3°</option>
+                            <option>Superiori - 4°</option>
+                            <option>Superiori - 5°</option>
+                            <option>Università</option>
+                        </select>
                     </div>
-                    <select class="setting-select" id="setAnno">
-                        <option>Superiori - 1°</option>
-                        <option>Superiori - 2°</option>
-                        <option>Superiori - 3°</option>
-                        <option>Superiori - 4°</option>
-                        <option>Superiori - 5°</option>
-                        <option>Università</option>
-                    </select>
                 </div>
             </div>
             <div class="settings-actions">
@@ -492,8 +524,8 @@
                     <div class="setting-row__info">
                         <div class="setting-row__label" style="color: var(--red);">Disconnetti</div>
                         <div class="setting-row__desc">Dovrai inserire nuovamente le credenziali per accedere.</div>
+                        <button class="btn btn--danger" onclick="eseguiLogout()" style="margin-top: 16px;">Esci ora</button>
                     </div>
-                    <button class="btn btn--danger" onclick="eseguiLogout()">Esci ora</button>
                 </div>
             </div>
         </div>
@@ -515,6 +547,10 @@
         document.querySelectorAll('.sidebar__item').forEach(b => b.classList.remove('active'));
         document.getElementById('s-' + id).classList.add('active');
         btn.classList.add('active');
+        
+        if(window.innerWidth <= 768) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     async function caricaDatiAccount() {
