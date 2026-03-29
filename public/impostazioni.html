@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* TEMA SCURO (DEFAULT) */
             --bg: #0a0a0a; 
             --surface: #111111; 
             --surface2: #181818;
@@ -25,7 +24,6 @@
             --shadow-color: rgba(0,0,0,0.5);
         }
 
-        /* ─── VARIABILI TEMA CHIARO ─── */
         body.light-theme {
             --bg: #f8f9fa; 
             --surface: #ffffff; 
@@ -33,7 +31,7 @@
             --surface3: #e9ecef;
             --text: #1a1a1a; 
             --muted: rgba(0,0,0,0.55);
-            --accent: #a3cc2b; /* Verde leggermente più scuro per contrasto sul bianco */
+            --accent: #a3cc2b;
             --accent-soft: rgba(163,204,43,0.15);
             --border: rgba(0,0,0,0.08);
             --border2: rgba(0,0,0,0.15);
@@ -48,18 +46,17 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s; /* Transizione fluida */
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* ─── NAVBAR UNIFICATA ─── */
+        /* ─── NAVBAR (SOLO DESKTOP) ─── */
         .topnav { 
             position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); 
-            background: rgba(var(--bg-rgb, 10,10,10), 0.95); backdrop-filter: blur(10px); 
+            background: rgba(10,10,10, 0.95); backdrop-filter: blur(10px); 
             display: flex; align-items: center; padding: 0 32px; z-index: 1000; 
             border-bottom: 1px solid var(--border); 
             transition: background-color 0.3s;
         }
-        /* Fix speciale per la navbar nel tema chiaro */
         body.light-theme .topnav { background: rgba(248, 249, 250, 0.95); }
 
         .topnav__brand { 
@@ -78,7 +75,6 @@
             background: var(--accent); color: #fff; padding: 8px 24px; border-radius: 8px; 
             text-decoration: none; font-weight: 800; font-size: 0.95rem; transition: transform .2s; margin-left: auto; 
         }
-        /* Fix colore testo bottone accedi in chiaro per contrasto */
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: scale(1.05); }
 
@@ -86,23 +82,49 @@
         .bottom-nav {
             display: none; 
             position: fixed; bottom: 0; left: 0; right: 0;
-            height: 64px;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            z-index: 1000;
-            justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); 
-            transition: background-color 0.3s;
+            z-index: 10000;
+            padding: 0 8px;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
-        
-        .bottom-nav a {
-            color: var(--muted); text-decoration: none;
-            font-size: 1.4rem; padding: 10px; border-radius: 12px;
-            transition: all .2s; display: flex; align-items: center; justify-content: center;
+        .bottom-nav__inner {
+            background: rgba(17,17,17,0.96);
+            backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid var(--border2);
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 68px;
+            padding: 0 8px;
         }
-        .bottom-nav a.active { color: var(--accent); }
+        body.light-theme .bottom-nav__inner {
+            background: rgba(255,255,255,0.96);
+            border-color: rgba(0,0,0,0.1);
+        }
+        .bottom-nav__item {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 3px; padding: 8px 20px;
+            text-decoration: none; color: var(--muted);
+            border-radius: 16px; transition: all .25s;
+            position: relative; flex: 1;
+        }
+        .bottom-nav__item.active { color: var(--accent); }
+        .bottom-nav__item.active::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 50%; transform: translateX(-50%);
+            width: 36px; height: 36px;
+            background: rgba(200,240,96,0.12);
+            border-radius: 12px;
+            z-index: -1;
+        }
+        body.light-theme .bottom-nav__item.active::before { background: rgba(163,204,43,0.15); }
+        .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
+        .bottom-nav__label {
+            font-size: 0.58rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
 
         /* ─── LAYOUT ─── */
         .page-container {
@@ -164,7 +186,6 @@
         .setting-row__label { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
         .setting-row__desc { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
 
-        /* Input Styles */
         .setting-input {
             width: 100%; background: var(--bg); border: 1px solid var(--border2);
             padding: 12px 16px; border-radius: 10px; color: var(--text);
@@ -216,7 +237,7 @@
 
         /* Toast */
         .toast {
-            position: fixed; bottom: 32px; right: 32px; background: var(--text);
+            position: fixed; bottom: 90px; right: 32px; background: var(--text);
             color: var(--bg); padding: 16px 24px; border-radius: 12px;
             font-family: 'Fraunces', serif; font-weight: 800; font-size: 0.95rem;
             transform: translateY(150px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000;
@@ -224,7 +245,7 @@
         .toast.show { transform: translateY(0); }
 
         /* ══════════════════════════
-           RESPONSIVE (SMARTPHONE)
+           RESPONSIVE — TABLET
         ══════════════════════════ */
         @media (max-width: 850px) {
             .page-container { grid-template-columns: 1fr; }
@@ -232,31 +253,42 @@
             .main-content { padding: 40px 20px; }
         }
 
+        /* ══════════════════════════
+           RESPONSIVE — MOBILE
+           Stessa grafica di profilo.html:
+           topnav nascosta, solo bottom-nav
+        ══════════════════════════ */
         @media (max-width: 768px) {
-            /* Navbar bottom visibile e margin al body per non coprire il contenuto */
+            /* Nascondi completamente la topnav su mobile */
+            .topnav { display: none; }
+
+            /* Mostra la bottom-nav */
+            .bottom-nav { display: block; }
+
+            /* Body con padding per la bottom-nav */
             body { padding-bottom: 80px; }
-            .bottom-nav { display: flex; }
-            .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; } /* Sposta il toast sopra la navbar */
 
-            /* 1. Navbar: Rendiamo i link scrollabili orizzontalmente invece di nasconderli */
-            .topnav { 
-                height: auto; 
-                padding: 12px 16px; 
-                flex-wrap: wrap; /* Permette agli elementi di andare a capo */
-                gap: 12px;
-            }
-            .topnav__brand { margin-right: auto; }
-            .topnav__login { padding: 6px 16px; font-size: 0.85rem; margin-left: auto; }
-            .topnav__links { 
-                display: none; /* Nascondiamo su mobile poiché abbiamo la bottom nav */
+            /* Il page-container parte dall'alto, senza offset della topnav */
+            .page-container {
+                margin-top: 0;
+                min-height: calc(100dvh - 68px);
+                grid-template-columns: 1fr;
             }
 
-            /* 2. Spazio extra sotto la navbar più alta */
-            .page-container { margin-top: 60px; min-height: calc(100vh - 60px - 80px); } /* Sottrae top e bottom nav */
+            /* Toast sopra la bottom-nav */
+            .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; }
 
-            /* 3. Sidebar trasformata in Tab orizzontali */
-            .sidebar { padding: 16px 16px 0; }
-            .sidebar__label { display: none; } /* Nascondiamo la scritta "Preferenze" per fare spazio */
+            /* Sidebar come tab orizzontali (invariato ma senza riferimento alla topnav) */
+            .sidebar {
+                padding: 16px 16px 0;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                border-bottom: 1px solid var(--border);
+                border-right: none;
+                height: auto;
+            }
+            .sidebar__label { display: none; }
             .sidebar__nav { 
                 flex-direction: row; 
                 overflow-x: auto; 
@@ -269,17 +301,16 @@
                 white-space: nowrap; 
                 width: auto; 
                 padding: 10px 18px; 
-                margin-top: 0 !important; /* Rimuove il margine al tasto Esci */
+                margin-top: 0 !important;
             }
-            /* Nasconde la linea separatrice tra i tab */
-            .sidebar__nav > div { display: none; } 
+            .sidebar__nav > div { display: none; }
 
-            /* 4. Main Content: adattamento margini */
+            /* Main Content */
             .main-content { padding: 32px 16px 60px; }
             .section__title { font-size: 1.8rem; }
             .section__sub { margin-bottom: 24px; font-size: 0.9rem; }
 
-            /* 5. Righe impostazioni impilate */
+            /* Righe impostazioni impilate */
             .setting-row { 
                 flex-direction: column; 
                 align-items: flex-start; 
@@ -289,7 +320,6 @@
             .setting-row__icon { margin-bottom: 4px; }
             .setting-row__info { width: 100%; }
             
-            /* Tasto toggle sulla stessa riga del titolo per risparmiare spazio */
             .setting-row:has(.toggle) {
                 flex-direction: row;
                 align-items: center;
@@ -301,22 +331,22 @@
 
             .setting-select { width: 100%; margin-top: 12px; }
 
-            /* 6. Bottoni a larghezza intera */
+            /* Bottoni a larghezza intera */
             .settings-actions { flex-direction: column; }
             .btn { width: 100%; }
-            
             .setting-row button.btn--danger { width: 100%; }
         }
     </style>
     <script>
         const currentTheme = localStorage.getItem('appuntiTheme');
         if (currentTheme === 'light') {
-            document.documentElement.classList.add('light-theme'); // Aggiungiamo a html/body
+            document.documentElement.classList.add('light-theme');
         }
     </script>
 </head>
 <body class=""> 
 
+<!-- TOPNAV (DESKTOP) -->
 <nav class="topnav">
     <a href="index.html" class="topnav__brand">📚 Appunti</a>
     <ul class="topnav__links">
@@ -330,11 +360,26 @@
     <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
+<!-- BOTTOM NAV (MOBILE) — stesso stile di profilo.html -->
 <nav class="bottom-nav">
-    <a href="index.html">🏠</a>
-    <a href="esplora.html">🧭</a>
-    <a href="podcast.html">🎙️</a>
-    <a href="profilo.html">👤</a>
+    <div class="bottom-nav__inner">
+        <a href="index.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">🏠</span>
+            <span class="bottom-nav__label">Home</span>
+        </a>
+        <a href="esplora.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">🧭</span>
+            <span class="bottom-nav__label">Esplora</span>
+        </a>
+        <a href="podcast.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">🎙️</span>
+            <span class="bottom-nav__label">Podcast</span>
+        </a>
+        <a href="profilo.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">👤</span>
+            <span class="bottom-nav__label">Profilo</span>
+        </a>
+    </div>
 </nav>
 
 <div class="page-container">
@@ -486,7 +531,6 @@
         } catch (e) { console.error(e); }
     }
 
-    // GESTIONE TEMA LATO UI
     function initTema() {
         const savedTheme = localStorage.getItem('appuntiTheme') || 'dark';
         if (savedTheme === 'light') {
@@ -527,10 +571,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        initTema(); // Inizializza i bottoni grafici in base alla scelta salvata
+        initTema();
         caricaDatiAccount();
         
-        // Verifica login per l'header (uguale in tutte le pagine)
         if (document.cookie.includes('username=')) {
             const loginBtn = document.getElementById('navLoginBtn');
             if(loginBtn) loginBtn.style.display = 'none';
