@@ -104,14 +104,8 @@
             align-items: center;
             gap: 16px;
         }
-        
-        .topnav__settings-mobile {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--text);
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
+
+        .topnav__settings-mobile { display: none; }
 
         .topnav__login {
             background: var(--accent); color: #0a0a0f;
@@ -123,10 +117,51 @@
         .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
 
         /* ════════════════════════════
-           BOTTOM NAV — PC
+           BOTTOM NAV — UNIFICATA
         ════════════════════════════ */
         .bottom-nav {
-            display: none; /* Su pc la nascondiamo */
+            display: none;
+            position: fixed; 
+            bottom: 0; left: 0; right: 0;
+            width: 100%; z-index: 10000;
+            padding: 0 8px;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .bottom-nav__inner {
+            background: rgba(17,17,24,0.96);
+            backdrop-filter: blur(24px) saturate(200%);
+            border: 1px solid var(--border2);
+            border-radius: 24px 24px 0 0;
+            display: flex; justify-content: space-around; align-items: center;
+            height: 68px; padding: 0 8px;
+            max-width: 600px; margin: 0 auto;
+        }
+        body.light-theme .bottom-nav__inner {
+            background: rgba(255,255,255,0.96);
+            border-color: rgba(0,0,0,0.1);
+        }
+        .bottom-nav__item {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 3px; padding: 8px 10px;
+            text-decoration: none; color: var(--muted);
+            border-radius: 16px; transition: all .25s;
+            position: relative; flex: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bottom-nav__item.active { color: var(--accent); }
+        .bottom-nav__item.active::before {
+            content: ''; position: absolute;
+            top: 6px; left: 50%; transform: translateX(-50%);
+            width: 36px; height: 36px;
+            background: var(--accent-glow);
+            border-radius: 12px; z-index: -1;
+        }
+        body.light-theme .bottom-nav__item.active::before { background: rgba(163,204,43,0.15); }
+        .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
+        .bottom-nav__label {
+            font-size: 0.58rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
         }
 
         /* ══════════════════════════
@@ -453,7 +488,7 @@
             border-color: rgba(255,77,109,0.4);
         }
 
-        /* ── STILE PER IL NUOVO BOTTONE SCARICA TONDO ── */
+        /* STILE TASTO SCARICA TONDO */
         .side-btn.download-btn { color: var(--accent3); } /* Azzurro */
         .side-btn.download-btn .side-btn__icon {
             background: rgba(96,180,240,0.15);
@@ -567,7 +602,6 @@
             transition: all .3s cubic-bezier(.22,1,.36,1);
             pointer-events: none; z-index: 99999;
             box-shadow: 0 8px 24px var(--shadow-color, rgba(200,240,96,0.2));
-            letter-spacing: -0.2px;
         }
         body.light-theme .toast { color: #fff; }
         .toast.show { opacity: 1; transform: translateY(0); }
@@ -583,47 +617,18 @@
            RESPONSIVE MOBILE (IL FEED FULLSCREEN)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. NASCONDI LA TOPNAV SU MOBILE (per non rubare spazio all'immagine) */
+            /* 1. NASCONDI LA TOPNAV SU MOBILE */
             .topnav { display: none !important; }
 
-            /* 2. MOSTRA LA BOTTOM NAV CON SFONDO NERO COMPLETO */
+            /* 2. MOSTRA LA BOTTOM NAV */
             .bottom-nav { 
                 display: block; 
-                position: fixed;
-                bottom: 0; left: 0; right: 0;
-                width: 100%; z-index: 10000;
-                /* Striscia nera nera (o bianca se tema chiaro) che copre tutto da bordo a bordo */
-                background: #000; 
-                border-top: 1px solid var(--border);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-            body.light-theme .bottom-nav {
-                background: #fff;
-                border-top: 1px solid var(--border2);
             }
 
-            .bottom-nav__inner {
-                background: transparent; 
-                border: none;
-                border-radius: 0;
-                display: flex; justify-content: space-around; align-items: center;
-                height: 68px; padding: 0 8px;
-                width: 100%;
-                max-width: 100%;
-            }
-
-            /* Assicura icone chiare su nero, o nere su bianco */
-            .bottom-nav__item {
-                color: rgba(255,255,255,0.6);
-            }
-            body.light-theme .bottom-nav__item {
-                color: rgba(0,0,0,0.6);
-            }
-            .bottom-nav__item.active { color: var(--accent); }
-
-            /* 3. IL FEED INIZIA DA CIMA E SI FERMA ESATTAMENTE PRIMA DELLA BOTTOM NAV */
+            /* 3. IL FEED OCCUPA IL 100% DELLA SCHERMATA E SI FERMA SOPRA LA BARRA */
             .feed-wrapper { 
                 margin-top: 0;
+                /* L'altezza calcola il 100% della view - l'altezza della navbar in basso - la safe area di iPhone */
                 height: calc(100dvh - 68px - env(safe-area-inset-bottom)); 
             }
             .card { 
@@ -631,19 +636,25 @@
                 padding: 0; 
             }
             .card__media-container {
-                width: 100%; max-width: 100%; border-radius: 0; max-height: 100%; aspect-ratio: auto; 
+                width: 100%; 
+                max-width: 100%;
+                border-radius: 0; 
+                max-height: 100%;
+                aspect-ratio: auto; 
             }
 
-            /* 4. ALZIAMO LA SIDEBAR E I PULSANTI PER FARLI RESPIRARE */
+            /* 4. SPOSTIAMO I TESTI IN ALTO PER NON COPRIRE LA BOTTOM NAV */
             .card__content { padding: 48px 16px 20px; } 
             
+            /* ALZIAMO LA SIDEBAR E AUMENTIAMO IL GAP TRA I PULSANTI */
             .card__sidebar { 
                 right: 12px; 
-                bottom: 120px; /* Molto più in alto per non stare incollati al testo o alla navbar */
-                gap: 22px; /* Più spazio tra un tasto rotondo e l'altro */
+                bottom: 24px; /* Posizione corretta essendo relativa alla card che si ferma prima della bottom-nav */
+                gap: 16px; 
             } 
             
-            .scroll-hint { bottom: 30px; } 
+            /* TOAST E SCROLL HINT (Rispetto allo schermo intero) */
+            .scroll-hint { bottom: 90px; } 
             .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; }
             
             .card-audio-btn { top: max(64px, calc(env(safe-area-inset-top) + 48px)); right: 16px; }
@@ -659,8 +670,10 @@
                 background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
             }
             
+            /* Nascondi i bottoni filtri larghi su mobile */
             .filter-bar { display: none; } 
             
+            /* MOSTRA LA SELECT TENDINA PER LE MATERIE SU MOBILE */
             .filter-select-mobile {
                 display: block; 
                 pointer-events: auto;
