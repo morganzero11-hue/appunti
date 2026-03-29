@@ -104,14 +104,8 @@
             align-items: center;
             gap: 16px;
         }
-        
-        .topnav__settings-mobile {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--text);
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
+
+        .topnav__settings-mobile { display: none; }
 
         .topnav__login {
             background: var(--accent); color: #0a0a0f;
@@ -132,18 +126,15 @@
             width: 100%; z-index: 10000;
             padding: 0 8px;
             padding-bottom: env(safe-area-inset-bottom);
-            pointer-events: none; /* Per permettere il click sul feed dietro gli angoli */
         }
         .bottom-nav__inner {
-            background: rgba(17,17,17,0.96);
+            background: rgba(17,17,24,0.96);
             backdrop-filter: blur(24px) saturate(200%);
             border: 1px solid var(--border2);
             border-radius: 24px 24px 0 0;
             display: flex; justify-content: space-around; align-items: center;
             height: 68px; padding: 0 8px;
-            pointer-events: auto; /* Riattiva i click sulla barra */
-            max-width: 600px; /* Centrata su PC */
-            margin: 0 auto;
+            max-width: 600px; margin: 0 auto;
         }
         body.light-theme .bottom-nav__inner {
             background: rgba(255,255,255,0.96);
@@ -198,7 +189,7 @@
         ══════════════════════════ */
         .top-bar {
             position: absolute; top: 0; left: 0; right: 0;
-            padding: max(20px, env(safe-area-inset-top)) 72px 16px 20px;
+            padding: 20px 72px 16px 20px;
             background: linear-gradient(to bottom, rgba(10,10,15,0.96) 0%, rgba(10,10,15,0) 100%);
             display: flex; align-items: center; gap: 14px;
             z-index: 100; pointer-events: none;
@@ -497,7 +488,7 @@
             border-color: rgba(255,77,109,0.4);
         }
 
-        /* ── STILE PER IL NUOVO BOTTONE SCARICA ── */
+        /* STILE TASTO SCARICA TONDO */
         .side-btn.download-btn { color: var(--accent3); } /* Azzurro */
         .side-btn.download-btn .side-btn__icon {
             background: rgba(96,180,240,0.15);
@@ -611,7 +602,6 @@
             transition: all .3s cubic-bezier(.22,1,.36,1);
             pointer-events: none; z-index: 99999;
             box-shadow: 0 8px 24px var(--shadow-color, rgba(200,240,96,0.2));
-            letter-spacing: -0.2px;
         }
         body.light-theme .toast { color: #fff; }
         .toast.show { opacity: 1; transform: translateY(0); }
@@ -627,44 +617,22 @@
            RESPONSIVE MOBILE (IL FEED FULLSCREEN)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. NASCONDI TOTALMENTE LA TOPNAV SU MOBILE */
+            /* 1. NASCONDI LA TOPNAV SU MOBILE */
             .topnav { display: none !important; }
 
-            /* 2. MOSTRA BOTTOM NAV TRASPARENTE */
+            /* 2. MOSTRA LA BOTTOM NAV */
             .bottom-nav { 
                 display: block; 
-                position: fixed;
-                bottom: 0; left: 0; right: 0;
-                width: 100%; z-index: 10000;
-                padding: 0 8px;
-                padding-bottom: env(safe-area-inset-bottom);
-                background: transparent; 
-                border: none;
             }
-            .bottom-nav__inner {
-                background: transparent !important; 
-                backdrop-filter: none;
-                border: none;
-                display: flex; justify-content: space-around; align-items: center;
-                height: 68px; padding: 0 8px;
-            }
-            .bottom-nav__item {
-                color: rgba(255,255,255,0.9);
-                text-shadow: 0 2px 6px rgba(0,0,0,0.8); 
-            }
-            body.light-theme .bottom-nav__item {
-                color: rgba(255,255,255,0.9); 
-                text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-            }
-            .bottom-nav__item.active { color: var(--accent); }
 
-            /* 3. IL FEED OCCUPA TUTTO LO SCHERMO (100dvh) */
+            /* 3. IL FEED OCCUPA IL 100% DELLA SCHERMATA E SI FERMA SOPRA LA BARRA */
             .feed-wrapper { 
                 margin-top: 0;
-                height: 100dvh; 
+                /* L'altezza calcola il 100% della view - l'altezza della navbar in basso - la safe area di iPhone */
+                height: calc(100dvh - 68px - env(safe-area-inset-bottom)); 
             }
             .card { 
-                height: 100dvh; 
+                height: calc(100dvh - 68px - env(safe-area-inset-bottom)); 
                 padding: 0; 
             }
             .card__media-container {
@@ -676,16 +644,17 @@
             }
 
             /* 4. SPOSTIAMO I TESTI IN ALTO PER NON COPRIRE LA BOTTOM NAV */
-            .card__content { padding: 48px 16px 85px; } 
+            .card__content { padding: 48px 16px 20px; } 
             
             /* ALZIAMO LA SIDEBAR E AUMENTIAMO IL GAP TRA I PULSANTI */
             .card__sidebar { 
                 right: 12px; 
-                bottom: 110px; /* Alzata per fare spazio alla navbar */
-                gap: 16px; /* Spazio aumentato per ospitare un tasto in più senza affollare */
+                bottom: 24px; /* Posizione corretta essendo relativa alla card che si ferma prima della bottom-nav */
+                gap: 16px; 
             } 
             
-            .scroll-hint { bottom: 95px; } 
+            /* TOAST E SCROLL HINT (Rispetto allo schermo intero) */
+            .scroll-hint { bottom: 90px; } 
             .toast { bottom: 90px; right: 16px; left: 16px; text-align: center; }
             
             .card-audio-btn { top: max(64px, calc(env(safe-area-inset-top) + 48px)); right: 16px; }
@@ -701,9 +670,10 @@
                 background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
             }
             
-            /* Sostituisci i bottoni materia con una tendina select per risparmiare spazio */
+            /* Nascondi i bottoni filtri larghi su mobile */
             .filter-bar { display: none; } 
             
+            /* MOSTRA LA SELECT TENDINA PER LE MATERIE SU MOBILE */
             .filter-select-mobile {
                 display: block; 
                 pointer-events: auto;
@@ -754,7 +724,6 @@
         <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
     <div class="topnav__actions">
-        <a href="impostazioni.html" class="topnav__settings-mobile" title="Impostazioni">⚙️</a>
         <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
     </div>
 </nav>
