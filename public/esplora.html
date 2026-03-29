@@ -15,14 +15,16 @@
             --surface2: #1a1a24;
             --surface3: #22222e;
             --border:   rgba(255,255,255,0.05);
-            --border2:  rgba(255,255,255,0.12);
+            --border2:  rgba(255,255,255,0.10); /* Allineato per coerenza globale */
             --text:     #f0ede8;
             --muted:    rgba(240,237,232,0.42);
             --accent:   #c8f060;
+            --accent-glow: rgba(200,240,96,0.15); /* Aggiunto per hover fx standard */
             --accent2:  #ff4d6d;
             --accent3:  #60b4f0;
-            --sidebar-w: 252px;
+            --nav-h:    64px;
             --radius:   16px;
+            --shadow-color: rgba(200,240,96,0.28);
         }
 
         /* ─── VARIABILI TEMA CHIARO ─── */
@@ -34,10 +36,12 @@
             --text: #1a1a1a; 
             --muted: rgba(0,0,0,0.55);
             --accent: #a3cc2b;
+            --accent-glow: rgba(163,204,43,0.15);
             --accent2: #e63950;
             --accent3: #4a9bd6;
             --border: rgba(0,0,0,0.08);
             --border2: rgba(0,0,0,0.15);
+            --shadow-color: rgba(163,204,43,0.3);
         }
 
         /* FIX PER LO SCROLL: Uso di dvh per le altezze reali su mobile */
@@ -46,124 +50,74 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             color: var(--text);
             display: flex;
+            flex-direction: column; /* Cambiato a column per il nuovo layout con topnav */
             transition: color 0.3s;
         }
 
-        /* ══════════════════════════
-           SIDEBAR NAV (PC)
-        ══════════════════════════ */
-        .sidenav {
-            position: fixed; top: 0; left: 0; bottom: 0;
-            width: var(--sidebar-w);
-            background: rgba(var(--bg-rgb, 14, 14, 20), 0.97);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border);
-            padding: 28px 16px 28px;
-            display: flex; flex-direction: column;
-            z-index: 1000;
-            transition: background-color 0.3s, border-color 0.3s;
+        /* ════════════════════════════
+           NAVBAR (DESKTOP) - STILE UNIFICATO
+        ════════════════════════════ */
+        .topnav {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+            background: rgba(10,10,15,0.88);
+            backdrop-filter: blur(20px) saturate(180%);
+            display: flex; align-items: center; padding: 0 36px; z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.3s;
         }
-        body.light-theme .sidenav { background: rgba(248, 249, 250, 0.97); }
+        body.light-theme .topnav { background: rgba(248,249,250,0.88); }
 
-        .sidenav__brand {
+        .topnav__brand {
             display: flex; align-items: center; gap: 10px;
-            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
+            font-family: 'Fraunces', serif;
+            font-size: 1.45rem; font-weight: 900;
             color: var(--accent); text-decoration: none;
-            padding: 8px 12px; margin-bottom: 32px;
-            letter-spacing: -0.4px;
+            margin-right: 36px; letter-spacing: -0.5px;
+        }
+        .brand-icon { font-size: 1.5rem; animation: gentleFloat 4s ease-in-out infinite; }
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50%      { transform: translateY(-4px) rotate(2deg); }
         }
 
-        .sidenav__logo {
-            position: relative; width: 28px; height: 28px;
+        .topnav__links {
+            list-style: none; display: flex; gap: 2px; flex: 1;
         }
-        .sidenav__logo span {
-            position: absolute; width: 14px; height: 14px; border-radius: 4px;
-        }
-        .sidenav__logo span:nth-child(1) { background: #c8f060; top: 0; left: 0; z-index: 3; }
-        .sidenav__logo span:nth-child(2) { background: #ff4d6d; top: 7px; left: 7px; z-index: 2; }
-        .sidenav__logo span:nth-child(3) { background: #60b4f0; top: 14px; left: 14px; z-index: 1; }
-
-        .sidenav__section-label {
-            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 2px; color: var(--muted);
-            padding: 0 12px; margin-bottom: 8px; margin-top: 4px;
-        }
-
-        .sidenav__links { list-style: none; display: flex; flex-direction: column; gap: 2px; flex: 1; }
-
-        .sidenav__links a {
+        .topnav__links a {
             color: var(--muted); text-decoration: none;
-            font-size: 0.92rem; font-weight: 700;
-            padding: 11px 14px; border-radius: 12px;
-            transition: all .2s; display: flex; align-items: center; gap: 11px;
-            letter-spacing: -0.1px;
+            font-size: 0.9rem; font-weight: 700;
+            padding: 7px 14px; border-radius: 10px; transition: all .2s;
+            display: block;
         }
-        .sidenav__links a:hover { background: var(--surface2); color: var(--text); }
-        .sidenav__links a.active { background: rgba(200,240,96,0.1); color: var(--accent); }
-        .sidenav__links a .nav-icon {
-            width: 32px; height: 32px; border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.95rem; flex-shrink: 0;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            transition: background .2s, border-color .2s;
-        }
-        body.light-theme .sidenav__links a .nav-icon { background: rgba(0,0,0,0.04); }
-        .sidenav__links a:hover .nav-icon { background: var(--surface3); }
-        .sidenav__links a.active .nav-icon {
-            background: rgba(200,240,96,0.12);
-            border-color: rgba(200,240,96,0.25);
-        }
+        .topnav__links a:hover { color: var(--text); background: var(--surface2); }
+        .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
+        body.light-theme .topnav__links a.active { background: rgba(163,204,43,0.15); }
 
-        .sidenav__divider {
-            height: 1px; background: var(--border);
-            margin: 12px 0;
-        }
-
-        .sidenav__login {
+        .nav__login {
             background: var(--accent); color: #0a0a0f;
-            padding: 12px 20px; border-radius: 12px;
-            text-decoration: none; font-weight: 800; font-size: 0.9rem;
-            text-align: center; transition: all .2s; margin-top: 16px;
-            letter-spacing: -0.2px;
-            display: flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 8px 22px; border-radius: 10px;
+            text-decoration: none; font-weight: 800;
+            font-size: 0.9rem; transition: all .2s; margin-left: auto;
         }
-        body.light-theme .sidenav__login { color: #fff; }
-        .sidenav__login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(200,240,96,0.28);
-        }
+        body.light-theme .nav__login { color: #fff; }
+        .nav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
 
         /* ════════════════════════════
-           BOTTOM NAV (SOLO SMARTPHONE)
+           BOTTOM NAV — MOBILE NASCOSTA SU PC
         ════════════════════════════ */
         .bottom-nav {
-            display: none; 
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: 64px;
-            background: rgba(10,10,15, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            z-index: 1000;
-            justify-content: space-around; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); 
+            display: none;
         }
-        body.light-theme .bottom-nav { background: rgba(248, 249, 250, 0.95); }
-        
-        .bottom-nav a {
-            color: var(--muted); text-decoration: none;
-            font-size: 1.4rem; padding: 10px; border-radius: 12px;
-            transition: all .2s; display: flex; align-items: center; justify-content: center;
-        }
-        .bottom-nav a.active { color: var(--accent); }
 
         /* ══════════════════════════
            FEED WRAPPER & SCROLL FIX
         ══════════════════════════ */
         .feed-wrapper {
-            margin-left: var(--sidebar-w);
-            flex: 1; height: 100dvh;
+            margin-top: var(--nav-h); /* Spinge il feed sotto la navbar */
+            flex: 1; 
+            height: calc(100dvh - var(--nav-h));
             position: relative;
+            background: var(--bg);
         }
 
         .feed {
@@ -177,7 +131,7 @@
         .feed::-webkit-scrollbar { display: none; }
 
         /* ══════════════════════════
-           TOP BAR
+           TOP BAR (FILTRI DENTRO IL FEED)
         ══════════════════════════ */
         .top-bar {
             position: absolute; top: 0; left: 0; right: 0;
@@ -256,7 +210,7 @@
            TOGGLE VISIBILITÀ
         ══════════════════════════ */
         .toggle-view-btn {
-            position: fixed; top: 20px; right: 20px;
+            position: fixed; top: calc(var(--nav-h) + 20px); right: 20px;
             background: rgba(14,14,20,0.8);
             backdrop-filter: blur(12px);
             color: var(--muted); border: 1px solid var(--border2);
@@ -291,13 +245,13 @@
         }
 
         /* ══════════════════════════
-           CARD (9:16 feed) - MODIFICATO PER FIX SCROLL
+           CARD (9:16 feed)
         ══════════════════════════ */
         .card {
             height: 100%; /* Si adatta al feed wrapper */
             width: 100%;
             scroll-snap-align: start;
-            scroll-snap-stop: always; /* Forza la fermata esatta su una card */
+            scroll-snap-stop: always;
             display: flex; justify-content: center; align-items: center;
             position: relative; overflow: hidden; 
             padding: 20px; /* Padding su PC */
@@ -319,7 +273,7 @@
 
         .card__media-container {
             position: relative; z-index: 1;
-            height: 100%; width: 100%; max-width: 500px; /* Larghezza massima per non schiacciare su PC */
+            height: 100%; width: 100%; max-width: 500px;
             max-height: 850px;
             aspect-ratio: 9 / 16;
             background: var(--surface);
@@ -362,7 +316,7 @@
         }
         .dot.active { background: #fff; width: 32px; }
 
-        /* Page indicator (retained for compat) */
+        /* Page indicator */
         .page-indicator {
             position: absolute; top: 82px; left: 16px;
             background: rgba(10,10,15,0.7);
@@ -448,7 +402,7 @@
         /* ── SIDEBAR BUTTONS ── */
         .card__sidebar {
             position: absolute;
-            right: 18px; /* Fissato a destra del contenitore */
+            right: 18px;
             bottom: 64px;
             display: flex; flex-direction: column;
             align-items: center; justify-content: flex-end;
@@ -602,7 +556,7 @@
         }
         .playlist-item:hover {
             border-color: var(--accent);
-            background: var(--accent-soft);
+            background: var(--accent-glow);
             transform: translateX(4px);
         }
         .playlist-item-title { font-weight: 800; font-size: 0.95rem; }
@@ -640,40 +594,80 @@
            RESPONSIVE (MOBILE FIXES)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. Nascondiamo la sidebar su PC, mostriamo la bottom-nav */
-            .sidenav { display: none; }
-            .bottom-nav { display: flex; }
+            /* 1. Nascondiamo la topnav su PC semplificata, mostriamo la bottom-nav */
+            .topnav { padding: 0 16px; justify-content: space-between; }
+            .topnav__links { display: none; }
+            .nav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
 
-            /* 2. Layout Fullscreen adattato per Mobile */
+            .bottom-nav { 
+                display: block; 
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                width: 100%; z-index: 10000;
+                padding: 0 8px;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            .bottom-nav__inner {
+                background: rgba(17,17,17,0.96);
+                backdrop-filter: blur(24px) saturate(200%);
+                border: 1px solid var(--border2);
+                border-radius: 24px 24px 0 0;
+                display: flex; justify-content: space-around; align-items: center;
+                height: 68px; padding: 0 8px;
+            }
+            body.light-theme .bottom-nav__inner {
+                background: rgba(255,255,255,0.96);
+                border-color: rgba(0,0,0,0.1);
+            }
+            .bottom-nav__item {
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                gap: 3px; padding: 8px 10px;
+                text-decoration: none; color: var(--muted);
+                border-radius: 16px; transition: all .25s;
+                position: relative; flex: 1;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .bottom-nav__item.active { color: var(--accent); }
+            .bottom-nav__item.active::before {
+                content: ''; position: absolute;
+                top: 6px; left: 50%; transform: translateX(-50%);
+                width: 36px; height: 36px;
+                background: var(--accent-glow);
+                border-radius: 12px; z-index: -1;
+            }
+            body.light-theme .bottom-nav__item.active::before { background: rgba(163,204,43,0.15); }
+            .bottom-nav__icon { font-size: 1.35rem; line-height: 1; }
+            .bottom-nav__label {
+                font-size: 0.58rem; font-weight: 800;
+                text-transform: uppercase; letter-spacing: 0.8px;
+            }
+
+            /* 2. Layout Fullscreen adattato per Mobile (Sottrai Topnav e Bottomnav) */
             .feed-wrapper { 
-                margin-left: 0; 
-                height: calc(100dvh - 64px); /* Ridotto esattamente dello spazio della bottom-nav */
+                margin-top: var(--nav-h);
+                height: calc(100dvh - var(--nav-h) - 68px); 
             }
             .card { 
-                height: calc(100dvh - 64px); /* Una card occupa esattamente lo spazio visibile */
-                padding: 0; /* Rimuove padding per far occupare all'immagine tutto lo schermo */
+                height: calc(100dvh - var(--nav-h) - 68px); 
+                padding: 0; 
             }
             
             /* 3. L'immagine/video occupa tutto lo schermo del telefono */
             .card__media-container {
                 width: 100%; 
-                max-width: 100%; /* Rimuove limite di 500px */
+                max-width: 100%;
                 border-radius: 0; 
-                max-height: 100%; /* Altezza intera */
-                aspect-ratio: auto; /* Adatta al telefono */
+                max-height: 100%;
+                aspect-ratio: auto; 
             }
 
             /* 4. Rialziamo gli elementi interattivi */
-            .card__content { 
-                padding: 48px 16px 20px; 
-            }
-            .card__sidebar { 
-                right: 12px; 
-                bottom: 24px; 
-            }
+            .card__content { padding: 48px 16px 20px; }
+            .card__sidebar { right: 12px; bottom: 24px; }
             
-            /* 5. Alziamo il pulsante UI-toggle e la scroll-hint */
-            .toggle-view-btn { top: 80px; right: 16px; width: 36px; height: 36px; }
+            /* 5. Abbassiamo il pulsante UI-toggle e la scroll-hint */
+            .toggle-view-btn { top: calc(var(--nav-h) + 16px); right: 16px; width: 36px; height: 36px; }
             .scroll-hint { bottom: 84px; }
             
             /* SPOSTIAMO IL TASTO AUDIO PIÙ IN BASSO */
@@ -693,65 +687,45 @@
 </head>
 <body class=""> 
 
-<nav class="sidenav">
-    <a href="index.html" class="sidenav__brand">
-        <div class="sidenav__logo">
-            <span></span><span></span><span></span>
-        </div>
+<nav class="topnav">
+    <a href="index.html" class="topnav__brand">
+        <span class="brand-icon">📚</span>
         Appunti
     </a>
-
-    <div class="sidenav__section-label">Navigazione</div>
-    <ul class="sidenav__links">
-        <li>
-            <a href="index.html">
-                <span class="nav-icon">🏠</span>
-                Home
-            </a>
-        </li>
-        <li>
-            <a href="esplora.html" class="active">
-                <span class="nav-icon">🧭</span>
-                Esplora
-            </a>
-        </li>
-        <li>
-            <a href="profilo.html">
-                <span class="nav-icon">👤</span>
-                Profilo
-            </a>
-        </li>
-        <li>
-            <a href="utenti.html">
-                <span class="nav-icon">🔍</span>
-                Utenti
-            </a>
-        </li>
-        <li>
-            <a href="podcast.html">
-                <span class="nav-icon">🎙️</span>
-                Podcast
-            </a>
-        </li>
-        <div class="sidenav__divider"></div>
-        <li>
-            <a href="impostazioni.html">
-                <span class="nav-icon">⚙️</span>
-                Impostazioni
-            </a>
-        </li>
+    <ul class="topnav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="esplora.html" class="active">Esplora</a></li>
+        <li><a href="profilo.html">Profilo</a></li>
+        <li><a href="podcast.html">Podcast</a></li>
+        <li><a href="utenti.html">Utenti</a></li>
+        <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-
-    <a href="login.html" class="sidenav__login" id="navLoginBtn">
-        Accedi →
-    </a>
+    <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
 </nav>
 
 <nav class="bottom-nav">
-    <a href="index.html"><span class="nav-icon">🏠</span></a>
-    <a href="esplora.html" class="active"><span class="nav-icon">🧭</span></a>
-    <a href="podcast.html"><span class="nav-icon">🎙️</span></a>
-    <a href="profilo.html"><span class="nav-icon">👤</span></a>
+    <div class="bottom-nav__inner">
+        <a href="index.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">🏠</span>
+            <span class="bottom-nav__label">Home</span>
+        </a>
+        <a href="esplora.html" class="bottom-nav__item active">
+            <span class="bottom-nav__icon">🧭</span>
+            <span class="bottom-nav__label">Esplora</span>
+        </a>
+        <a href="profilo.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">👤</span>
+            <span class="bottom-nav__label">Profilo</span>
+        </a>
+        <a href="podcast.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">🎙️</span>
+            <span class="bottom-nav__label">Podcast</span>
+        </a>
+        <a href="utenti.html" class="bottom-nav__item">
+            <span class="bottom-nav__icon">👥</span>
+            <span class="bottom-nav__label">Utenti</span>
+        </a>
+    </div>
 </nav>
 
 <div class="feed-wrapper">
