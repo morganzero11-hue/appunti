@@ -16,7 +16,7 @@
             --accent: #c8f060;
             --accent2: #ff4d6d;
             --accent-glow: rgba(200,240,96,0.15);
-            --nav-h: 64px; /* Adattato all'altezza delle altre navbar */
+            --nav-h: 64px;
             --radius: 18px;
             --border: rgba(255,255,255,0.05);
             --border2: rgba(255,255,255,0.10);
@@ -58,7 +58,7 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding-bottom: 90px; /* Spazio per la bottom nav */
+            padding-bottom: 90px;
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -106,14 +106,6 @@
             display: flex;
             align-items: center;
             gap: 16px;
-        }
-        
-        .topnav__settings-mobile {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--text);
-            text-decoration: none;
-            transition: transform 0.2s;
         }
         
         .topnav__login {
@@ -501,7 +493,6 @@
             .topnav { padding: 0 16px; justify-content: space-between; height: var(--nav-h); }
             .topnav__links { display: none; }
             .topnav__actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-            .topnav__settings-mobile { display: flex; align-items: center; justify-content: center; }
             .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
 
             /* ── HERO MOBILE ── */
@@ -687,7 +678,6 @@
             <li><a href="impostazioni.html">Impostazioni</a></li>
         </ul>
         <div class="topnav__actions">
-            <a href="impostazioni.html" class="topnav__settings-mobile" title="Impostazioni">⚙️</a>
             <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
         </div>
     </nav>
