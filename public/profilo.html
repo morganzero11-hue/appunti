@@ -96,10 +96,25 @@
         .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
         body.light-theme .topnav__links a.active { background: rgba(163,204,43,0.15); }
         
+        .topnav__actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .topnav__settings-mobile {
+            display: none; /* Nascosto su PC */
+            font-size: 1.5rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        
         .topnav__login {
             background: var(--accent); color: #0a0a0f; padding: 8px 22px;
             border-radius: 10px; text-decoration: none; font-weight: 800;
-            font-size: 0.9rem; transition: all .2s; margin-left: auto; letter-spacing: -0.2px;
+            font-size: 0.9rem; transition: all .2s; letter-spacing: -0.2px;
         }
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
@@ -592,7 +607,7 @@
            RESPONSIVE (SMARTPHONE)
         ══════════════════════════ */
         @media (max-width: 768px) {
-            /* 1. Navbar superiore limitata a Logo e Login */
+            /* 1. Navbar superiore limitata a Logo, Impostazioni e Login */
             .topnav { 
                 height: auto; 
                 padding: 12px 16px; 
@@ -600,6 +615,11 @@
             }
             .topnav__links { display: none; }
             .topnav__brand { margin-right: 0; }
+            .topnav__actions { gap: 12px; margin-left: auto; }
+            
+            /* Mostra il bottone impostazioni da mobile */
+            .topnav__settings-mobile { display: flex; align-items: center; justify-content: center; }
+            
             .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
 
             /* 2. Mostra la Bottom Nav */
@@ -709,7 +729,11 @@
         <li><a href="podcast.html">Podcast</a></li>
         <li><a href="impostazioni.html">Impostazioni</a></li>
     </ul>
-    <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+    
+    <div class="topnav__actions">
+        <a href="impostazioni.html" class="topnav__settings-mobile" title="Impostazioni">⚙️</a>
+        <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+    </div>
 </nav>
 
 <nav class="bottom-nav">
