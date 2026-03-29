@@ -130,7 +130,7 @@
         .bottom-nav__item {
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            gap: 3px; padding: 8px 20px;
+            gap: 3px; padding: 8px 10px;
             text-decoration: none; color: var(--muted);
             border-radius: 16px; transition: all .25s;
             position: relative; flex: 1;
@@ -739,7 +739,6 @@
 </head>
 <body>
 
-    <!-- TOPNAV -->
     <nav class="topnav">
         <a href="index.html" class="topnav__brand">
             <span class="brand-icon">📚</span>
@@ -749,14 +748,13 @@
             <li><a href="index.html" class="active">Home</a></li>
             <li><a href="esplora.html">Esplora</a></li>
             <li><a href="profilo.html">Profilo</a></li>
-            <li><a href="utenti.html">Utenti</a></li>
             <li><a href="podcast.html">Podcast</a></li>
+            <li><a href="utenti.html">Utenti</a></li>
             <li><a href="impostazioni.html">Impostazioni</a></li>
         </ul>
         <a href="login.html" class="nav__login" id="navLoginBtn">Accedi</a>
     </nav>
 
-    <!-- BOTTOM NAV MOBILE -->
     <nav class="bottom-nav">
         <div class="bottom-nav__inner">
             <a href="index.html" class="bottom-nav__item active">
@@ -767,21 +765,23 @@
                 <span class="bottom-nav__icon">🧭</span>
                 <span class="bottom-nav__label">Esplora</span>
             </a>
-            <a href="podcast.html" class="bottom-nav__item">
-                <span class="bottom-nav__icon">🎙️</span>
-                <span class="bottom-nav__label">Podcast</span>
-            </a>
             <a href="profilo.html" class="bottom-nav__item">
                 <span class="bottom-nav__icon">👤</span>
                 <span class="bottom-nav__label">Profilo</span>
             </a>
+            <a href="podcast.html" class="bottom-nav__item">
+                <span class="bottom-nav__icon">🎙️</span>
+                <span class="bottom-nav__label">Podcast</span>
+            </a>
+            <a href="utenti.html" class="bottom-nav__item">
+                <span class="bottom-nav__icon">👥</span>
+                <span class="bottom-nav__label">Utenti</span>
+            </a>
         </div>
     </nav>
 
-    <!-- FAB — carica appunti -->
     <button class="fab" title="Carica appunti">＋</button>
 
-    <!-- HERO -->
     <header class="hero">
         <div class="hero__bg">
             <div class="blob blob--1"></div>
@@ -829,7 +829,6 @@
         </div>
     </header>
 
-    <!-- FEATURE STRIP -->
     <div class="feature-strip">
         <div class="feature-strip__grid">
             <div class="feature-card feature-card--green">
@@ -858,7 +857,6 @@
 
     <hr class="section-divider">
 
-    <!-- MAIN CONTENT -->
     <main class="main-content" id="mainContent">
 
         <div class="section-header">
