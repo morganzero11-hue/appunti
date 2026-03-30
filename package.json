@@ -19,7 +19,9 @@
   "homepage": "https://github.com/morganzero11-hue/appunti#readme",
   "dependencies": {
     "@vercel/blob": "^2.3.1",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.3.1",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "vercel": "^50.32.5"
   }
