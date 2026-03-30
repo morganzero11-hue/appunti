@@ -965,19 +965,33 @@
                     fetch('/api/appunti?limit=9'),
                     fetch('/api/likes?top=6')
                 ]);
+                
+                // Gestione Ultimi Appunti
+                const homeGrid = document.getElementById('homeNotesGrid');
                 if (resU.ok) {
                     const ultimi = await resU.json();
-                    document.getElementById('homeNotesGrid').innerHTML = ultimi.length
+                    homeGrid.innerHTML = ultimi.length
                         ? ultimi.map(n => creaCardHTML(n)).join('')
                         : '<div class="notes-empty">Nessun appunto trovato.</div>';
+                } else {
+                    homeGrid.innerHTML = '<div class="notes-empty" style="color:#ff4d6d">Errore nel caricamento degli appunti.</div>';
                 }
+
+                // Gestione Classifica
+                const topGrid = document.getElementById('topNotesGrid');
                 if (resT.ok) {
                     const top = await resT.json();
-                    document.getElementById('topNotesGrid').innerHTML = top.length
+                    topGrid.innerHTML = top.length
                         ? top.map((n,i) => creaCardHTML(n, i+1)).join('')
                         : '<div class="notes-empty">Nessun appunto trovato.</div>';
+                } else {
+                    topGrid.innerHTML = '<div class="notes-empty" style="color:#ff4d6d">Errore server: impossibile caricare la classifica.</div>';
                 }
-            } catch(e) { console.error("Errore griglie:", e); }
+            } catch(e) { 
+                console.error("Errore griglie:", e); 
+                document.getElementById('homeNotesGrid').innerHTML = '<div class="notes-empty">Errore di connessione.</div>';
+                document.getElementById('topNotesGrid').innerHTML = '<div class="notes-empty">Errore di connessione.</div>';
+            }
         }
 
         async function caricaStatistiche() {
@@ -998,17 +1012,26 @@
         async function filtraPerMateria(materia) {
             const grid  = document.getElementById('homeNotesGrid');
             const title = document.getElementById('homeSectionTitle');
+            
             title.innerHTML = `${materia} <button onclick="resetFiltro()" style="background:none;border:1px solid var(--accent);color:var(--accent);padding:2px 10px;border-radius:6px;cursor:pointer;font-size:0.72rem;margin-left:12px;font-family:inherit;font-weight:800;">✕</button>`;
             grid.innerHTML = '<div class="notes-empty">Filtrando…</div>';
+            
             try {
                 const res  = await fetch('/api/appunti');
+                if(!res.ok) throw new Error("Errore API");
+                
                 const data = await res.json();
                 const filtered = data.filter(n => n.materia === materia);
+                
                 grid.innerHTML = filtered.length
                     ? filtered.map(n => creaCardHTML(n)).join('')
                     : '<div class="notes-empty">Nessun appunto per questa materia.</div>';
+                
                 document.getElementById('mainContent').scrollIntoView({ behavior:'smooth' });
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error(e); 
+                grid.innerHTML = '<div class="notes-empty" style="color:#ff4d6d">Errore durante il filtro.</div>';
+            }
         }
 
         function resetFiltro() {
@@ -1022,6 +1045,7 @@
             caricaHome();
             caricaStatistiche();
             autoScroll();
+            
             if (document.cookie.includes('username=')) {
                 const n = document.getElementById('navLoginBtn');
                 const h = document.getElementById('heroLoginBtn');
