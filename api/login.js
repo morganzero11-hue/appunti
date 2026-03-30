@@ -1,18 +1,11 @@
 const { Pool } = require('pg');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt'); // Libreria sicura per leggere l'hash
+const jwt = require('jsonwebtoken'); // Libreria per i Token di sicurezza
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: true }
 });
-
-/**
- * IMPORTANTE: Questa funzione deve essere IDENTICA a quella 
- * usata nel file register.js, altrimenti gli hash non coincideranno mai.
- */
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
 
 module.exports = async (req, res) => {
   // 1. Accettiamo solo richieste POST
@@ -28,36 +21,47 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // 3. Trasformiamo la password inserita dall'utente nello stesso hash salvato nel DB
-    const passwordHashata = hashPassword(password);
-
-    // 4. Cerchiamo l'utente nel database (usiamo username minuscolo per coerenza)
+    // 3. Cerchiamo l'utente nel database
+    // NOVITÀ: Estraiamo la "password" (l'hash salvato nel DB) e la "foto_profilo_url"
     const result = await pool.query(
-      'SELECT id, username FROM utenti WHERE username = $1 AND password = $2',
-      [username.toLowerCase().trim(), passwordHashata]
+      'SELECT id, username, password, foto_profilo_url FROM utenti WHERE username = $1',
+      [username.toLowerCase().trim()]
     );
 
-    // 5. Verifica del risultato
-    if (result.rows.length > 0) {
-      const utente = result.rows[0];
+    // 4. Se l'utente non esiste, fermiamo tutto
+    if (result.rows.length === 0) {
+      return res.status(401).json({ success: false, message: 'Username o password errati' });
+    }
 
-      // Impostiamo i cookie per il browser
-      // Nota: Ho aggiunto "SameSite=Lax" per compatibilità moderna
+    const utente = result.rows[0];
+
+    // 5. NOVITÀ: Confrontiamo la password scritta dall'utente con l'hash salvato nel DB
+    const passwordCorretta = await bcrypt.compare(password, utente.password);
+
+    if (passwordCorretta) {
+      
+      // 6. NOVITÀ: Creiamo un Token JWT sicuro
+      // NOTA: Aggiungi JWT_SECRET nelle variabili d'ambiente del tuo server/Vercel
+      const secret = process.env.JWT_SECRET || 'chiave_segreta_temporanea_da_cambiare_subito';
+      const token = jwt.sign({ utente_id: utente.id, username: utente.username }, secret, { expiresIn: '7d' });
+
+      // 7. Impostiamo i cookie
+      // Il cookie "token" è impostato su HttpOnly: significa che JavaScript non può leggerlo
+      // (nessun hacker può rubarlo), ma il browser lo invierà in automatico ad ogni richiesta API.
       res.setHeader('Set-Cookie', [
-        `utente_id=${utente.id}; Path=/; SameSite=Lax`,
-        `username=${utente.username}; Path=/; SameSite=Lax`
+        `token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`,
+        `utente_id=${utente.id}; Path=/; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`,
+        `username=${utente.username}; Path=/; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`
       ]);
 
       return res.status(200).json({ 
         success: true, 
-        message: 'Login effettuato con successo' 
+        message: 'Login effettuato con successo',
+        foto_profilo_url: utente.foto_profilo_url // NOVITÀ: Utile per il tuo frontend!
       });
     } else {
-      // Se non trova corrispondenza, le credenziali sono sbagliate
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Username o password errati' 
-      });
+      // Password sbagliata
+      return res.status(401).json({ success: false, message: 'Username o password errati' });
     }
 
   } catch (err) {

@@ -1,19 +1,34 @@
 const { Pool } = require('pg');
+const jwt = require('jsonwebtoken'); // Aggiunta la libreria per l'autenticazione sicura
 
 const pool = new Pool({ 
     connectionString: process.env.DATABASE_URL, 
     ssl: true 
 });
 
+// Funzione di supporto per leggere il Token in modo sicuro
+function getUtenteAutenticato(req) {
+    const cookieHeader = req.headers.cookie || '';
+    const tokenMatch = cookieHeader.match(/token=([^;]+)/);
+    
+    if (!tokenMatch) return null;
+
+    try {
+        const secret = process.env.JWT_SECRET || 'chiave_segreta_temporanea_da_cambiare_subito';
+        return jwt.verify(tokenMatch[1], secret);
+    } catch (err) {
+        return null;
+    }
+}
+
 export default async function handler(req, res) {
     
     // ==========================================
-    // 1. RICHIESTE GET (Lettura)
+    // 1. RICHIESTE GET (Lettura - Pubblico)
     // ==========================================
     if (req.method === 'GET') {
         
         // 🏆 CASO A: Classifica Top Appunti (Home Page)
-        // MANTENUTO DAL TUO CODICE ORIGINALE
         if (req.query.top) {
             try {
                 const limit = parseInt(req.query.top) || 6;
@@ -39,7 +54,6 @@ export default async function handler(req, res) {
         }
 
         // 📊 CASO B: Contare i like RICEVUTI da un utente (Profilo Statistiche)
-        // AGGIORNATO per contare sia i like agli appunti che ai podcast
         if (req.query.autore_id) {
             try {
                 const query = `
@@ -57,7 +71,6 @@ export default async function handler(req, res) {
         }
 
         // ❤️ CASO C: Recuperare la lista dei SALVATI (Profilo -> Tab Salvati)
-        // AGGIORNATO: Ora restituisce { appunti: [...], podcast: [...] } separatamente
         const { utente_id } = req.query;
         if (utente_id) {
             try {
@@ -96,22 +109,30 @@ export default async function handler(req, res) {
     }
 
     // ==========================================
-    // 2. METTI O TOGLI IL MI PIACE (POST)
+    // 2. METTI O TOGLI IL MI PIACE (POST - Protetto)
     // ==========================================
     if (req.method === 'POST') {
+        // 1. Verifichiamo chi sta facendo la richiesta in modo sicuro
+        const utente = getUtenteAutenticato(req);
+        if (!utente) {
+            return res.status(401).json({ error: "Devi effettuare l'accesso per aggiungere ai salvati." });
+        }
+
+        // 2. Ignoriamo l'utente_id passato nel body e usiamo quello del Token crittografato
+        const utente_id_sicuro = utente.utente_id;
+        
         // Accetta sia 'appunto_id' (vecchio frontend) che 'elemento_id' (nuovo frontend podcast)
         const targetId = req.body.appunto_id || req.body.elemento_id;
-        const utente_id = req.body.utente_id;
         const tipo = req.body.tipo || 'appunto';
 
-        if (!utente_id || !targetId) {
-            return res.status(400).json({ error: "Mancano utente_id o ID elemento" });
+        if (!targetId) {
+            return res.status(400).json({ error: "Manca l'ID dell'elemento" });
         }
 
         try {
             const checkQuery = await pool.query(
                 'SELECT id FROM likes WHERE utente_id = $1 AND appunto_id = $2 AND tipo = $3',
-                [utente_id, targetId, tipo]
+                [utente_id_sicuro, targetId, tipo]
             );
 
             if (checkQuery.rows.length > 0) {
@@ -120,7 +141,7 @@ export default async function handler(req, res) {
                 return res.status(200).json({ success: true, action: 'unliked' });
             } else {
                 // Se non esiste, lo AGGIUNGE (Cuore pieno)
-                await pool.query('INSERT INTO likes (utente_id, appunto_id, tipo) VALUES ($1, $2, $3)', [utente_id, targetId, tipo]);
+                await pool.query('INSERT INTO likes (utente_id, appunto_id, tipo) VALUES ($1, $2, $3)', [utente_id_sicuro, targetId, tipo]);
                 return res.status(200).json({ success: true, action: 'liked' });
             }
         } catch (err) {

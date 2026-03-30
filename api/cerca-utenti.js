@@ -17,13 +17,20 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // ==========================================
+    // SICUREZZA: Prevenzione Fuga di Dati (Data Leak)
+    // Ho rimosso la colonna "email". Ora la ricerca restituisce 
+    // solo i dati strettamente pubblici.
+    // Ho aggiunto "id" perché solitamente serve al frontend per 
+    // reindirizzare al profilo corretto cliccando sul risultato.
+    // ==========================================
     const result = await pool.query(
       `SELECT
+         id,
          username,
          nome,
          cognome,
-         foto_profilo_url,
-         email
+         foto_profilo_url
        FROM utenti
        WHERE
          username ILIKE $1 OR

@@ -1,8 +1,25 @@
 const { Pool } = require('pg');
+const jwt = require('jsonwebtoken'); // Aggiunto per l'autenticazione sicura
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true });
 
+// Funzione di supporto per leggere il Token in modo sicuro
+function getUtenteAutenticato(req) {
+    const cookieHeader = req.headers.cookie || '';
+    const tokenMatch = cookieHeader.match(/token=([^;]+)/);
+    
+    if (!tokenMatch) return null;
+
+    try {
+        const secret = process.env.JWT_SECRET || 'chiave_segreta_temporanea_da_cambiare_subito';
+        return jwt.verify(tokenMatch[1], secret);
+    } catch (err) {
+        return null;
+    }
+}
+
 export default async function handler(req, res) {
-    // ─── GET: RECUPERA CONTEGGI, STATO o ELENCO AMICI ───
+    // ─── GET: RECUPERA CONTEGGI, STATO o ELENCO AMICI (Pubblico) ───
     if (req.method === 'GET') {
         const { utente_id, target_id, check_status, elenco_seguiti } = req.query;
 
@@ -47,31 +64,39 @@ export default async function handler(req, res) {
         }
     }
 
-    // ─── POST: METTI O TOGLI IL "SEGUI" ───
+    // ─── POST: METTI O TOGLI IL "SEGUI" (Protetto) ───
     if (req.method === 'POST') {
-        const { follower_id, seguito_id } = req.body;
+        // 1. Verifichiamo in modo sicuro chi sta facendo la richiesta
+        const utente = getUtenteAutenticato(req);
+        if (!utente) {
+            return res.status(401).json({ error: "Devi effettuare l'accesso per seguire un utente." });
+        }
+
+        // 2. Usiamo l'ID autenticato ignorando qualsiasi follower_id finto passato nel body
+        const follower_id_sicuro = utente.utente_id;
+        const { seguito_id } = req.body; // Ci interessa solo sapere CHI vuole seguire
         
-        if (!follower_id || !seguito_id) return res.status(400).json({ error: "Dati mancanti" });
-        if (follower_id.toString() === seguito_id.toString()) return res.status(400).json({ error: "Non puoi seguire te stesso" });
+        if (!seguito_id) return res.status(400).json({ error: "Manca l'ID dell'utente da seguire" });
+        if (follower_id_sicuro.toString() === seguito_id.toString()) return res.status(400).json({ error: "Non puoi seguire te stesso" });
 
         try {
             const check = await pool.query(
                 'SELECT * FROM followers WHERE follower_id::text = $1 AND seguito_id::text = $2', 
-                [follower_id.toString(), seguito_id.toString()]
+                [follower_id_sicuro.toString(), seguito_id.toString()]
             );
             
             if (check.rows.length > 0) {
                 // Se lo segui già -> Unfollow
                 await pool.query(
                     'DELETE FROM followers WHERE follower_id::text = $1 AND seguito_id::text = $2', 
-                    [follower_id.toString(), seguito_id.toString()]
+                    [follower_id_sicuro.toString(), seguito_id.toString()]
                 );
                 return res.status(200).json({ action: 'unfollowed' });
             } else {
                 // Se non lo segui -> Follow
                 await pool.query(
                     'INSERT INTO followers (follower_id, seguito_id) VALUES ($1, $2)', 
-                    [follower_id, seguito_id]
+                    [follower_id_sicuro, seguito_id]
                 );
                 return res.status(201).json({ action: 'followed' });
             }
