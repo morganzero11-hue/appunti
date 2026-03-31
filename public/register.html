@@ -9,29 +9,29 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            /* TEMA SCURO (DEFAULT) */
-            --bg:      #0a0a0a;
-            --surface: #111111;
-            --border:  rgba(255,255,255,0.08);
-            --border2: rgba(255,255,255,0.14);
-            --text:    #f2f0ec;
-            --muted:   rgba(242,240,236,0.4);
-            --accent:  #f0c040;
-            --accent2: #d4522a;
-            --btn-text: #0a0a0a;
+            /* TEMA SCURO (NUOVO) */
+            --bg:       #0a0a0f;
+            --surface:  #111118;
+            --border:   rgba(255,255,255,0.05);
+            --border2:  rgba(255,255,255,0.11);
+            --text:     #f0ede8;
+            --muted:    rgba(240,237,232,0.42);
+            --accent:   #c8f060;
+            --accent2:  #ff4d6d;
+            --btn-text: #0a0a0f;
         }
 
-        /* ─── VARIABILI TEMA CHIARO ─── */
+        /* ─── VARIABILI TEMA CHIARO (NUOVO) ─── */
         body.light-theme {
-            --bg:      #f8f9fa;
-            --surface: #ffffff;
-            --border:  rgba(0,0,0,0.08);
-            --border2: rgba(0,0,0,0.14);
-            --text:    #1a1a1a;
-            --muted:   rgba(0,0,0,0.55);
-            --accent:  #f0c040; 
-            --accent2: #d4522a;
-            --btn-text: #0a0a0a;
+            --bg:       #f8f9fa; 
+            --surface:  #ffffff; 
+            --border:   rgba(0,0,0,0.08);
+            --border2:  rgba(0,0,0,0.15);
+            --text:     #1a1a1a; 
+            --muted:    rgba(0,0,0,0.55);
+            --accent:   #a3cc2b;
+            --accent2:  #e63950;
+            --btn-text: #0a0a0f;
         }
 
         html, body { 
@@ -47,8 +47,8 @@
         .bg::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px); background-size: 26px 26px; }
         body.light-theme .bg::before { background-image: radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px); }
         
-        .bg__glow1 { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(212,82,42,0.15) 0%, transparent 65%); bottom: -280px; left: -180px; pointer-events: none;}
-        .bg__glow2 { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(240,192,64,0.10) 0%, transparent 65%); top: -160px; right: -100px; pointer-events: none;}
+        .bg__glow1 { position: absolute; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(255,77,109,0.15) 0%, transparent 65%); bottom: -280px; left: -180px; pointer-events: none;}
+        .bg__glow2 { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(200,240,96,0.10) 0%, transparent 65%); top: -160px; right: -100px; pointer-events: none;}
         .bg__stripes { position: absolute; inset: 0; background-image: repeating-linear-gradient(-55deg, transparent, transparent 60px, rgba(255,255,255,0.012) 60px, rgba(255,255,255,0.012) 61px); }
         body.light-theme .bg__stripes { background-image: repeating-linear-gradient(-55deg, transparent, transparent 60px, rgba(0,0,0,0.015) 60px, rgba(0,0,0,0.015) 61px); }
 
@@ -78,8 +78,8 @@
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-        .step__num { width: 28px; height: 28px; border-radius: 8px; background: rgba(240,192,64,0.12); border: 1px solid rgba(240,192,64,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 0.85rem; font-weight: 900; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
-        body.light-theme .step__num { background: rgba(240,192,64,0.2); }
+        .step__num { width: 28px; height: 28px; border-radius: 8px; background: rgba(200,240,96,0.12); border: 1px solid rgba(200,240,96,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 0.85rem; font-weight: 900; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+        body.light-theme .step__num { background: rgba(163,204,43,0.2); border-color: rgba(163,204,43,0.3); color: var(--accent); }
         .step__text { font-size: 0.85rem; font-weight: 700; color: var(--muted); line-height: 1.5; }
 
         /* DIVIDER */
@@ -124,7 +124,8 @@
 
         body.light-theme .field__input { background: rgba(0,0,0,0.02); }
         .field__input::placeholder { color: var(--muted); font-weight: 400; opacity: 0.6;}
-        .field__input:focus { border-color: var(--accent); background: rgba(240,192,64,0.05); box-shadow: 0 0 0 3px rgba(240,192,64,0.1); }
+        .field__input:focus { border-color: var(--accent); background: rgba(200,240,96,0.05); box-shadow: 0 0 0 3px rgba(200,240,96,0.1); }
+        body.light-theme .field__input:focus { background: rgba(163,204,43,0.05); box-shadow: 0 0 0 3px rgba(163,204,43,0.1); }
 
         /* password toggle */
         .field__toggle { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 0.95rem; transition: color .2s; padding: 2px; }
@@ -142,7 +143,7 @@
         .terms-row input { display: none; }
         .terms-box { width: 17px; height: 17px; border: 1.5px solid var(--border2); border-radius: 4px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s; flex-shrink: 0; cursor: pointer; margin-top: 1px; }
         body.light-theme .terms-box { background: rgba(0,0,0,0.02); }
-        .terms-box .check { display: none; color: #0a0a0a; font-size: 0.65rem; font-weight: 900; }
+        .terms-box .check { display: none; color: var(--btn-text); font-size: 0.65rem; font-weight: 900; }
         #termsCb:checked + .terms-box { background: var(--accent); border-color: var(--accent); }
         #termsCb:checked + .terms-box .check { display: block; }
         .terms-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); line-height: 1.5; }
@@ -157,7 +158,8 @@
             margin-top: 4px; position: relative; overflow: hidden; 
         }
         .btn-submit::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent); pointer-events: none; }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(240,192,64,0.3); }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,240,96,0.3); }
+        body.light-theme .btn-submit:hover { box-shadow: 0 8px 28px rgba(163,204,43,0.3); }
         .btn-submit:active { transform: translateY(0); }
         .btn-submit.loading { pointer-events: none; opacity: 0.7; }
         .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -188,14 +190,13 @@
         .messaggio.show { display: block; opacity: 1; transform: translateY(0); }
         .messaggio.success { background: rgba(42,125,79,0.15); border: 1px solid rgba(42,125,79,0.3); color: #6ee7a0; }
         body.light-theme .messaggio.success { color: #21834b; }
-        .messaggio.error { background: rgba(212,82,42,0.15); border: 1px solid rgba(212,82,42,0.3); color: #f4a07a; }
-        body.light-theme .messaggio.error { color: #d4522a; }
+        .messaggio.error { background: rgba(255,77,109,0.15); border: 1px solid rgba(255,77,109,0.3); color: #ff4d6d; }
+        body.light-theme .messaggio.error { color: #e63950; }
 
         /* field error */
-        .field__error { font-size: 0.7rem; color: #f4a07a; font-weight: 700; margin-top: 3px; display: none; }
-        body.light-theme .field__error { color: #d4522a; }
+        .field__error { font-size: 0.7rem; color: var(--accent2); font-weight: 700; margin-top: 3px; display: none; }
         .field__error.show { display: block; }
-        .field__input.invalid { border-color: rgba(212,82,42,0.6); }
+        .field__input.invalid { border-color: rgba(255,77,109,0.6); }
 
         /* ─── MOBILE LOGO (ONLY SHOWS ON PHONE) ─── */
         .mobile-brand {
@@ -429,7 +430,7 @@
             { w:'0%',   c:'transparent',      t:'Inserisci una password' },
             { w:'25%',  c:'#ef4444',           t:'Debole' },
             { w:'50%',  c:'#f97316',           t:'Discreta' },
-            { w:'75%',  c:'#f0c040',           t:'Buona' },
+            { w:'75%',  c:'#c8f060',           t:'Buona' },
             { w:'100%', c:'#22c55e',           t:'Ottima' },
         ];
 
@@ -471,7 +472,7 @@
 
         if (errore('username', !/^[a-zA-Z0-9_]{3,30}$/.test(username))) ok = false;
         if (errore('email',   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) ok = false;
-        if (errore('livello', !livello)) ok = false; // Validazione del nuovo campo
+        if (errore('livello', !livello)) ok = false; 
         if (errore('password', !pwdRegex.test(pw))) ok = false; 
         if (errore('conferma', pw !== pw2))    ok = false;
         if (errore('terms',   !terms))         ok = false;
@@ -488,7 +489,6 @@
         btn.textContent = 'Creazione account…';
         btn.classList.add('loading');
 
-        // AGGIUNTO IL LIVELLO NEL PAYLOAD
         const payload = {
             username: document.getElementById('username').value.trim(),
             email:    document.getElementById('email').value.trim(),
@@ -524,7 +524,6 @@
         mostraMsg('🔗 Registrazione con ' + provider + ' — funzione in arrivo!', 'error');
     }
 
-    /* Rimuovi errori al cambio valore */
     ['username','email','livello','password','confermaPassword'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', () => { errore(id, false); nascondiMsg(); });
