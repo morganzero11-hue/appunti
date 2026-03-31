@@ -25,6 +25,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         const { utente_id } = req.query;
         try {
+            // "p.*" estrarrà automaticamente anche la colonna "livello"
             let query = `
                 SELECT p.*, u.username, u.foto_profilo_url 
                 FROM podcast p 
@@ -56,8 +57,8 @@ export default async function handler(req, res) {
             return res.status(401).json({ error: "Devi effettuare l'accesso per caricare un podcast." });
         }
 
-        // 2. Estraiamo i dati, MA ignoriamo utente_id dal body. Usiamo quello sicuro del Token.
-        const { titolo, descrizione, categoria, scuola, fonti, audio_url, cover_url } = req.body;
+        // 2. Estraiamo i dati (aggiunto "livello")
+        const { titolo, descrizione, categoria, livello, scuola, fonti, audio_url, cover_url } = req.body;
         const utente_id_sicuro = utente.utente_id; 
         
         if (!titolo || !audio_url) {
@@ -65,13 +66,15 @@ export default async function handler(req, res) {
         }
 
         try {
+            // 3. Inseriamo "livello" nella query SQL
             await pool.query(
-                'INSERT INTO podcast (utente_id, titolo, descrizione, categoria, scuola, fonti, audio_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
+                'INSERT INTO podcast (utente_id, titolo, descrizione, categoria, livello, scuola, fonti, audio_url, cover_url, data_caricamento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())',
                 [
-                    utente_id_sicuro, // Usiamo l'ID estratto dal token!
+                    utente_id_sicuro, 
                     titolo, 
                     descrizione || null, 
                     categoria || 'Generale', 
+                    livello || null, // Aggiunto il livello qui
                     scuola || null,  
                     fonti || null,    
                     audio_url, 

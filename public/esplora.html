@@ -21,7 +21,7 @@
             --accent:   #c8f060;
             --accent-glow: rgba(200,240,96,0.15);
             --accent2:  #ff4d6d;
-            --accent3:  #60b4f0; /* Azzurro per il download */
+            --accent3:  #60b4f0; 
             --nav-h:    64px;
             --radius:   16px;
             --shadow-color: rgba(200,240,96,0.28);
@@ -132,7 +132,7 @@
             width: 100%; z-index: 10000;
             padding: 0 8px;
             padding-bottom: env(safe-area-inset-bottom);
-            pointer-events: none; /* Per permettere il click sul feed dietro gli angoli */
+            pointer-events: none; 
         }
         .bottom-nav__inner {
             background: rgba(17,17,17,0.96);
@@ -141,8 +141,8 @@
             border-radius: 24px 24px 0 0;
             display: flex; justify-content: space-around; align-items: center;
             height: 68px; padding: 0 8px;
-            pointer-events: auto; /* Riattiva i click sulla barra */
-            max-width: 600px; /* Centrata su PC */
+            pointer-events: auto; 
+            max-width: 600px; 
             margin: 0 auto;
         }
         body.light-theme .bottom-nav__inner {
@@ -214,8 +214,6 @@
         }
         .filter-bar::-webkit-scrollbar { display: none; }
 
-        .filter-select-mobile { display: none; } /* Nascosta su PC */
-
         .filter-chip {
             padding: 7px 16px;
             background: rgba(255,255,255,0.06);
@@ -244,8 +242,12 @@
         }
         body.light-theme .filter-chip.active { color: #fff; }
 
-        .search-container { pointer-events: auto; flex-shrink: 0; }
-        .search-input {
+        .search-container { 
+            pointer-events: auto; flex-shrink: 0; 
+            display: flex; gap: 10px; 
+        }
+        
+        .search-input, .filter-select-desktop {
             background: rgba(255,255,255,0.07);
             backdrop-filter: blur(16px);
             border: 1px solid var(--border2);
@@ -253,16 +255,27 @@
             color: var(--text);
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 0.8rem; font-weight: 600;
-            padding: 7px 16px 7px 34px;
-            outline: none; width: 190px;
+            padding: 7px 16px;
+            outline: none; 
             transition: all .25s;
+        }
+        
+        /* Stile specifico per barra di ricerca (icona) */
+        .search-input {
+            width: 190px;
+            padding-left: 34px;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: 12px center;
         }
-        body.light-theme .search-input { 
+
+        body.light-theme .search-input, body.light-theme .filter-select-desktop { 
             background: rgba(0,0,0,0.04); 
+            color: #000;
+        }
+        body.light-theme .search-input {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='rgba(0,0,0,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
         }
+        
         .search-input::placeholder { color: var(--muted); }
         .search-input:focus {
             background: var(--surface2);
@@ -270,6 +283,22 @@
             width: 230px;
             box-shadow: 0 0 0 3px rgba(200,240,96,0.08);
         }
+
+        /* Stile specifico per dropdown desktop (Freccia custom) */
+        .filter-select-desktop {
+            appearance: none;
+            cursor: pointer;
+            padding-right: 30px;
+            padding-left: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.7)' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+        body.light-theme .filter-select-desktop {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(0,0,0,0.7)' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        }
+        .filter-select-desktop option { background: var(--surface); color: var(--text); }
+
 
         /* ══════════════════════════
            TOGGLE VISIBILITÀ
@@ -498,7 +527,7 @@
         }
 
         /* ── STILE PER IL NUOVO BOTTONE SCARICA TONDO ── */
-        .side-btn.download-btn { color: var(--accent3); } /* Azzurro */
+        .side-btn.download-btn { color: var(--accent3); } 
         .side-btn.download-btn .side-btn__icon {
             background: rgba(96,180,240,0.15);
             border-color: rgba(96,180,240,0.3);
@@ -626,6 +655,9 @@
         /* ══════════════════════════
            RESPONSIVE MOBILE (IL FEED FULLSCREEN)
         ══════════════════════════ */
+        /* Stili condivisi per i select (mobile/desktop) */
+        .filter-select { display: none; }
+        
         @media (max-width: 768px) {
             /* 1. NASCONDI LA TOPNAV SU MOBILE */
             .topnav { display: none !important; }
@@ -682,8 +714,8 @@
             /* ALZIAMO LA SIDEBAR E AUMENTIAMO IL GAP TRA I PULSANTI */
             .card__sidebar { 
                 right: 12px; 
-                bottom: 120px; /* Molto più in alto per non stare incollati al testo o alla navbar */
-                gap: 22px; /* Più spazio tra un tasto rotondo e l'altro */
+                bottom: 120px; 
+                gap: 22px; 
             } 
             
             .scroll-hint { bottom: 30px; } 
@@ -694,19 +726,27 @@
 
             /* 5. LA BARRA DI RICERCA/FILTRI IN ALTO DIVENTA FLUTTUANTE E COMPATTA */
             .top-bar {
-                flex-direction: row; align-items: center;
+                flex-direction: column; /* Impilati su mobile per fare spazio */
+                align-items: stretch;
                 padding: max(16px, env(safe-area-inset-top)) 16px 12px 16px; gap: 10px;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%); 
+                background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%); 
             }
             body.light-theme .top-bar {
-                background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
+                background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
             }
             
             .filter-bar { display: none; } 
             
-            .filter-select-mobile {
-                display: block; 
+            /* Contenitore per allineare le due tendine su mobile */
+            .mobile-filters-row {
+                display: flex;
+                gap: 8px;
                 pointer-events: auto;
+            }
+
+            .filter-select {
+                display: block; 
+                flex: 1; /* Le tendine si dividono lo spazio a metà */
                 background: rgba(255,255,255,0.07);
                 backdrop-filter: blur(16px);
                 border: 1px solid var(--border2);
@@ -714,27 +754,30 @@
                 color: var(--text);
                 font-family: 'Cabinet Grotesk', sans-serif;
                 font-size: 0.8rem; font-weight: 600;
-                padding: 7px 12px 7px 30px;
+                padding: 7px 24px 7px 14px; /* Padding aggiustato per icona a destra */
                 outline: none;
                 appearance: none; 
                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.7)' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-                background-repeat: no-repeat; background-position: 8px center;
+                background-repeat: no-repeat; background-position: right 10px center;
             }
-            body.light-theme .filter-select-mobile {
-                background: rgba(0,0,0,0.04); 
+            body.light-theme .filter-select {
+                background-color: rgba(255,255,255,0.6); 
                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(0,0,0,0.7)' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
                 color: #000;
             }
-            .filter-select-mobile option { background: var(--surface); color: var(--text); }
+            .filter-select option { background: var(--surface); color: var(--text); }
 
             .search-container { flex-shrink: 1; flex-grow: 1; }
             .search-input { width: 100%; }
             .search-input:focus { width: 100%; } 
+            
+            .filter-select-desktop { display: none; } /* Nascondi la tendina livello desktop su mobile */
         }
         
         /* Desktop fix per toast */
         @media (min-width: 769px) {
             .toast { bottom: 84px; right: 28px; left: auto; text-align: left; }
+            .mobile-filters-row { display: none; } /* Nascondi il contenitore mobile su desktop */
         }
     </style>
 </head>
@@ -787,40 +830,56 @@
 
     <div class="top-bar">
         <div class="filter-bar" id="filterBar">
-            <button class="filter-chip active" onclick="applicaFiltro('Tutte', this)">✦ Tutte</button>
-            <button class="filter-chip" onclick="applicaFiltro('Matematica', this)">∑ Matematica</button>
-            <button class="filter-chip" onclick="applicaFiltro('Scienze', this)">🔬 Scienze</button>
-            <button class="filter-chip" onclick="applicaFiltro('Fisica', this)">⚛️ Fisica</button>
-            <button class="filter-chip" onclick="applicaFiltro('Chimica', this)">🧪 Chimica</button>
-            <button class="filter-chip" onclick="applicaFiltro('Storia', this)">📖 Storia</button>
-            <button class="filter-chip" onclick="applicaFiltro('Geografia', this)">🌍 Geografia</button>
-            <button class="filter-chip" onclick="applicaFiltro('Italiano', this)">✏️ Italiano</button>
-            <button class="filter-chip" onclick="applicaFiltro('Inglese', this)">🗣️ Inglese</button>
-            <button class="filter-chip" onclick="applicaFiltro('Informatica', this)">💻 Informatica</button>
-            <button class="filter-chip" onclick="applicaFiltro('Arte', this)">🎨 Arte</button>
-            <button class="filter-chip" onclick="applicaFiltro('Biologia', this)">🧬 Biologia</button>
-            <button class="filter-chip" onclick="applicaFiltro('Geometria', this)">📐 Geometria</button>
-            <button class="filter-chip" onclick="applicaFiltro('Altro', this)">📌 Altro</button>
+            <button class="filter-chip active" onclick="applicaFiltroMateria('Tutte', this)">✦ Tutte</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Matematica', this)">∑ Matematica</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Scienze', this)">🔬 Scienze</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Fisica', this)">⚛️ Fisica</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Chimica', this)">🧪 Chimica</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Storia', this)">📖 Storia</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Geografia', this)">🌍 Geografia</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Italiano', this)">✏️ Italiano</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Inglese', this)">🗣️ Inglese</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Informatica', this)">💻 Informatica</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Arte', this)">🎨 Arte</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Biologia', this)">🧬 Biologia</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Geometria', this)">📐 Geometria</button>
+            <button class="filter-chip" onclick="applicaFiltroMateria('Altro', this)">📌 Altro</button>
         </div>
 
-        <select class="filter-select-mobile" id="filterSelectMobile" onchange="applicaFiltro(this.value, null)">
-            <option value="Tutte">✦ Tutte le materie</option>
-            <option value="Matematica">∑ Matematica</option>
-            <option value="Scienze">🔬 Scienze</option>
-            <option value="Fisica">⚛️ Fisica</option>
-            <option value="Chimica">🧪 Chimica</option>
-            <option value="Storia">📖 Storia</option>
-            <option value="Geografia">🌍 Geografia</option>
-            <option value="Italiano">✏️ Italiano</option>
-            <option value="Inglese">🗣️ Inglese</option>
-            <option value="Informatica">💻 Informatica</option>
-            <option value="Arte">🎨 Arte</option>
-            <option value="Biologia">🧬 Biologia</option>
-            <option value="Geometria">📐 Geometria</option>
-            <option value="Altro">📌 Altro</option>
-        </select>
+        <div class="mobile-filters-row">
+            <select class="filter-select" id="filterSelectMobileMateria" onchange="applicaFiltroMateria(this.value, null)">
+                <option value="Tutte">✦ Tutte le materie</option>
+                <option value="Matematica">∑ Matematica</option>
+                <option value="Scienze">🔬 Scienze</option>
+                <option value="Fisica">⚛️ Fisica</option>
+                <option value="Chimica">🧪 Chimica</option>
+                <option value="Storia">📖 Storia</option>
+                <option value="Geografia">🌍 Geografia</option>
+                <option value="Italiano">✏️ Italiano</option>
+                <option value="Inglese">🗣️ Inglese</option>
+                <option value="Informatica">💻 Informatica</option>
+                <option value="Arte">🎨 Arte</option>
+                <option value="Biologia">🧬 Biologia</option>
+                <option value="Geometria">📐 Geometria</option>
+                <option value="Altro">📌 Altro</option>
+            </select>
+            
+            <select class="filter-select" id="filterSelectMobileLivello" onchange="applicaFiltroLivello(this.value)">
+                <option value="Tutti">🎓 Tutti i livelli</option>
+                <option value="medie">Scuole Medie</option>
+                <option value="superiori">Scuole Superiori</option>
+                <option value="universita">Università</option>
+            </select>
+        </div>
 
         <div class="search-container">
+            <select class="filter-select-desktop" id="filterSelectDesktopLivello" onchange="applicaFiltroLivello(this.value)">
+                <option value="Tutti">🎓 Tutti i livelli</option>
+                <option value="medie">Scuole Medie</option>
+                <option value="superiori">Scuole Superiori</option>
+                <option value="universita">Università</option>
+            </select>
+
             <input type="text" id="searchInput" class="search-input"
                 placeholder="Cerca nel titolo..."
                 oninput="onSearchInput(event)">
@@ -871,6 +930,14 @@
             </select>
         </div>
         <div class="modal__field">
+            <label class="modal__label">Livello di Studio</label>
+            <select class="modal__select" id="mLivello">
+                <option value="medie">Scuole Medie</option>
+                <option value="superiori">Scuole Superiori</option>
+                <option value="universita">Università</option>
+            </select>
+        </div>
+        <div class="modal__field">
             <label class="modal__label">Foto Preview / Copertina (Opzionale)</label>
             <input class="modal__input" id="mCover" type="file" accept="image/*">
         </div>
@@ -914,13 +981,11 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    // Recupero il tema anche nel body al caricamento per sicurezza
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
             document.body.classList.add('light-theme');
         }
         
-        // Verifica login
         if (document.cookie.includes('username=')) {
             const loginBtn = document.getElementById('navLoginBtn');
             if(loginBtn) loginBtn.style.display = 'none';
@@ -933,18 +998,42 @@
         btn.innerHTML = document.body.classList.contains('clean-view') ? '🙈' : '👁️';
     }
 
-    // Intercetta la funzione js per gestire sia il click su PC che la Select su Mobile
-    const originalApplicaFiltro = window.applicaFiltro;
-    window.applicaFiltro = function(materia, el) {
-        if (typeof originalApplicaFiltro === 'function') {
-            originalApplicaFiltro(materia, el);
-        } else {
-            console.log('Filtra per:', materia);
-        }
-        
-        // Aggiorna la tendina se clicco dai bottoni desktop
+    // Variabili per conservare i filtri attualmente attivi
+    window.filtroCorrenteMateria = 'Tutte';
+    window.filtroCorrenteLivello = 'Tutti';
+
+    // Funzione chiamata quando si cambia materia (da bottoni PC o tendina Mobile)
+    window.applicaFiltroMateria = function(materia, el) {
+        window.filtroCorrenteMateria = materia;
+
+        // Se l'utente clicca dai bottoni su PC, aggiorno la tendina mobile per tenerle sincronizzate
         if(el) {
-            document.getElementById('filterSelectMobile').value = materia;
+            document.getElementById('filterSelectMobileMateria').value = materia;
+        }
+
+        chiamaFiltroReale();
+    }
+
+    // Funzione chiamata quando si cambia livello (da tendina PC o tendina Mobile)
+    window.applicaFiltroLivello = function(livello) {
+        window.filtroCorrenteLivello = livello;
+
+        // Tengo sincronizzate le due tendine (PC e Mobile)
+        document.getElementById('filterSelectDesktopLivello').value = livello;
+        document.getElementById('filterSelectMobileLivello').value = livello;
+
+        chiamaFiltroReale();
+    }
+
+    // Unica funzione che comunica con il file JavaScript esterno (esplora.js) passandogli entrambi i filtri
+    function chiamaFiltroReale() {
+        if (typeof window.applicaFiltriCombinati === 'function') {
+            window.applicaFiltriCombinati(window.filtroCorrenteMateria, window.filtroCorrenteLivello);
+        } else {
+            // Fallback se esplora.js non è ancora stato aggiornato per supportare due filtri contemporaneamente
+            if (typeof window.applicaFiltro === 'function') {
+                window.applicaFiltro(window.filtroCorrenteMateria, null);
+            }
         }
     }
 </script>

@@ -7,9 +7,9 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: true }
 });
 
-/* Validazione aggiornata lato server */
-function valida({ nome, cognome, username, email, password }) {
-  if (!nome || !cognome) return 'Nome e cognome sono obbligatori';
+/* Validazione aggiornata lato server (senza nome/cognome, con livello) */
+function valida({ username, email, password, livello }) {
+  if (!livello) return 'Il livello di studio è obbligatorio';
   if (!/^[a-zA-Z0-9_]{3,30}$/.test(username))
     return 'Username non valido (3-30 caratteri, solo lettere, numeri e _)';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -28,11 +28,11 @@ module.exports = async (req, res) => {
     return res.status(405).json({ success: false, message: 'Solo POST ammesso' });
   }
 
-  // Estraiamo anche 'scuola' dal corpo della richiesta
-  const { nome, cognome, username, email, password, scuola } = req.body;
+  // Estraiamo i dati dal corpo della richiesta
+  const { username, email, password, livello, scuola } = req.body;
 
   /* Validazione */
-  const errore = valida({ nome, cognome, username, email, password });
+  const errore = valida({ username, email, password, livello });
   if (errore) {
     return res.status(400).json({ success: false, message: errore });
   }
@@ -51,19 +51,17 @@ module.exports = async (req, res) => {
       });
     }
 
-    /* * NOVITÀ: Creazione dell'hash sicuro con bcrypt.
-     * Il valore "10" rappresenta i "salt rounds" (la complessità dell'algoritmo).
-     */
+    /* Creazione dell'hash sicuro con bcrypt. */
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    /* Inserisce il nuovo utente, includendo il campo SCUOLA (che può essere vuoto/null) */
-    // Gestiamo il caso in cui scuola sia undefined
+    /* Gestiamo il caso in cui scuola sia undefined */
     const scuolaValue = scuola && scuola.trim() !== '' ? scuola.trim() : null;
 
+    /* Inserisce il nuovo utente senza nome e cognome, ma salvando il livello */
     await pool.query(
-      `INSERT INTO utenti (nome, cognome, username, email, password, scuola, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
-      [nome.trim(), cognome.trim(), username.toLowerCase(), email.toLowerCase(), hashedPassword, scuolaValue]
+      `INSERT INTO utenti (username, email, password, livello, scuola, created_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())`,
+      [username.toLowerCase(), email.toLowerCase(), hashedPassword, livello, scuolaValue]
     );
 
     return res.status(201).json({

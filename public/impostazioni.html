@@ -469,16 +469,16 @@
                     <div class="setting-row__icon">🆔</div>
                     <div class="setting-row__info">
                         <div class="setting-row__label">Username</div>
-                        <div class="setting-row__desc">Il nome pubblico visualizzato sulla piattaforma.</div>
-                        <input type="text" id="setNick" class="setting-input" placeholder="Caricamento...">
+                        <div class="setting-row__desc">Il nome pubblico visualizzato sulla piattaforma. (Non modificabile)</div>
+                        <input type="text" id="setNick" class="setting-input" placeholder="Caricamento..." disabled>
                     </div>
                 </div>
                 <div class="setting-row">
                     <div class="setting-row__icon">📧</div>
                     <div class="setting-row__info">
                         <div class="setting-row__label">Email</div>
-                        <div class="setting-row__desc">Indirizzo email collegato al tuo profilo.</div>
-                        <input type="email" id="setEmail" class="setting-input" placeholder="Caricamento...">
+                        <div class="setting-row__desc">Indirizzo email collegato al tuo profilo. (Non modificabile)</div>
+                        <input type="email" id="setEmail" class="setting-input" placeholder="Caricamento..." disabled>
                     </div>
                 </div>
                 <div class="setting-row">
@@ -486,27 +486,24 @@
                     <div class="setting-row__info">
                         <div class="setting-row__label">Scuola o Università</div>
                         <div class="setting-row__desc">Aiuta gli altri a trovare appunti del tuo istituto.</div>
-                        <input type="text" id="setScuola" class="setting-input" placeholder="Caricamento...">
+                        <input type="text" id="setScuola" class="setting-input" placeholder="Es: Liceo Scientifico Volta">
                     </div>
                 </div>
                 <div class="setting-row">
                     <div class="setting-row__icon">🎓</div>
                     <div class="setting-row__info">
-                        <div class="setting-row__label">Anno di corso</div>
-                        <div class="setting-row__desc">Seleziona il tuo attuale anno di studi.</div>
-                        <select class="setting-select" id="setAnno">
-                            <option>Superiori - 1°</option>
-                            <option>Superiori - 2°</option>
-                            <option>Superiori - 3°</option>
-                            <option>Superiori - 4°</option>
-                            <option>Superiori - 5°</option>
-                            <option>Università</option>
+                        <div class="setting-row__label">Livello di Studio</div>
+                        <div class="setting-row__desc">Seleziona il tuo attuale livello di studi.</div>
+                        <select class="setting-select" id="setLivello">
+                            <option value="medie">Scuole Medie</option>
+                            <option value="superiori">Scuole Superiori</option>
+                            <option value="universita">Università</option>
                         </select>
                     </div>
                 </div>
             </div>
             <div class="settings-actions">
-                <button class="btn btn--accent" onclick="salva('Modifiche salvate con successo!')">Salva Modifiche</button>
+                <button class="btn btn--accent" onclick="salvaModificheAccount()">Salva Modifiche</button>
                 <button class="btn btn--ghost" onclick="caricaDatiAccount()">Ripristina</button>
             </div>
         </div>
@@ -581,9 +578,13 @@
         }
     }
 
+    // Caricamento dati iniziali
     async function caricaDatiAccount() {
         const userLog = getCookieSafe('username');
-        if (!userLog) return;
+        if (!userLog) {
+            document.getElementById('setNick').value = 'Ospite (Non loggato)';
+            return;
+        }
         try {
             const res = await fetch(`/api/utente?username=${encodeURIComponent(userLog)}`);
             if (res.ok) {
@@ -591,8 +592,50 @@
                 document.getElementById('setNick').value = u.username || '';
                 document.getElementById('setEmail').value = u.email || '';
                 document.getElementById('setScuola').value = u.scuola || '';
+                
+                // Imposta il livello di studio corretto
+                if (u.livello) {
+                    const selectLivello = document.getElementById('setLivello');
+                    const options = Array.from(selectLivello.options);
+                    const optionToSelect = options.find(opt => opt.value === u.livello);
+                    if (optionToSelect) {
+                        selectLivello.value = u.livello;
+                    }
+                }
             }
         } catch (e) { console.error(e); }
+    }
+
+    // Salvataggio nel database
+    async function salvaModificheAccount() {
+        const utenteId = getCookieSafe('utente_id');
+        if (!utenteId) return salva('Devi effettuare il login!');
+
+        const nuovaScuola = document.getElementById('setScuola').value;
+        const nuovoLivello = document.getElementById('setLivello').value;
+
+        try {
+            // Usa la stessa rotta API che usi nel profilo per aggiornare la foto, 
+            // ma passandogli scuola e livello
+            const res = await fetch('/api/utente', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    id: utenteId, 
+                    scuola: nuovaScuola,
+                    livello: nuovoLivello
+                })
+            });
+
+            if (res.ok) {
+                salva('Modifiche salvate con successo!');
+            } else {
+                salva('Errore durante il salvataggio.');
+            }
+        } catch (err) {
+            console.error(err);
+            salva('Errore di connessione.');
+        }
     }
 
     function initTema() {
@@ -631,6 +674,7 @@
     async function eseguiLogout() {
         try { await fetch('/api/logout', { method: 'POST' }); } catch {}
         document.cookie = 'username=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie = 'utente_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = 'index.html';
     }
 

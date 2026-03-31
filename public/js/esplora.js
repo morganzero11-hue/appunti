@@ -8,6 +8,7 @@ function getCookieSafe(name) {
 
 let tuttiAppunti = [];
 let activeMateria = 'Tutte';
+let activeLivello = 'Tutti'; // Nuova variabile per tenere traccia del livello
 let searchQuery = '';
 let currentAppuntoPerPlaylist = null; 
 
@@ -31,7 +32,11 @@ async function initEsplora() {
         const res = await fetch('/api/appunti');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         tuttiAppunti = await res.json();
-        applicaFiltriCombinati(); 
+        
+        // Se non abbiamo ancora definito la funzione dal file HTML, usiamo quella base
+        if (typeof window.applicaFiltriCombinati !== 'function') {
+            applicaFiltriReale();
+        }
     } catch (err) {
         console.error('Errore recupero appunti:', err);
         mostraErrore();
@@ -39,30 +44,51 @@ async function initEsplora() {
 }
 
 /* ── GESTIONE FILTRI E RICERCA ── */
-window.applicaFiltro = function(materiaSelezionata, btnElement) {
-    if (btnElement) {
+
+// Questa funzione viene chiamata dal file HTML quando si cambiano le tendine
+window.applicaFiltriCombinati = function(materiaSelezionata, livelloSelezionato) {
+    if (materiaSelezionata) activeMateria = materiaSelezionata;
+    if (livelloSelezionato) activeLivello = livelloSelezionato;
+    
+    // Aggiorno visivamente i bottoncini su PC (se esistono e se la materia non è null)
+    if (materiaSelezionata) {
         const chips = document.querySelectorAll('.filter-chip');
-        chips.forEach(chip => chip.classList.remove('active'));
-        btnElement.classList.add('active');
+        chips.forEach(chip => {
+            chip.classList.remove('active');
+            // Cerca il bottone che ha come testo (escludendo l'icona iniziale) la materia selezionata
+            if (chip.textContent.includes(materiaSelezionata)) {
+                chip.classList.add('active');
+            }
+        });
     }
-    activeMateria = materiaSelezionata;
-    applicaFiltriCombinati();
+
+    applicaFiltriReale();
 }
 
 window.onSearchInput = function(event) {
     searchQuery = event.target.value.toLowerCase();
-    applicaFiltriCombinati();
+    applicaFiltriReale();
 }
 
-function applicaFiltriCombinati() {
+// Questa è la funzione che esegue effettivamente il filtro sui dati
+function applicaFiltriReale() {
     let appuntiFiltrati = tuttiAppunti;
 
+    // 1. Filtro per Materia
     if (activeMateria !== 'Tutte') {
         appuntiFiltrati = appuntiFiltrati.filter(a => 
             a.materia && a.materia.toLowerCase() === activeMateria.toLowerCase()
         );
     }
 
+    // 2. Filtro per Livello
+    if (activeLivello !== 'Tutti') {
+        appuntiFiltrati = appuntiFiltrati.filter(a => 
+            a.livello && a.livello.toLowerCase() === activeLivello.toLowerCase()
+        );
+    }
+
+    // 3. Filtro per Ricerca testuale
     if (searchQuery.trim() !== '') {
         appuntiFiltrati = appuntiFiltrati.filter(a => 
             a.titolo && a.titolo.toLowerCase().includes(searchQuery)
@@ -158,7 +184,6 @@ window.salvaAppuntoInPlaylist = async function(playlistId) {
     if (!currentAppuntoPerPlaylist) return;
 
     try {
-        // ORA PUNTA CORRETTAMENTE A /api/playlists
         const res = await fetch('/api/playlists', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -169,7 +194,6 @@ window.salvaAppuntoInPlaylist = async function(playlistId) {
             window.toast('✅ Appunto salvato nella playlist!');
             chiudiModalPlaylist();
         } else {
-            // Se c'è un errore (es. appunto già salvato), lo mostriamo!
             const data = await res.json();
             window.toast(`⚠️ ${data.error || 'Errore nel salvataggio.'}`);
         }
@@ -259,6 +283,14 @@ function renderFeed(lista) {
         const data_str = formatData(a.data_caricamento);
         const titoloSafe = a.titolo ? a.titolo.replace(/'/g, "\\'").replace(/"/g, '&quot;') : 'Appunto';
 
+        // Estrai il livello da stampare a schermo
+        let testoLivello = '';
+        if (a.livello) {
+            if (a.livello === 'medie') testoLivello = 'Scuole Medie';
+            if (a.livello === 'superiori') testoLivello = 'Scuole Superiori';
+            if (a.livello === 'universita') testoLivello = 'Università';
+        }
+
         const fotoProfiloHTML = a.foto_profilo_url 
             ? `<img src="${a.foto_profilo_url}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">`
             : `<span style="color:${ac}; font-family: 'Fraunces', serif;">${iniziale}</span>`;
@@ -313,7 +345,9 @@ function renderFeed(lista) {
                             <div class="card__school">${data_str}</div>
                         </div>
                     </div>
-                    <div class="card__subject" style="color:${mc}; border-color:${mc}66;">${icona} ${a.materia || 'Generale'}</div>
+                    <div class="card__subject" style="color:${mc}; border-color:${mc}66;">
+                        ${icona} ${a.materia || 'Generale'} ${testoLivello ? ` • ${testoLivello}` : ''}
+                    </div>
                     <div class="card__title">${a.titolo || 'Senza titolo'}</div>
                     <div class="card__actions">
                         ${immagini.length > 0 ? `<button onclick="scaricaTutteLeImmagini('${a.file_url}', '${titoloSafe}')" class="card__btn">📥 Apri/Scarica Tutto</button>` : ''}
@@ -413,6 +447,7 @@ window.pubblicaAppunto = async function() {
     const audioIn = document.getElementById('mAudio');
     const titolo = document.getElementById('mTitolo').value.trim();
     const materia = document.getElementById('mMateria').value;
+    const livello = document.getElementById('mLivello').value; // <-- AGGIUNTO QUI: Cattura il livello
 
     if (!titolo) return window.toast('⚠️ Inserisci il titolo!');
     if (!filesIn.files || filesIn.files.length === 0) return window.toast('⚠️ Seleziona almeno un documento!');
@@ -458,8 +493,13 @@ window.pubblicaAppunto = async function() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                utente_id: utenteId, titolo: titolo, materia: materia, 
-                file_url: fileUrls.join(','), audio_url: audioUrl, cover_url: coverUrl 
+                utente_id: utenteId, 
+                titolo: titolo, 
+                materia: materia, 
+                livello: livello, // <-- AGGIUNTO QUI: Invia il livello al DB
+                file_url: fileUrls.join(','), 
+                audio_url: audioUrl, 
+                cover_url: coverUrl 
             })
         });
         if (!dbRes.ok) throw new Error('Errore DB');
@@ -471,6 +511,7 @@ window.pubblicaAppunto = async function() {
         document.getElementById('mFile').value = '';
         document.getElementById('mCover').value = '';
         document.getElementById('mAudio').value = '';
+        // Il livello non ha bisogno di essere resettato (può rimanere sull'ultima scelta)
         
         initEsplora();
 
