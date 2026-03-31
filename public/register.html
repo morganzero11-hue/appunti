@@ -110,12 +110,18 @@
         
         .field__wrap { position: relative; }
         .field__icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; transition: color .2s; }
+        
         .field__input { 
             width: 100%; background: rgba(255,255,255,0.05); border: 1.5px solid var(--border2); 
             border-radius: 12px; color: var(--text); font-family: 'Cabinet Grotesk', sans-serif; 
             font-size: 0.95rem; font-weight: 600; padding: 12px 14px 12px 42px; outline: none; 
             transition: border-color .2s, background .2s, box-shadow .2s; 
         }
+        
+        select.field__input { appearance: none; cursor: pointer; }
+        select.field__input option { background: var(--surface); color: var(--text); }
+        body.light-theme select.field__input option { background: var(--surface); color: var(--text); }
+
         body.light-theme .field__input { background: rgba(0,0,0,0.02); }
         .field__input::placeholder { color: var(--muted); font-weight: 400; opacity: 0.6;}
         .field__input:focus { border-color: var(--accent); background: rgba(240,192,64,0.05); box-shadow: 0 0 0 3px rgba(240,192,64,0.1); }
@@ -123,9 +129,6 @@
         /* password toggle */
         .field__toggle { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 0.95rem; transition: color .2s; padding: 2px; }
         .field__toggle:hover { color: var(--text); }
-
-        /* row 2 inputs same line */
-        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         /* strength bar */
         .strength-wrap { margin-top: 4px; }
@@ -206,25 +209,22 @@
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 850px) {
-            .page { padding: 20px 16px; align-items: flex-start; } /* Su mobile sta più in alto */
+            .page { padding: 20px 16px; align-items: flex-start; } 
             .page__inner { 
                 grid-template-columns: 1fr; 
                 gap: 0; 
                 max-width: 480px; 
                 margin: 0 auto; 
             }
-            .left, .divider { display: none; } /* Nascondiamo la colonna testuale */
+            .left, .divider { display: none; } 
             .right { padding: 20px 0 40px; animation: slideIn 0.5s ease both; }
             .card { 
-                padding: 32px 24px; /* Padding ridotto per far entrare più roba */
+                padding: 32px 24px; 
                 max-width: 100%; 
                 border-radius: 20px;
                 box-shadow: 0 16px 40px rgba(0,0,0,0.3);
             }
             .mobile-brand { display: flex; animation: fadeUp 0.6s ease both; }
-            
-            /* Su mobile, i campi nome e cognome vanno uno sotto l'altro per stare comodi */
-            .field-row { grid-template-columns: 1fr; gap: 14px; }
         }
     </style>
 </head>
@@ -287,25 +287,6 @@
 
                 <form class="form" id="regForm" onsubmit="inviaRegistrazione(event)" novalidate>
 
-                    <div class="field-row">
-                        <div class="field">
-                            <div class="field__label">Nome</div>
-                            <div class="field__wrap">
-                                <input class="field__input" type="text" id="nome" placeholder="Mario" autocomplete="given-name" required>
-                                <span class="field__icon">✏️</span>
-                            </div>
-                            <div class="field__error" id="err-nome">Inserisci il tuo nome</div>
-                        </div>
-                        <div class="field">
-                            <div class="field__label">Cognome</div>
-                            <div class="field__wrap">
-                                <input class="field__input" type="text" id="cognome" placeholder="Rossi" autocomplete="family-name" required>
-                                <span class="field__icon">✏️</span>
-                            </div>
-                            <div class="field__error" id="err-cognome">Inserisci il tuo cognome</div>
-                        </div>
-                    </div>
-
                     <div class="field">
                         <div class="field__label">Username</div>
                         <div class="field__wrap">
@@ -325,8 +306,22 @@
                     </div>
 
                     <div class="field">
+                        <div class="field__label">Livello di studio</div>
+                        <div class="field__wrap">
+                            <select class="field__input" id="livello" required>
+                                <option value="" disabled selected>Seleziona il tuo livello...</option>
+                                <option value="medie">Scuole Medie</option>
+                                <option value="superiori">Scuole Superiori</option>
+                                <option value="universita">Università</option>
+                            </select>
+                            <span class="field__icon">🎓</span>
+                        </div>
+                        <div class="field__error" id="err-livello">Seleziona un livello di studio</div>
+                    </div>
+
+                    <div class="field">
                         <div class="field__label">
-                            <span>Scuola</span>
+                            <span>Scuola o Università</span>
                             <span class="optional">Opzionale</span>
                         </div>
                         <div class="field__wrap">
@@ -401,14 +396,12 @@
 </div>
 
 <script>
-    // Recupero il tema salvato nelle impostazioni
     document.addEventListener("DOMContentLoaded", () => {
         if (localStorage.getItem('appuntiTheme') === 'light') {
             document.body.classList.add('light-theme');
         }
     });
 
-    /* 1. AGGIUNTO: Toggle password funzionante */
     function togglePwd(inputId, btnId) {
         const input = document.getElementById(inputId);
         const btn   = document.getElementById(btnId);
@@ -467,25 +460,19 @@
 
     function valida() {
         let ok = true;
-        const nome     = document.getElementById('nome').value.trim();
-        const cognome  = document.getElementById('cognome').value.trim();
         const username = document.getElementById('username').value.trim();
         const email    = document.getElementById('email').value.trim();
+        const livello  = document.getElementById('livello').value;
         const pw       = document.getElementById('password').value;
         const pw2      = document.getElementById('confermaPassword').value;
         const terms    = document.getElementById('termsCb').checked;
 
-        /* 2. AGGIUNTO: Controllo Password (8 car, 1 num, 1 speciale) */
         const pwdRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-        if (errore('nome',    !nome))    ok = false;
-        if (errore('cognome', !cognome)) ok = false;
         if (errore('username', !/^[a-zA-Z0-9_]{3,30}$/.test(username))) ok = false;
         if (errore('email',   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) ok = false;
-        
-        /* Uso la nuova validazione password */
+        if (errore('livello', !livello)) ok = false; // Validazione del nuovo campo
         if (errore('password', !pwdRegex.test(pw))) ok = false; 
-        
         if (errore('conferma', pw !== pw2))    ok = false;
         if (errore('terms',   !terms))         ok = false;
 
@@ -501,12 +488,11 @@
         btn.textContent = 'Creazione account…';
         btn.classList.add('loading');
 
-        /* 3. AGGIUNTO: Raccolta del campo "scuola" nel payload */
+        // AGGIUNTO IL LIVELLO NEL PAYLOAD
         const payload = {
-            nome:     document.getElementById('nome').value.trim(),
-            cognome:  document.getElementById('cognome').value.trim(),
             username: document.getElementById('username').value.trim(),
             email:    document.getElementById('email').value.trim(),
+            livello:  document.getElementById('livello').value, 
             scuola:   document.getElementById('scuola').value.trim(), 
             password: document.getElementById('password').value,
         };
@@ -538,10 +524,11 @@
         mostraMsg('🔗 Registrazione con ' + provider + ' — funzione in arrivo!', 'error');
     }
 
-    /* rimuovi errori quando l'utente riprende a scrivere */
-    ['nome','cognome','username','email','password','confermaPassword'].forEach(id => {
+    /* Rimuovi errori al cambio valore */
+    ['username','email','livello','password','confermaPassword'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', () => { errore(id, false); nascondiMsg(); });
+        if (el) el.addEventListener('change', () => { errore(id, false); nascondiMsg(); });
     });
     document.getElementById('termsCb').addEventListener('change', () => errore('terms', false));
 </script>
