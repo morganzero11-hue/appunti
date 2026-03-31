@@ -57,26 +57,25 @@
         }
 
         /* ════════════════════════════
-           TOPNAV (PC)
+           TOPNAV (DESKTOP)
         ════════════════════════════ */
         .topnav {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: var(--nav-h);
-            background: rgba(var(--bg-rgb, 10,10,15), 0.9);
+            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+            background: rgba(10,10,15,0.88);
             backdrop-filter: blur(20px) saturate(180%);
-            display: flex; align-items: center; padding: 0 36px;
-            z-index: 1000; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 36px; z-index: 1000;
+            border-bottom: 1px solid var(--border);
             transition: background-color 0.3s;
         }
-        body.light-theme .topnav { background: rgba(248, 249, 250, 0.9); }
+        body.light-theme .topnav { background: rgba(248,249,250,0.88); }
 
         .topnav__brand {
             display: flex; align-items: center; gap: 10px;
-            font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900;
-            color: var(--accent); text-decoration: none; margin-right: 32px;
-            letter-spacing: -0.4px;
+            font-family: 'Fraunces', serif;
+            font-size: 1.45rem; font-weight: 900;
+            color: var(--accent); text-decoration: none;
+            margin-right: 36px; letter-spacing: -0.5px;
         }
-        
         .brand-icon { font-size: 1.5rem; animation: gentleFloat 4s ease-in-out infinite; }
         @keyframes gentleFloat {
             0%, 100% { transform: translateY(0) rotate(-2deg); }
@@ -84,39 +83,34 @@
         }
 
         .topnav__links {
-            list-style: none; display: flex; gap: 2px; flex: 1; margin: 0; padding: 0;
+            list-style: none; display: flex; gap: 2px; flex: 1;
         }
         .topnav__links a {
-            color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 700;
-            padding: 7px 14px; border-radius: 10px; transition: all .2s; display: block;
+            color: var(--muted); text-decoration: none;
+            font-size: 0.9rem; font-weight: 700;
+            padding: 7px 14px; border-radius: 10px; transition: all .2s;
+            display: block;
         }
         .topnav__links a:hover { color: var(--text); background: var(--surface2); }
-        .topnav__links a.active { color: var(--accent); background: var(--accent-glow); }
+        .topnav__links a.active { color: var(--accent); background: rgba(200,240,96,0.08); }
         body.light-theme .topnav__links a.active { background: rgba(163,204,43,0.15); }
-        
+
         .topnav__actions {
             margin-left: auto;
             display: flex;
             align-items: center;
             gap: 16px;
         }
-        
-        .topnav__settings-mobile {
-            display: none;
-            font-size: 1.5rem;
-            color: var(--text);
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
-        
+
         .topnav__login {
-            background: var(--accent); color: #0a0a0f; padding: 8px 22px;
-            border-radius: 10px; text-decoration: none; font-weight: 800;
-            font-size: 0.9rem; transition: all .2s; letter-spacing: -0.2px;
+            background: var(--accent); color: #0a0a0f;
+            padding: 8px 22px; border-radius: 10px;
+            text-decoration: none; font-weight: 800;
+            font-size: 0.9rem; transition: all .2s; margin-left: auto;
         }
         body.light-theme .topnav__login { color: #fff; }
         .topnav__login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-color); }
-        
+
         .nav__back {
             display: none; align-items: center; gap: 8px;
             padding: 7px 16px; border-radius: 10px;
@@ -259,7 +253,7 @@
             width: 120px; height: 120px; border-radius: 50%; background: var(--surface2); 
             border: 4px solid var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center;
             font-family: 'Fraunces', serif; font-size: 3rem; color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            flex-shrink: 0; /* Assicura che l'avatar non si rimpicciolisca */
+            flex-shrink: 0;
         }
         body.light-theme .profile-avatar { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -278,8 +272,6 @@
         body.light-theme .btn-follow { color: #fff; }
         .btn-follow.following { background: transparent; color: var(--text); border-color: var(--border2); }
         body.light-theme .btn-follow.following { color: var(--text); border-color: var(--border2); }
-        
-        /* Effetto hover rosso quando segui già */
         .btn-follow.following:hover { background: rgba(255,77,109,0.1); color: var(--accent2); border-color: rgba(255,77,109,0.3); }
 
         .main { max-width: 900px; margin: 40px auto; padding: 0 32px 80px; }
@@ -356,7 +348,6 @@
 
         /* ─── RESPONSIVE (SMARTPHONE) ─── */
         @media (max-width: 768px) { 
-            /* 1. Navbar limitata a Logo, Impostazioni e Login */
             .topnav { 
                 height: auto; 
                 padding: 12px 16px; 
@@ -369,16 +360,12 @@
             .topnav__settings-mobile { display: flex; align-items: center; justify-content: center; }
             .topnav__login { margin-left: 0; padding: 6px 16px; font-size: 0.85rem; }
             
-            /* Tasto Cerca / Back incastrato nei bottoni destri */
             .nav__back { margin-left: 0; padding: 6px 12px; font-size: 0.85rem; }
             
-            /* 2. Mostra la Bottom Nav */
             .bottom-nav { display: block; }
 
-            /* 3. Aggiustamenti Ricerca Utenti */
             .search-page { margin-top: 100px; padding: 0 16px 40px; }
             
-            /* 4. Profilo Utente: Riorganizza header */
             .profile-header {
                 flex-direction: column;
                 align-items: center;
@@ -390,17 +377,14 @@
             .profile-avatar { width: 100px; height: 100px; font-size: 2.2rem; }
             .profile-name { font-size: 1.8rem; }
             
-            /* Bottoni centrali e a larghezza piena */
             .profile-actions { justify-content: center; width: 100%; }
             .btn-follow { flex: 1; min-width: 140px; }
 
-            /* 5. Main and Grids per Profilo Utente */
             .main { padding: 0 16px 40px; margin-top: 24px; }
             .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .stat-card { padding: 16px; }
             .stat-card__n { font-size: 1.6rem; }
             
-            /* Tabs scrollabili orizzontalmente */
             .tabs-container {
                 max-width: 100%;
                 overflow-x: auto;
@@ -411,7 +395,6 @@
 
             .notes-grid { grid-template-columns: 1fr; gap: 16px; }
             
-            /* Toast fixato in basso su mobile (sopra la bottom-nav) */
             .toast { bottom: 84px; right: 16px; left: 16px; text-align: center; }
         }
     </style>
@@ -435,7 +418,7 @@
         <div class="topnav__actions">
             <div class="nav__back" id="navBack" onclick="window.location.href='utenti.html'">← Cerca</div>
             <a href="impostazioni.html" class="topnav__settings-mobile" title="Impostazioni">⚙️</a>
-            <a href="login.html" class="topnav__login" id="navLoginBtn">Accedi</a>
+            <a href="register.html" class="topnav__login" id="navLoginBtn">Registrati</a>
         </div>
     </nav>
 
@@ -636,7 +619,7 @@
             }
         }
 
-        // --- GESTIONE FOLLOW (NUOVA FUNZIONALITÀ AGGIORNATA) ---
+        // --- GESTIONE FOLLOW ---
         window.toggleFollow = async function(targetId) {
             const myId = getCookieSafe('utente_id');
             if (!myId) {
